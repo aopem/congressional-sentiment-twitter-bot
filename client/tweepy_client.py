@@ -3,7 +3,6 @@ import json
 
 class TweepyClient:
     def __init__(self, secrets_file_name):
-        # load secrets
         secrets_json = json.load(open(secrets_file_name))
 
         # create tweepy client using secrets
@@ -17,4 +16,8 @@ class TweepyClient:
 
     def searchUsername(self, username):
         response = self.client.get_user(username=username)
+        return response
+
+    def getUserTweets(self, user, max_results):
+        response = self.client.get_users_tweets(id=user.id, max_results=max_results)
         return response
