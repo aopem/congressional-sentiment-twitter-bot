@@ -7,7 +7,6 @@ from model.politician_type import PoliticianType
 TWITTER_USERNAME_CHARACTER_LIMIT=15
 TWITTER_USERNAME_REGEX_PATTERN=r"^[A-Za-z0-9_]{1,15}$"
 
-
 def get_politician_dict(politician_list_wiki_url, list_size):
     wiki_data = pd.read_html(politician_list_wiki_url)
 
@@ -24,31 +23,31 @@ def get_politician_list(politician_list_wiki_url, list_size, politician_type, na
     politician_dict = get_politician_dict(politician_list_wiki_url, list_size)
     politician_list = []
 
-    for member in politician_dict.values():
+    for politician in politician_dict.values():
         try:
             if politician_type == PoliticianType.Representative:
                 politician_list.append(Representative(
-                    first_name=member[name_key].split()[0],
-                    last_name=member[name_key].split()[1],
-                    party=member[party_key],
-                    state=member[state_key],
-                    residence=member[residence_key],
-                    date_born=member[date_born_key]
+                    first_name=politician[name_key].split()[0],
+                    last_name=politician[name_key].split()[1],
+                    party=politician[party_key],
+                    state=politician[state_key],
+                    residence=politician[residence_key],
+                    date_born=politician[date_born_key]
                 ))
             elif politician_type == PoliticianType.Senator:
                 politician_list.append(Senator(
-                    first_name=member[name_key].split()[0],
-                    last_name=member[name_key].split()[1],
-                    party=member[party_key],
-                    state=member[state_key],
-                    residence=member[residence_key],
-                    date_born=member[date_born_key]
+                    first_name=politician[name_key].split()[0],
+                    last_name=politician[name_key].split()[1],
+                    party=politician[party_key],
+                    state=politician[state_key],
+                    residence=politician[residence_key],
+                    date_born=politician[date_born_key]
                 ))
             else:
                 raise Exception(f"Invalid type: {politician_type}")
 
         except IndexError:
-            print(f"Name {member[name_key]} not formatted correctly")
+            print(f"Name {politician[name_key]} not formatted correctly")
 
     return politician_list
 
