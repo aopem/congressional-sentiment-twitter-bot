@@ -1,8 +1,3 @@
-from unicodedata import name
-
-from pandas import describe_option
-
-
 class TwitterUser:
     def __init__(self, id, name, username, description, location, verified):
         self.id = id
