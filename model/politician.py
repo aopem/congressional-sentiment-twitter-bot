@@ -2,9 +2,11 @@ import re
 import constants as c
 
 class Politician:
-    def __init__(self, first_name, last_name, party, state, residence, date_born):
-        self.first_name = first_name
-        self.last_name = last_name
+    def __init__(self, name, party, state, residence, date_born):
+        name_list = name.split()
+        self.first_name = name_list[0]
+        self.last_name = name_list[1] if len(name_list) <= 2 else name_list[2]
+        self.name = name
         self.party = party
         self.state = state
         self.residence = residence
