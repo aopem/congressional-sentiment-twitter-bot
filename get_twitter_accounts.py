@@ -1,13 +1,13 @@
 import json
 import pandas as pd
 
-import constants as c
-from client.tweepy_client import TweepyClient
-from model.twitter_account import TwitterAccount
-from model.politician_type import PoliticianType
-from model.senator import Senator
-from model.representative import Representative
-from model.encoder import Encoder
+import twitter_bot.utils.constants as c
+from twitter_bot.client import TweepyClient
+from twitter_bot.model import TwitterAccount
+from twitter_bot.model import PoliticianType
+from twitter_bot.model import Senator
+from twitter_bot.model import Representative
+from twitter_bot.serialization import Encoder
 
 
 def get_politician_dict(

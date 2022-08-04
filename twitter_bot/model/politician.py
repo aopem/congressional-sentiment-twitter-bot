@@ -1,5 +1,5 @@
 import re
-import constants as c
+import twitter_bot.utils.constants as c
 
 class Politician:
     def __init__(self, name, party, state, residence, date_born):
