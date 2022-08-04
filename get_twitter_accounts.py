@@ -69,7 +69,7 @@ def main():
                 num_senators_found += 1
         else:
             twitter_accounts_missing.append(politician)
-            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}")
+            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}\n")
 
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
