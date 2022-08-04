@@ -1,5 +1,5 @@
 import re
-import twitter_bot.utils.constants as c
+from twitter_bot.utils import constants as c
 
 class Politician:
     def __init__(self, name, party, state, residence, date_born):
@@ -35,5 +35,3 @@ class Politician:
             return None
 
         return possible_handle
-
-
