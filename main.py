@@ -14,6 +14,7 @@ def search_possible_twitter_handles(politician, client):
         response = client.searchUsername(handle)
 
         # if user is found, response.data will be populated
+        # TODO: verify that this is the correct user
         if response.data != None:
             return handle
 
