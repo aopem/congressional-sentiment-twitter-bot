@@ -2,8 +2,8 @@ import json
 import pandas as pd
 
 import twitter_bot.utils.constants as c
-from twitter_bot.client import TweepyClient
-from twitter_bot.model import TwitterAccount
+from twitter_bot.client import BotClient
+from twitter_bot.model import TwitterUser
 from twitter_bot.model import PoliticianType
 from twitter_bot.model import Senator
 from twitter_bot.model import Representative
@@ -114,7 +114,7 @@ def search_possible_twitter_handles(
             continue
 
         # if above checks pass, can return as a real account
-        return TwitterAccount(id=response.data.id,
+        return TwitterUser(id=response.data.id,
             name=response.data.name,
             username=response.data.username,
             verified=response.data.verified
@@ -124,8 +124,7 @@ def search_possible_twitter_handles(
 
 
 def main():
-    secrets_file_path = "./secrets.json"
-    client = TweepyClient(secrets_file_path)
+    bot = BotClient(c.SECRETS_FILEPATH)
 
     # get lists of politicians
     senator_list = get_politicians(
@@ -145,16 +144,16 @@ def main():
     # find politician twitter accounts
     num_senators_found = 0
     num_reps_found = 0
-    twitter_accounts_found = []
-    twitter_accounts_missing = []
+    twitter_users_found = []
+    twitter_users_missing = []
     for politician in politician_list:
-        twitter_account = search_possible_twitter_handles(
+        twitter_user = search_possible_twitter_handles(
             politician=politician,
-            client=client
+            client=bot
         )
 
-        if twitter_account:
-            twitter_accounts_found.append(twitter_account)
+        if twitter_user:
+            twitter_users_found.append(twitter_user)
 
             if politician.getPoliticianType() == PoliticianType.REPRESENTATIVE:
                 num_reps_found += 1
@@ -162,25 +161,25 @@ def main():
                 num_senators_found += 1
 
             print("\n")
-            print(f"Twitter Account ({politician.first_name} {politician.last_name})")
-            print(f"id:       {twitter_account.id}")
-            print(f"name:     {twitter_account.name}")
-            print(f"username: {twitter_account.username}")
-            print(f"verified: {twitter_account.verified}")
+            print(f"Twitter User ({politician.first_name} {politician.last_name})")
+            print(f"id:       {twitter_user.id}")
+            print(f"name:     {twitter_user.name}")
+            print(f"username: {twitter_user.username}")
+            print(f"verified: {twitter_user.verified}")
             print("\n")
         else:
-            twitter_accounts_missing.append(politician)
-            print(f"WARN: Could not find account: {politician.first_name} {politician.last_name}")
+            twitter_users_missing.append(politician)
+            print(f"WARN: Could not find user: {politician.first_name} {politician.last_name}")
 
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
     # save data to files
     with open(c.TWITTER_ACCOUNTS_FOUND_FILENAME, "w+") as file:
-        json.dump(twitter_accounts_found, fp=file, cls=Encoder)
+        json.dump(twitter_users_found, fp=file, cls=Encoder)
 
     with open(c.TWITTER_ACCOUNTS_MISSING_FILENAME, "w+") as file:
-        json.dump(twitter_accounts_missing, fp=file, cls=Encoder)
+        json.dump(twitter_users_missing, fp=file, cls=Encoder)
 
     return
 

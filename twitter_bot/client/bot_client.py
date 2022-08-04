@@ -1,8 +1,11 @@
 import json
 import tweepy
 
-class TweepyClient:
-    def __init__(self, secrets_file_name):
+class BotClient:
+    def __init__(
+        self,
+        secrets_file_name
+    ):
         secrets_json = json.load(open(secrets_file_name))
 
         # create tweepy client using secrets
@@ -15,16 +18,37 @@ class TweepyClient:
             wait_on_rate_limit=True
         )
 
-    def searchUsername(self, username):
-        response = self.__client.get_user(
+    def searchUsername(
+        self,
+        username
+    ):
+        return self.__client.get_user(
             username=username,
             user_fields=["verified"]
         )
-        return response
 
-    def getUserTweets(self, user, max_results):
-        response = self.__client.get_users_tweets(
+    def getUserTweets(
+        self,
+        user,
+        max_results
+    ):
+        return self.__client.get_users_tweets(
             id=user.id,
             max_results=max_results
         )
-        return response
+
+    def getUserMentions(
+        self,
+        user,
+        max_results
+    ):
+        return self.__client.get_users_mentions(
+            id=user.id,
+            max_results=max_results
+        )
+
+    def followUser(
+        self,
+        user
+    ):
+        self.__client.follow_user(user.id)

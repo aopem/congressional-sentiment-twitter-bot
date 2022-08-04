@@ -11,3 +11,4 @@ TWITTER_USERNAME_REGEX_PATTERN=r"^[A-Za-z0-9_]{1,15}$"
 # file output names
 TWITTER_ACCOUNTS_FOUND_FILENAME = "out_twitter_accounts.json"
 TWITTER_ACCOUNTS_MISSING_FILENAME = "out_missing_twitter_accounts.json"
+SECRETS_FILEPATH = "./secrets.json"

@@ -1,1 +1,1 @@
-from .tweepy_client import TweepyClient
+from .bot_client import BotClient
