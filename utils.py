@@ -4,8 +4,6 @@ from model.senator import Senator
 from model.representative import Representative
 from model.politician_type import PoliticianType
 
-TWITTER_USERNAME_CHARACTER_LIMIT=15
-TWITTER_USERNAME_REGEX_PATTERN=r"^[A-Za-z0-9_]{1,15}$"
 
 def get_politician_dict(politician_list_wiki_url, list_size):
     wiki_data = pd.read_html(politician_list_wiki_url)
@@ -74,32 +72,3 @@ def get_politicians(politician_list_wiki_url, list_size, politician_type):
 
     return get_politician_list(politician_list_wiki_url, list_size, politician_type, **keys)
 
-
-def get_possible_twitter_handles(politician):
-    prefixes = []
-    if politician.getPoliticianType() == PoliticianType.Representative:
-        prefixes.append("Rep")
-    elif politician.getPoliticianType() == PoliticianType.Senator:
-        prefixes.append("Sen")
-        prefixes.append("Senator")
-    else:
-        raise Exception(f"Invalid type: {politician.getPoliticianType()}")
-
-    possible_handles = []
-    for prefix in prefixes:
-        unfiltered_possible_handles = []
-        unfiltered_possible_handles.append(f"{prefix}{politician.first_name}{politician.last_name}")
-        unfiltered_possible_handles.append(f"{prefix}{politician.last_name}")
-        unfiltered_possible_handles.append(f"{prefix}{politician.first_name}")
-
-        for possible_handle in unfiltered_possible_handles:
-            if len(possible_handle) > TWITTER_USERNAME_CHARACTER_LIMIT:
-                possible_handle = possible_handle[:TWITTER_USERNAME_CHARACTER_LIMIT]
-
-            if not re.match(TWITTER_USERNAME_REGEX_PATTERN, possible_handle):
-                continue
-
-            # if above checks pass, could be a real handle
-            possible_handles.append(possible_handle)
-
-    return possible_handles

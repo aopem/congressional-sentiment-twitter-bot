@@ -1,72 +1,80 @@
 import utils
+import constants as c
 from client.tweepy_client import TweepyClient
+from model.twitter_user import TwitterUser
 from model.politician_type import PoliticianType
-
-REPRESENTATIVES_WIKI_URL="https://en.wikipedia.org/wiki/List_of_current_members_of_the_United_States_House_of_Representatives"
-SENATORS_WIKI_URL="https://en.wikipedia.org/wiki/List_of_current_United_States_senators"
-TOTAL_NUM_REPRESENTATIVES=435
-TOTAL_NUM_SENATORS=100
 
 
 def search_possible_twitter_handles(politician, client):
-    possible_twitter_handles = utils.get_possible_twitter_handles(politician)
+    possible_twitter_handles = politician.getPossibleTwitterHandles()
+
     for handle in possible_twitter_handles:
         response = client.searchUsername(handle)
 
         # if user is found, response.data will be populated
-        # TODO: verify that this is the correct user
-        if response.data != None:
-            return handle
+        if response.data == None:
+            continue
+
+        user = TwitterUser(id=response.data.id,
+            name=response.data.name,
+            username=response.data.username
+        )
+
+        # TODO: add validation checks here
+        # if user.name == f"{politician.first_name} {politician.last_name}":
+        return user
 
     return None
+
 
 def main():
     secrets_file_path = "./secrets.json"
     client = TweepyClient(secrets_file_path)
 
     # get lists of politicians
-    senator_list = utils.get_politicians(politician_list_wiki_url=SENATORS_WIKI_URL,
-        list_size=TOTAL_NUM_SENATORS,
+    senator_list = utils.get_politicians(politician_list_wiki_url=c.SENATORS_WIKI_URL,
+        list_size=c.TOTAL_NUM_SENATORS,
         politician_type=PoliticianType.Senator)
-    rep_list = utils.get_politicians(politician_list_wiki_url=REPRESENTATIVES_WIKI_URL,
-        list_size=TOTAL_NUM_REPRESENTATIVES,
+    rep_list = utils.get_politicians(politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
+        list_size=c.TOTAL_NUM_REPRESENTATIVES,
         politician_type=PoliticianType.Representative)
 
-    twitter_handles_found = []
+    # join lists
+    politician_list = senator_list + rep_list
 
     # process senators
     num_senators_found = 0
-    for senator in senator_list:
-        handle = search_possible_twitter_handles(senator, client)
-
-        if handle:
-            twitter_handles_found.append(handle)
-            num_senators_found += 1
-            print(f"Found {senator.first_name} {senator.last_name} at @{handle}!")
-        else:
-            print(f"Could not find twitter account for {senator.first_name} {senator.last_name}")
-
-    # process representatives
     num_reps_found = 0
-    for rep in rep_list:
-        handle = search_possible_twitter_handles(rep, client)
+    twitter_accounts_found = []
+    for politician in politician_list:
+        twitter_account = search_possible_twitter_handles(politician, client)
+        if twitter_account:
+            twitter_accounts_found.append(twitter_account)
 
-        if handle:
-            twitter_handles_found.append(handle)
-            num_reps_found += 1
-            print(f"Found {rep.first_name} {rep.last_name} at @{handle}!")
+            print("Twitter Account Info")
+            print(f"id:       {twitter_account.id}")
+            print(f"name:     {twitter_account.name}")
+            print(f"username: {twitter_account.username}")
+            print("\n")
+
+            if politician.getPoliticianType() == PoliticianType.Representative:
+                num_reps_found += 1
+            elif politician.getPoliticianType() == PoliticianType.Senator:
+                num_senators_found += 1
         else:
-            print(f"Could not find twitter account for {rep.first_name} {rep.last_name}")
+            print(f"Could not find twitter account for {politician.first_name} {politician.last_name}")
 
-    print(f"Found {num_reps_found}/{TOTAL_NUM_REPRESENTATIVES} representatives")
-    print(f"Found {num_senators_found}/{TOTAL_NUM_SENATORS} senators")
+    print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
+    print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
     # save data to file
     handle_file_name = "handles.txt"
     with open(handle_file_name, "w+") as handle_file:
-        handle_file.writelines(twitter_handles_found)
+        for twitter_account in twitter_accounts_found:
+            handle_file.write(f"{twitter_account.username}\n")
 
     return
+
 
 if __name__ == "__main__":
     main()
