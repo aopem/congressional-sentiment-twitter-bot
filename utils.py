@@ -1,4 +1,3 @@
-import re
 import pandas as pd
 from model.senator import Senator
 from model.representative import Representative

@@ -25,9 +25,6 @@ class Politician:
 
         return possible_handles
 
-    def _verifyUser(self):
-        pass
-
     def __getValidTwitterHandle(self, possible_handle):
         if len(possible_handle) > c.TWITTER_USERNAME_CHARACTER_LIMIT:
             possible_handle = possible_handle[:c.TWITTER_USERNAME_CHARACTER_LIMIT]

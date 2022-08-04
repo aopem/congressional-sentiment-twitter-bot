@@ -11,6 +11,7 @@ class Representative(Politician):
     def getPossibleTwitterHandles(self):
         prefix = "Rep"
         unfiltered_possible_handles = []
+        unfiltered_possible_handles.append(f"{self.first_name}{self.last_name}")
         unfiltered_possible_handles.append(f"{prefix}{self.first_name}{self.last_name}")
         unfiltered_possible_handles.append(f"{prefix}{self.last_name}")
         unfiltered_possible_handles.append(f"{prefix}{self.first_name}")

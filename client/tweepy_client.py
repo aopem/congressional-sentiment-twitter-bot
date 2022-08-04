@@ -16,7 +16,7 @@ class TweepyClient:
         )
 
     def searchUsername(self, username):
-        response = self.__client.get_user(username=username)
+        response = self.__client.get_user(username=username, user_fields=["verified"])
         return response
 
     def getUserTweets(self, user, max_results):

@@ -1,8 +1,10 @@
 import utils
 import constants as c
 from client.tweepy_client import TweepyClient
-from model.twitter_user import TwitterUser
+from model.twitter_account import TwitterAccount
 from model.politician_type import PoliticianType
+from model.encoder import Encoder
+import json
 
 
 def search_possible_twitter_handles(politician, client):
@@ -15,14 +17,16 @@ def search_possible_twitter_handles(politician, client):
         if response.data == None:
             continue
 
-        user = TwitterUser(id=response.data.id,
-            name=response.data.name,
-            username=response.data.username
-        )
+        # if user retrieved is not verified, then continue
+        if not response.data.verified:
+            continue
 
-        # TODO: add validation checks here
-        # if user.name == f"{politician.first_name} {politician.last_name}":
-        return user
+        # if above checks pass, can return as a real account
+        return TwitterAccount(id=response.data.id,
+            name=response.data.name,
+            username=response.data.username,
+            verified=response.data.verified
+        )
 
     return None
 
@@ -46,15 +50,17 @@ def main():
     num_senators_found = 0
     num_reps_found = 0
     twitter_accounts_found = []
+    twitter_accounts_missing = []
     for politician in politician_list:
         twitter_account = search_possible_twitter_handles(politician, client)
         if twitter_account:
             twitter_accounts_found.append(twitter_account)
 
-            print("Twitter Account Info")
+            print(f"Twitter Account ({politician.first_name} {politician.last_name})")
             print(f"id:       {twitter_account.id}")
             print(f"name:     {twitter_account.name}")
             print(f"username: {twitter_account.username}")
+            print(f"verified: {twitter_account.verified}")
             print("\n")
 
             if politician.getPoliticianType() == PoliticianType.Representative:
@@ -62,16 +68,18 @@ def main():
             elif politician.getPoliticianType() == PoliticianType.Senator:
                 num_senators_found += 1
         else:
-            print(f"Could not find twitter account for {politician.first_name} {politician.last_name}")
+            twitter_accounts_missing.append(politician)
+            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}")
 
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
-    # save data to file
-    handle_file_name = "handles.txt"
-    with open(handle_file_name, "w+") as handle_file:
-        for twitter_account in twitter_accounts_found:
-            handle_file.write(f"{twitter_account.username}\n")
+    # save data to files
+    with open(c.TWITTER_ACCOUNTS_FOUND_FILENAME, "w+") as file:
+        json.dump(twitter_accounts_found, file, cls=Encoder)
+
+    with open(c.TWITTER_ACCOUNTS_MISSING_FILENAME, "w+") as file:
+        json.dump(twitter_accounts_missing, file, cls=Encoder)
 
     return
 
