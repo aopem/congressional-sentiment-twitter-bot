@@ -101,10 +101,10 @@ def main():
     client = TweepyClient(secrets_file_path)
 
     # get lists of politicians
-    senator_list = utils.get_politicians(politician_list_wiki_url=c.SENATORS_WIKI_URL,
+    senator_list = get_politicians(politician_list_wiki_url=c.SENATORS_WIKI_URL,
         list_size=c.TOTAL_NUM_SENATORS,
         politician_type=PoliticianType.Senator)
-    rep_list = utils.get_politicians(politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
+    rep_list = get_politicians(politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
         list_size=c.TOTAL_NUM_REPRESENTATIVES,
         politician_type=PoliticianType.Representative)
 
