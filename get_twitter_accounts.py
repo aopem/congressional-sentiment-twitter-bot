@@ -46,7 +46,7 @@ def main():
     # join lists
     politician_list = senator_list + rep_list
 
-    # process senators
+    # find politician twitter accounts
     num_senators_found = 0
     num_reps_found = 0
     twitter_accounts_found = []
