@@ -1,5 +1,5 @@
-import pandas as pd
 import json
+import pandas as pd
 
 import constants as c
 from client.tweepy_client import TweepyClient
@@ -10,7 +10,10 @@ from model.representative import Representative
 from model.encoder import Encoder
 
 
-def get_politician_dict(politician_list_wiki_url, list_size):
+def get_politician_dict(
+    politician_list_wiki_url,
+    list_size
+):
     wiki_data = pd.read_html(politician_list_wiki_url)
 
     # find correct table according to list_size
@@ -22,8 +25,20 @@ def get_politician_dict(politician_list_wiki_url, list_size):
     raise Exception(f"No entry found for list size: {list_size} at URL: {politician_list_wiki_url}")
 
 
-def get_politician_list(politician_list_wiki_url, list_size, politician_type, name_key, party_key, state_key, residence_key, date_born_key):
-    politician_dict = get_politician_dict(politician_list_wiki_url, list_size)
+def get_politician_list(
+    politician_list_wiki_url,
+    list_size,
+    politician_type,
+    name_key,
+    party_key,
+    state_key,
+    residence_key,
+    date_born_key
+):
+    politician_dict = get_politician_dict(
+        politician_list_wiki_url=politician_list_wiki_url,
+        list_size=list_size
+    )
     politician_list = []
 
     for politician in politician_dict.values():
@@ -36,9 +51,9 @@ def get_politician_list(politician_list_wiki_url, list_size, politician_type, na
         }
 
         try:
-            if politician_type == PoliticianType.Representative:
+            if politician_type == PoliticianType.REPRESENTATIVE:
                 politician_list.append(Representative(**constructor_args))
-            elif politician_type == PoliticianType.Senator:
+            elif politician_type == PoliticianType.SENATOR:
                 politician_list.append(Senator(**constructor_args))
             else:
                 raise Exception(f"Invalid type: {politician_type}")
@@ -49,8 +64,12 @@ def get_politician_list(politician_list_wiki_url, list_size, politician_type, na
     return politician_list
 
 
-def get_politicians(politician_list_wiki_url, list_size, politician_type):
-    if politician_type == PoliticianType.Representative:
+def get_politicians(
+    politician_list_wiki_url,
+    list_size,
+    politician_type
+):
+    if politician_type == PoliticianType.REPRESENTATIVE:
         keys = {
             "name_key": "Member",
             "party_key": "Party.1",
@@ -58,7 +77,7 @@ def get_politicians(politician_list_wiki_url, list_size, politician_type):
             "residence_key": "Residence",
             "date_born_key": "Born[2]"
         }
-    elif politician_type == PoliticianType.Senator:
+    elif politician_type == PoliticianType.SENATOR:
         keys = {
             "name_key": "Senator",
             "party_key": "Party.1",
@@ -69,17 +88,25 @@ def get_politicians(politician_list_wiki_url, list_size, politician_type):
     else:
         raise Exception(f"Invalid type: {politician_type}")
 
-    return get_politician_list(politician_list_wiki_url, list_size, politician_type, **keys)
+    return get_politician_list(
+        politician_list_wiki_url=politician_list_wiki_url,
+        list_size=list_size,
+        politician_type=politician_type,
+        **keys
+    )
 
 
-def search_possible_twitter_handles(politician, client):
+def search_possible_twitter_handles(
+    politician,
+    client
+):
     possible_twitter_handles = politician.getPossibleTwitterHandles()
 
     for handle in possible_twitter_handles:
         response = client.searchUsername(handle)
 
         # if user is found, response.data will be populated
-        if response.data == None:
+        if response.data is None:
             continue
 
         # if user retrieved is not verified, then continue
@@ -101,12 +128,16 @@ def main():
     client = TweepyClient(secrets_file_path)
 
     # get lists of politicians
-    senator_list = get_politicians(politician_list_wiki_url=c.SENATORS_WIKI_URL,
+    senator_list = get_politicians(
+        politician_list_wiki_url=c.SENATORS_WIKI_URL,
         list_size=c.TOTAL_NUM_SENATORS,
-        politician_type=PoliticianType.Senator)
-    rep_list = get_politicians(politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
+        politician_type=PoliticianType.SENATOR
+    )
+    rep_list = get_politicians(
+        politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
         list_size=c.TOTAL_NUM_REPRESENTATIVES,
-        politician_type=PoliticianType.Representative)
+        politician_type=PoliticianType.REPRESENTATIVE
+    )
 
     # join lists
     politician_list = senator_list + rep_list
@@ -117,9 +148,18 @@ def main():
     twitter_accounts_found = []
     twitter_accounts_missing = []
     for politician in politician_list:
-        twitter_account = search_possible_twitter_handles(politician, client)
+        twitter_account = search_possible_twitter_handles(
+            politician=politician,
+            client=client
+        )
+
         if twitter_account:
             twitter_accounts_found.append(twitter_account)
+
+            if politician.getPoliticianType() == PoliticianType.REPRESENTATIVE:
+                num_reps_found += 1
+            elif politician.getPoliticianType() == PoliticianType.SENATOR:
+                num_senators_found += 1
 
             print("\n")
             print(f"Twitter Account ({politician.first_name} {politician.last_name})")
@@ -128,24 +168,19 @@ def main():
             print(f"username: {twitter_account.username}")
             print(f"verified: {twitter_account.verified}")
             print("\n")
-
-            if politician.getPoliticianType() == PoliticianType.Representative:
-                num_reps_found += 1
-            elif politician.getPoliticianType() == PoliticianType.Senator:
-                num_senators_found += 1
         else:
             twitter_accounts_missing.append(politician)
-            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}")
+            print(f"WARN: Could not find account: {politician.first_name} {politician.last_name}")
 
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
     # save data to files
     with open(c.TWITTER_ACCOUNTS_FOUND_FILENAME, "w+") as file:
-        json.dump(twitter_accounts_found, file, cls=Encoder)
+        json.dump(twitter_accounts_found, fp=file, cls=Encoder)
 
     with open(c.TWITTER_ACCOUNTS_MISSING_FILENAME, "w+") as file:
-        json.dump(twitter_accounts_missing, file, cls=Encoder)
+        json.dump(twitter_accounts_missing, fp=file, cls=Encoder)
 
     return
 

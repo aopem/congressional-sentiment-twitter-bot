@@ -1,5 +1,5 @@
-import tweepy
 import json
+import tweepy
 
 class TweepyClient:
     def __init__(self, secrets_file_name):
@@ -16,9 +16,15 @@ class TweepyClient:
         )
 
     def searchUsername(self, username):
-        response = self.__client.get_user(username=username, user_fields=["verified"])
+        response = self.__client.get_user(
+            username=username,
+            user_fields=["verified"]
+        )
         return response
 
     def getUserTweets(self, user, max_results):
-        response = self.__client.get_users_tweets(id=user.id, max_results=max_results)
+        response = self.__client.get_users_tweets(
+            id=user.id,
+            max_results=max_results
+        )
         return response
