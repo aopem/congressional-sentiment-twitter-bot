@@ -56,6 +56,7 @@ def main():
         if twitter_account:
             twitter_accounts_found.append(twitter_account)
 
+            print("\n")
             print(f"Twitter Account ({politician.first_name} {politician.last_name})")
             print(f"id:       {twitter_account.id}")
             print(f"name:     {twitter_account.name}")
@@ -69,7 +70,7 @@ def main():
                 num_senators_found += 1
         else:
             twitter_accounts_missing.append(politician)
-            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}\n")
+            print(f"WARN: Could not find twitter account for {politician.first_name} {politician.last_name}")
 
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
