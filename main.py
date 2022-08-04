@@ -15,7 +15,7 @@ def search_possible_twitter_handles(politician, client):
 
         # if user is found, response.data will be populated
         if response.data != None:
-            return response.data
+            return handle
 
     return None
 
@@ -57,7 +57,7 @@ def main():
         else:
             print(f"Could not find twitter account for {rep.first_name} {rep.last_name}")
 
-    print(f"Found {num_reps_found}/{TOTAL_NUM_SENATORS} representatives")
+    print(f"Found {num_reps_found}/{TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{TOTAL_NUM_SENATORS} senators")
 
     # save data to file
