@@ -1,5 +1,5 @@
+from twitter_bot.enums import PoliticianType
 from .politician import Politician
-from .politician_type import PoliticianType
 
 class Representative(Politician):
     def getPoliticianType(self):
