@@ -37,18 +37,52 @@ class BotClient:
             max_results=max_results
         )
 
+    def getTweetReplies(
+        self,
+        tweet,
+        max_results
+    ):
+        pass
+        # TODO: currently broken, fix this function
+        # response = self.__client.get_tweet(
+        #     id=tweet.id,
+        #     tweet_fields=["conversation_id"]
+        # )
+
+        # print(response.data)
+        # conversation_id = 0
+        # for response_tweet in response:
+        #     print(f"response_tweet: {response_tweet}")
+        #     if response_tweet.data["conversation_id"]:
+        #         print(f"conversation_id: {response_tweet.data['conversation_id']}")
+        #         conversation_id = response_tweet.data["conversation_id"]
+        #         break
+
+        # conversation_tweets = self.__client.search_recent_tweets(
+        #     query=f"conversation_id:{conversation_id}",
+        #     max_results=max_results,
+        #     expansions=["referenced_tweets.id", "in_reply_to_user_id"]
+        # )
+
+        # return conversation_tweets
+
     def getUserMentions(
         self,
         user,
         max_results
     ):
-        return self.__client.get_users_mentions(
+        response = self.__client.get_users_mentions(
             id=user.id,
             max_results=max_results
         )
+
+        if response.data is None:
+            return None
+
+        return response.data
 
     def followUser(
         self,
         user
     ):
-        self.__client.follow_user(user.id)
+        return self.__client.follow_user(user.id)
