@@ -1,4 +1,12 @@
-*secrets*
+# generated build files
 __pycache__
 .DS_Store
-*out*
+*.egg-info
+build
+dist
+
+# output files
+out*
+
+# config files
+*secrets*
