@@ -4,9 +4,9 @@ import pandas as pd
 import twitter_bot.utils.constants as c
 from twitter_bot.client import BotClient
 from twitter_bot.model import TwitterUser
-from twitter_bot.model import PoliticianType
 from twitter_bot.model import Senator
 from twitter_bot.model import Representative
+from twitter_bot.enums import PoliticianType
 from twitter_bot.serialization import Encoder
 
 
