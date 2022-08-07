@@ -4,6 +4,6 @@ local.settings.json
 test
 .venv
 .DS_Store
-*secrets
-*out
+secrets*
+out*
 README.md
