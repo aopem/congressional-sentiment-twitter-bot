@@ -9,4 +9,4 @@ dist
 out*
 
 # config files
-*secrets*
+secrets.json
