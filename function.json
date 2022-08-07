@@ -1,0 +1,6 @@
+{
+    "schedule": "0 0 0 * * *",
+    "name": "getUsersTimer",
+    "type": "timerTrigger",
+    "direction": "in"
+}

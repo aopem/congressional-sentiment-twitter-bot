@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import azure.functions as azfunc
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
@@ -124,7 +125,7 @@ def search_possible_twitter_handles(
     return None
 
 
-def main():
+def run():
     twitter_secrets = func.get_secrets_dict()["twitter"]
     bot = BotClient(
         api_key=twitter_secrets["apiKey"],
@@ -190,6 +191,11 @@ def main():
         json.dump(twitter_users_missing, fp=file, cls=Encoder)
 
     return
+
+
+def main(timer: azfunc.TimerRequest):
+    if timer.past_due:
+        run()
 
 
 if __name__ == "__main__":
