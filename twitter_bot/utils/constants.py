@@ -15,5 +15,5 @@ TWITTER_ACCOUNTS_FOUND_FILENAME = "out_twitter_accounts.json"
 TWITTER_ACCOUNTS_MISSING_FILENAME = "out_missing_twitter_accounts.json"
 
 # config files
-SECRETS_FILEPATH = "./secrets.json"
-AZURE_CONFIG_FILEPATH = "./config.azure.json"
+SECRETS_FILEPATH = "../secrets.json"
+AZURE_CONFIG_FILEPATH = "../config.azure.json"

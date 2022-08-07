@@ -1,0 +1,11 @@
+{
+    "scriptFile": "get_users.py",
+    "bindings": [
+        {
+            "schedule": "0 0 0 * * *",
+            "name": "getUsersTimer",
+            "type": "timerTrigger",
+            "direction": "in"
+        }
+    ]
+}

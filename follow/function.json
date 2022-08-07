@@ -1,0 +1,11 @@
+{
+    "scriptFile": "follow.py",
+    "bindings": [
+        {
+            "schedule": "0 0 0 * * *",
+            "name": "followTimer",
+            "type": "timerTrigger",
+            "direction": "in"
+        }
+    ]
+}
