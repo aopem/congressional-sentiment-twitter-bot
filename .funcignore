@@ -3,3 +3,7 @@
 local.settings.json
 test
 .venv
+.DS_Store
+*secrets
+*out
+README.md
