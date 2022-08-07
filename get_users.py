@@ -1,13 +1,14 @@
 import json
 import pandas as pd
 
-import twitter_bot.utils.constants as c
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 from twitter_bot.model import Senator
 from twitter_bot.model import Representative
 from twitter_bot.enums import PoliticianType
 from twitter_bot.serialization import Encoder
+import twitter_bot.utils.constants as c
+import twitter_bot.utils.functions as func
 
 
 def get_politician_dict(
@@ -124,7 +125,7 @@ def search_possible_twitter_handles(
 
 
 def main():
-    twitter_secrets = json.load(open(c.SECRETS_FILEPATH))["twitter"]
+    twitter_secrets = func.get_secrets_dict()["twitter"]
     bot = BotClient(
         api_key=twitter_secrets["apiKey"],
         api_key_secret=twitter_secrets["apiKeySecret"],

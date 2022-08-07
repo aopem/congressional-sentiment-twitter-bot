@@ -1,16 +1,23 @@
 {
     "resourceGroup": {
         "name": "bot-rg",
-        "resources": {
-            "keyVault": {
-                "name": "twitter-bot-akv"
-            },
-            "functionApp": {
-                "name": "twitter-bot-func-app"
-            },
-            "managedIdentity": {
-                "name": "twitter-bot-msi"
-            }
+        "keyVault": {
+            "name": "twitter-bot-akv",
+            "secretNames": [
+                "apiKey",
+                "apiKeySecret",
+                "bearerToken",
+                "clientId",
+                "clientSecret",
+                "accessToken",
+                "accessTokenSecret"
+            ]
+        },
+        "functionApp": {
+            "name": "twitter-bot-func-app"
+        },
+        "managedIdentity": {
+            "name": "twitter-bot-msi"
         }
     }
 }

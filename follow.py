@@ -2,11 +2,12 @@ import json
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 import twitter_bot.utils.constants as c
+import twitter_bot.utils.functions as func
 
 
 def main():
     # create bot client
-    twitter_secrets = json.load(open(c.SECRETS_FILEPATH))["twitter"]
+    twitter_secrets = func.get_secrets_dict()["twitter"]
     bot = BotClient(
         api_key=twitter_secrets["apiKey"],
         api_key_secret=twitter_secrets["apiKeySecret"],
