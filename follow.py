@@ -1,12 +1,19 @@
 import json
-from twitter_bot.client import BotClient
+from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 import twitter_bot.utils.constants as c
 
 
 def main():
     # create bot client
-    bot = BotClient(c.SECRETS_FILEPATH)
+    twitter_secrets = json.load(open(c.SECRETS_FILEPATH))["twitter"]
+    bot = BotClient(
+        api_key=twitter_secrets["apiKey"],
+        api_key_secret=twitter_secrets["apiKeySecret"],
+        access_token=twitter_secrets["accessToken"],
+        access_token_secret=twitter_secrets["accessTokenSecret"],
+        bearer_token=twitter_secrets["bearerToken"]
+    )
 
     # read json containing twitter account info
     twitter_user_json = json.load(open(c.TWITTER_ACCOUNTS_FOUND_FILENAME))

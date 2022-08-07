@@ -1,20 +1,23 @@
 import json
+from os import access
 import tweepy
 
 class BotClient:
     def __init__(
         self,
-        secrets_file_name
+        api_key,
+        api_key_secret,
+        access_token,
+        access_token_secret,
+        bearer_token
     ):
-        secrets_json = json.load(open(secrets_file_name))
-
-        # create tweepy client using secrets
+        # create tweepy client
         self.__client = tweepy.Client(
-            consumer_key=secrets_json["API_KEY"],
-            consumer_secret=secrets_json["API_KEY_SECRET"],
-            access_token=secrets_json["ACCESS_TOKEN"],
-            access_token_secret=secrets_json["ACCESS_TOKEN_SECRET"],
-            bearer_token=secrets_json["BEARER_TOKEN"],
+            consumer_key=api_key,
+            consumer_secret=api_key_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+            bearer_token=bearer_token,
             wait_on_rate_limit=True
         )
 

@@ -1,0 +1,16 @@
+{
+    "resourceGroup": {
+        "name": "bot-rg",
+        "resources": {
+            "keyVault": {
+                "name": "twitter-bot-akv"
+            },
+            "functionApp": {
+                "name": "twitter-bot-func-app"
+            },
+            "managedIdentity": {
+                "name": "twitter-bot-msi"
+            }
+        }
+    }
+}
