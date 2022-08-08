@@ -14,10 +14,18 @@
             ]
         },
         "functionApp": {
-            "name": "twitter-bot-func-app"
+            "name": "twitter-bot-func-app",
+            "functions": [
+                "get_users",
+                "get_user_sentiment",
+                "follow"
+            ]
         },
         "managedIdentity": {
             "name": "twitter-bot-msi"
+        },
+        "storageAccount": {
+            "name": "twitterbotsa"
         }
     }
 }

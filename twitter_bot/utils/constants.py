@@ -1,6 +1,6 @@
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).parent.parent.parent
 
 # senator/representative constants
 REPRESENTATIVES_WIKI_URL="https://en.wikipedia.org/wiki/List_of_current_members_of_the_United_States_House_of_Representatives"
@@ -20,4 +20,4 @@ TWITTER_ACCOUNTS_MISSING_FILENAME = "out_missing_twitter_accounts.json"
 
 # config files
 SECRETS_FILEPATH = f"{ROOT_DIR}/secrets.json"
-AZURE_CONFIG_REMOTE_FILEPATH = f"{ROOT_DIR}/config.azure.json"
+AZURE_CONFIG_FILEPATH = f"{ROOT_DIR}/config.azure.json"

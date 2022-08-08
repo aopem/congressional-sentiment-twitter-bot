@@ -10,7 +10,7 @@ def main():
     secrets = func.get_secrets_dict()
     azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
 
-    print("Creating keyvault client...")
+    print("Creating KeyVaultClient...")
     keyvault = KeyVaultClient(
         key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"]
     )
