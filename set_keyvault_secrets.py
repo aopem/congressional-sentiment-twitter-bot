@@ -11,17 +11,18 @@ def main():
     azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
 
     print("Creating KeyVaultClient...")
+    key_vault_name = azure_config["resourceGroup"]["keyVault"]["name"]
     keyvault = KeyVaultClient(
-        key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"]
+        key_vault_name=key_vault_name
     )
 
-    # now save twitter secrets in key vault, if not already there
-    twitter_secrets = secrets["twitter"]
-    for secret_name, secret_value in twitter_secrets.items():
+    # now save secrets in key vault, if not already there
+    for secret_name, secret_value in secrets.items():
         try:
             keyvault.getSecret(
                 name=secret_name
             )
+            print(f"Secret {secret_name} already exists in {key_vault_name}")
 
         except e.ResourceNotFoundError:
             print(f"Setting {secret_name} to {secret_value}")

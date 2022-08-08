@@ -9,13 +9,13 @@ import twitter_bot.utils.functions as func
 
 def run():
     # create bot client
-    twitter_secrets = func.get_secrets_dict()["twitter"]
+    secrets = func.get_secrets_dict()
     bot = BotClient(
-        api_key=twitter_secrets["apiKey"],
-        api_key_secret=twitter_secrets["apiKeySecret"],
-        access_token=twitter_secrets["accessToken"],
-        access_token_secret=twitter_secrets["accessTokenSecret"],
-        bearer_token=twitter_secrets["bearerToken"]
+        api_key=secrets["apiKey"],
+        api_key_secret=secrets["apiKeySecret"],
+        access_token=secrets["accessToken"],
+        access_token_secret=secrets["accessTokenSecret"],
+        bearer_token=secrets["bearerToken"]
     )
 
     # read json containing twitter account info

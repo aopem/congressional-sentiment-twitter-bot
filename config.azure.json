@@ -1,17 +1,23 @@
 {
+    "subscriptionId": "7cc90368-afd5-493e-9f7c-e5199bd142a5",
     "resourceGroup": {
         "name": "bot-rg",
         "keyVault": {
             "name": "twitter-bot-akv",
-            "secretNames": [
-                "apiKey",
-                "apiKeySecret",
-                "bearerToken",
-                "clientId",
-                "clientSecret",
-                "accessToken",
-                "accessTokenSecret"
-            ]
+            "secrets": {
+                "twitter": [
+                    "apiKey",
+                    "apiKeySecret",
+                    "bearerToken",
+                    "clientId",
+                    "clientSecret",
+                    "accessToken",
+                    "accessTokenSecret"
+                ],
+                "azure": [
+                    "twitterbotsaConnectionString"
+                ]
+            }
         },
         "functionApp": {
             "name": "twitter-bot-func-app",
@@ -22,7 +28,8 @@
             ]
         },
         "managedIdentity": {
-            "name": "twitter-bot-msi"
+            "name": "twitter-bot-msi",
+            "clientId": "7889ea16-4a52-46df-ba5c-0ca51ab70b32"
         },
         "storageAccount": {
             "name": "twitterbotsa"
