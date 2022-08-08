@@ -2,8 +2,12 @@ from twitter_bot.enums import PoliticianType
 from .politician import Politician
 
 class Representative(Politician):
-    def getPoliticianType(self):
-        return PoliticianType.REPRESENTATIVE
+    def __init__(
+        self,
+        kwargs
+    ):
+        super().__init__(**kwargs)
+        self.type = PoliticianType.SENATOR
 
     def getPossibleTwitterHandles(self):
         prefixes = []

@@ -1,15 +1,15 @@
 import json
-import azure.functions as azfunc
+import azure.functions as func
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 import twitter_bot.utils.constants as c
-import twitter_bot.utils.functions as func
+import twitter_bot.utils.functions as f
 
 
 def run():
     # create bot client
-    secrets = func.get_secrets_dict()
+    secrets = f.get_secrets_dict()
     bot = BotClient(
         api_key=secrets["apiKey"],
         api_key_secret=secrets["apiKeySecret"],
@@ -38,7 +38,7 @@ def run():
     return
 
 
-def main(timer: azfunc.TimerRequest):
+def main(timer: func.TimerRequest):
     if timer.past_due:
         run()
 

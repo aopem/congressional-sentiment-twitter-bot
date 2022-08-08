@@ -2,10 +2,34 @@
     "scriptFile": "get_users.py",
     "bindings": [
         {
-            "schedule": "0 0 0 * * *",
+            "schedule": "0 0 * * * *",
             "name": "getUsersTimer",
             "type": "timerTrigger",
             "direction": "in"
+        },
+        {
+            "name": "inMissing",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusers/missing.json",
+            "connection": "AzureWebJobsStorage",
+            "direction": "in"
+        },
+        {
+            "name": "outMissing",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusers/missing.json",
+            "connection": "AzureWebJobsStorage",
+            "direction": "out"
+        },
+        {
+            "name": "found",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusers/found.json",
+            "connection": "AzureWebJobsStorage",
+            "direction": "out"
         }
     ]
 }

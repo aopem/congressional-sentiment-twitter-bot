@@ -2,12 +2,12 @@ import json
 import azure.core.exceptions as e
 
 import twitter_bot.utils.constants as c
-import twitter_bot.utils.functions as func
+import twitter_bot.utils.functions as f
 from twitter_bot.client.azure import KeyVaultClient
 
 
 def main():
-    secrets = func.get_secrets_dict()
+    secrets = f.get_secrets_dict()
     azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
 
     print("Creating KeyVaultClient...")

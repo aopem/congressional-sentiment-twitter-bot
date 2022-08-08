@@ -19,9 +19,6 @@ class Politician:
         self.residence = residence
         self.date_born = date_born
 
-    def getPoliticianType(self):
-        raise NotImplementedError()
-
     def getPossibleTwitterHandles(self):
         raise NotImplementedError()
 

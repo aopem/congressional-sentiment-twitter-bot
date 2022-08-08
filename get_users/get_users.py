@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-import azure.functions as azfunc
+import azure.functions as func
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
@@ -9,7 +9,7 @@ from twitter_bot.model import Representative
 from twitter_bot.enums import PoliticianType
 from twitter_bot.serialization import Encoder
 import twitter_bot.utils.constants as c
-import twitter_bot.utils.functions as func
+import twitter_bot.utils.functions as f
 
 
 def get_politician_dict(
@@ -125,8 +125,29 @@ def search_possible_twitter_handles(
     return None
 
 
-def run():
-    secrets = func.get_secrets_dict()
+def run(
+    in_missing: str
+):
+    # load in_missing as JSON dict, create a list of Politician objects
+    in_missing_json = json.loads(in_missing)
+    in_missing_list = []
+    for politician_json in in_missing_json:
+        constructor_args = {
+            "name": politician_json["name"],
+            "party": politician_json["party"],
+            "state": politician_json["state"],
+            "residence": politician_json["residence"],
+            "date_born": politician_json["date_born"]
+        }
+
+        if politician_json["type"] == PoliticianType.SENATOR:
+            in_missing_list.append(Senator(**constructor_args))
+        elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
+            in_missing_list.append(Representative(**constructor_args))
+        else:
+            raise Exception(f"Invalid type {politician_json["type"]}")
+
+    secrets = f.get_secrets_dict()
     bot = BotClient(
         api_key=secrets["apiKey"],
         api_key_secret=secrets["apiKeySecret"],
@@ -135,26 +156,32 @@ def run():
         bearer_token=secrets["bearerToken"]
     )
 
-    # get lists of politicians
-    senator_list = get_politicians(
-        politician_list_wiki_url=c.SENATORS_WIKI_URL,
-        list_size=c.TOTAL_NUM_SENATORS,
-        politician_type=PoliticianType.SENATOR
-    )
-    rep_list = get_politicians(
-        politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
-        list_size=c.TOTAL_NUM_REPRESENTATIVES,
-        politician_type=PoliticianType.REPRESENTATIVE
-    )
+    # only create full list of senators/reps if in_missing_list not found
+    politician_list = []
+    if in_missing_list is None or len(in_missing_list) == 0:
+        senator_list = get_politicians(
+            politician_list_wiki_url=c.SENATORS_WIKI_URL,
+            list_size=c.TOTAL_NUM_SENATORS,
+            politician_type=PoliticianType.SENATOR
+        )
+        rep_list = get_politicians(
+            politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
+            list_size=c.TOTAL_NUM_REPRESENTATIVES,
+            politician_type=PoliticianType.REPRESENTATIVE
+        )
 
-    # join lists
-    politician_list = senator_list + rep_list
+        # join lists
+        politician_list = senator_list + rep_list
+    else:
+        politician_list = in_missing_list
 
     # find politician twitter accounts
     num_senators_found = 0
     num_reps_found = 0
     twitter_users_found = []
     twitter_users_missing = []
+
+    # only searching missing politicians
     for politician in politician_list:
         twitter_user = search_possible_twitter_handles(
             politician=politician,
@@ -183,19 +210,25 @@ def run():
     print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
     print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
-    # save data to files
-    with open(c.TWITTER_ACCOUNTS_FOUND_FILENAME, "w+") as file:
-        json.dump(twitter_users_found, fp=file, cls=Encoder)
+    # return data as 2 JSON lists
+    found = json.dumps(twitter_users_found, cls=Encoder)
+    missing = json.dumps(twitter_users_missing, cls=Encoder)
 
-    with open(c.TWITTER_ACCOUNTS_MISSING_FILENAME, "w+") as file:
-        json.dump(twitter_users_missing, fp=file, cls=Encoder)
-
-    return
+    return found, missing
 
 
-def main(timer: azfunc.TimerRequest):
+def main(
+    timer: func.TimerRequest,
+    in_missing: str,
+    out_missing: func.Out[str],
+    found: func.Out[str]
+):
     if timer.past_due:
-        run()
+        found_json, missing_json = run(in_missing)
+
+        # save JSON lists to storage account
+        found.set(found_json)
+        out_missing.set(missing_json)
 
 
 if __name__ == "__main__":
