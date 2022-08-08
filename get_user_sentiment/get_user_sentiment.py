@@ -1,5 +1,6 @@
 import json
 import argparse
+import azure.functions as azfunc
 
 import twitter_bot.utils.constants as c
 from twitter_bot.client.twitter import BotClient
@@ -46,7 +47,7 @@ def run(index):
     return
 
 
-def main():
+def main(timer: azfunc.TimerRequest):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-i',
@@ -57,7 +58,8 @@ def main():
 
     args = parser.parse_args()
 
-    run(args.index)
+    if timer.past_due:
+        run(args.index)
 
 
 if __name__ == "__main__":
