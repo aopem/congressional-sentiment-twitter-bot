@@ -131,21 +131,22 @@ def run(
     # load in_missing as JSON dict, create a list of Politician objects
     in_missing_json = json.loads(in_missing)
     in_missing_list = []
-    for politician_json in in_missing_json:
-        constructor_args = {
-            "name": politician_json["name"],
-            "party": politician_json["party"],
-            "state": politician_json["state"],
-            "residence": politician_json["residence"],
-            "date_born": politician_json["date_born"]
-        }
+    if in_missing_json != None:
+        for politician_json in in_missing_json:
+            constructor_args = {
+                "name": politician_json["name"],
+                "party": politician_json["party"],
+                "state": politician_json["state"],
+                "residence": politician_json["residence"],
+                "date_born": politician_json["date_born"]
+            }
 
-        if politician_json["type"] == PoliticianType.SENATOR:
-            in_missing_list.append(Senator(**constructor_args))
-        elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
-            in_missing_list.append(Representative(**constructor_args))
-        else:
-            raise Exception(f"Invalid type {politician_json['type']}")
+            if politician_json["type"] == PoliticianType.SENATOR:
+                in_missing_list.append(Senator(**constructor_args))
+            elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
+                in_missing_list.append(Representative(**constructor_args))
+            else:
+                raise Exception(f"Invalid type {politician_json['type']}")
 
     secrets = f.get_secrets_dict()
     bot = BotClient(
@@ -218,17 +219,17 @@ def run(
 
 
 def main(
-    timer: func.TimerRequest,
-    in_missing: str,
-    out_missing: func.Out[str],
+    getUsersTimer: func.TimerRequest,
+    inMissing: str,
+    outMissing: func.Out[str],
     found: func.Out[str]
 ):
-    if timer.past_due:
-        found_json, missing_json = run(in_missing)
+    if getUsersTimer.past_due:
+        found_json, missing_json = run(inMissing)
 
         # save JSON lists to storage account
         found.set(found_json)
-        out_missing.set(missing_json)
+        outMissing.set(missing_json)
 
 
 if __name__ == "__main__":
