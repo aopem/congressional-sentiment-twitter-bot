@@ -54,9 +54,9 @@ def get_politician_list(
 
         try:
             if politician_type == PoliticianType.REPRESENTATIVE:
-                politician_list.append(Representative(**constructor_args))
+                politician_list.append(Representative(constructor_args))
             elif politician_type == PoliticianType.SENATOR:
-                politician_list.append(Senator(**constructor_args))
+                politician_list.append(Senator(constructor_args))
             else:
                 raise Exception(f"Invalid type: {politician_type}")
 
@@ -129,9 +129,12 @@ def run(
     in_missing: str
 ):
     # load in_missing as JSON dict, create a list of Politician objects
-    in_missing_json = json.loads(in_missing)
+    in_missing_json = None
     in_missing_list = []
-    if in_missing_json != None and len(in_missing_json) > 0:
+    if in_missing != None and len(in_missing) > 0:
+        in_missing_json = json.loads(in_missing)
+
+        # create politician list
         for politician_json in in_missing_json:
             constructor_args = {
                 "name": politician_json["name"],
@@ -142,9 +145,9 @@ def run(
             }
 
             if politician_json["type"] == PoliticianType.SENATOR:
-                in_missing_list.append(Senator(**constructor_args))
+                in_missing_list.append(Senator(constructor_args))
             elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
-                in_missing_list.append(Representative(**constructor_args))
+                in_missing_list.append(Representative(constructor_args))
             else:
                 raise Exception(f"Invalid type {politician_json['type']}")
 
@@ -192,9 +195,9 @@ def run(
         if twitter_user:
             twitter_users_found.append(twitter_user)
 
-            if politician.getPoliticianType() == PoliticianType.REPRESENTATIVE:
+            if politician.type == PoliticianType.REPRESENTATIVE:
                 num_reps_found += 1
-            elif politician.getPoliticianType() == PoliticianType.SENATOR:
+            elif politician.type == PoliticianType.SENATOR:
                 num_senators_found += 1
 
             print("\n")
@@ -224,12 +227,12 @@ def main(
     outMissing: func.Out[str],
     found: func.Out[str]
 ):
-    if getUsersTimer.past_due:
-        found_json, missing_json = run(inMissing)
+    # if getUsersTimer.past_due:
+    found_json, missing_json = run(inMissing)
 
-        # save JSON lists to storage account
-        found.set(found_json)
-        outMissing.set(missing_json)
+    # save JSON lists to storage account
+    found.set(found_json)
+    outMissing.set(missing_json)
 
 
 if __name__ == "__main__":
