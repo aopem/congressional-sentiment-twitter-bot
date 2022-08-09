@@ -131,11 +131,12 @@ def run(
 ):
     # load in_missing as JSON dict, create a list of Politician objects
     in_missing_json = None
-    in_missing_list = []
+    missing_politician_list = []
     if in_missing != None and len(in_missing) > 0:
+        logging.info("Loading data from missing.json...")
         in_missing_json = json.loads(in_missing)
 
-        # create politician list
+        # create politician list from incoming JSON
         for politician_json in in_missing_json:
             constructor_args = {
                 "name": politician_json["name"],
@@ -146,24 +147,15 @@ def run(
             }
 
             if politician_json["type"] == PoliticianType.SENATOR:
-                in_missing_list.append(Senator(constructor_args))
+                missing_politician_list.append(Senator(constructor_args))
             elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
-                in_missing_list.append(Representative(constructor_args))
+                missing_politician_list.append(Representative(constructor_args))
             else:
                 logging.error(f"Invalid type {politician_json['type']}")
+    else:
+        logging.info("missing.json not found or empty, using wiki reference to form list")
 
-    secrets = f.get_secrets_dict()
-    bot = BotClient(
-        api_key=secrets["apiKey"],
-        api_key_secret=secrets["apiKeySecret"],
-        access_token=secrets["accessToken"],
-        access_token_secret=secrets["accessTokenSecret"],
-        bearer_token=secrets["bearerToken"]
-    )
-
-    # only create full list of senators/reps if in_missing_list not found
-    politician_list = []
-    if in_missing_list is None or len(in_missing_list) == 0:
+        # if incoming JSON not found/empty, grab info from wiki URL
         senator_list = get_politicians(
             politician_list_wiki_url=c.SENATORS_WIKI_URL,
             list_size=c.TOTAL_NUM_SENATORS,
@@ -175,10 +167,18 @@ def run(
             politician_type=PoliticianType.REPRESENTATIVE
         )
 
-        # join lists
-        politician_list = senator_list + rep_list
-    else:
-        politician_list = in_missing_list
+        # add lists
+        missing_politician_list = senator_list + rep_list
+
+    # create bot client using secrets
+    secrets = f.get_secrets_dict()
+    bot = BotClient(
+        api_key=secrets["apiKey"],
+        api_key_secret=secrets["apiKeySecret"],
+        access_token=secrets["accessToken"],
+        access_token_secret=secrets["accessTokenSecret"],
+        bearer_token=secrets["bearerToken"]
+    )
 
     # find politician twitter accounts
     num_senators_found = 0
@@ -187,14 +187,11 @@ def run(
     twitter_users_missing = []
 
     # only searching missing politicians
-    for politician in politician_list:
+    for politician in missing_politician_list:
         twitter_user = search_possible_twitter_handles(
             politician=politician,
             client=bot
         )
-
-        if len(twitter_users_found) == 5:
-            break
 
         if twitter_user:
             twitter_users_found.append(twitter_user)
