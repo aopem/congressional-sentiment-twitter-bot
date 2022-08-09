@@ -51,7 +51,26 @@ class StorageClient:
         )
 
         with open(local_filepath, "rb") as upload_file:
-            blob_client.upload_blob(upload_file)
+            blob_client.upload_blob(
+                data=upload_file
+            )
+
+    def uploadData(
+        self,
+        data,
+        data_name,
+        container_name,
+        overwrite=False
+    ):
+        blob_client = self.__client.get_blob_client(
+            container=container_name,
+            blob=data_name
+        )
+
+        blob_client.upload_blob(
+            data=data,
+            overwrite=overwrite
+        )
 
     def downloadFile(
         self,

@@ -32,7 +32,10 @@
             "clientId": "7889ea16-4a52-46df-ba5c-0ca51ab70b32"
         },
         "storageAccount": {
-            "name": "twitterbotsa"
+            "name": "twitterbotsa",
+            "emptyContainerFiles": [
+                "missing.json"
+            ]
         }
     }
 }

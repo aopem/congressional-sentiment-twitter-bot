@@ -131,7 +131,7 @@ def run(
     # load in_missing as JSON dict, create a list of Politician objects
     in_missing_json = json.loads(in_missing)
     in_missing_list = []
-    if in_missing_json != None:
+    if in_missing_json != None and len(in_missing_json) > 0:
         for politician_json in in_missing_json:
             constructor_args = {
                 "name": politician_json["name"],

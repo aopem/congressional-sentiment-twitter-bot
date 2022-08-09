@@ -21,6 +21,16 @@ def main():
             name=container_name
         )
 
+        # now, add all needed empty container files
+        for filename in azure_config["resourceGroup"]["storageAccount"]["emptyContainerFiles"]:
+            print(f"Uploading {filename} to container")
+            storage_account.uploadData(
+                data="",
+                data_name=filename,
+                container_name=container_name,
+                overwrite=True
+            )
+
     return
 
 
