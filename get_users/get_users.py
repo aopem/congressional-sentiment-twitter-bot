@@ -1,3 +1,4 @@
+import os
 import json
 import pandas as pd
 import logging
@@ -229,17 +230,18 @@ def main(
     outMissing: func.Out[str],
     found: func.Out[str]
 ):
-    logging.info(f"[IN] missing.json: {inMissing}")
+    logging.info(f"Initializing execution for {os.path.__basename__}")
+    logging.info(f"[IN] getusers/missing.json: {inMissing}")
 
-    if getUsersTimer.past_due:
-        found_json, missing_json = run(inMissing)
+    # run actual function
+    found_json, missing_json = run(inMissing)
 
-        logging.info(f"[OUT] found.json: {found_json}")
-        logging.info(f"[OUT] missing.json: {missing_json}")
+    logging.info(f"[OUT] getusers/found.json: {found_json}")
+    logging.info(f"[OUT] getusers/missing.json: {missing_json}")
 
-        # save JSON lists to storage account
-        found.set(found_json)
-        outMissing.set(missing_json)
+    # save JSON lists to storage account
+    found.set(found_json)
+    outMissing.set(missing_json)
 
 
 if __name__ == "__main__":
