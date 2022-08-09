@@ -230,7 +230,7 @@ def main(
     outMissing: func.Out[str],
     found: func.Out[str]
 ):
-    logging.info(f"Initializing execution for {os.path.__basename__}")
+    logging.info(f"Initializing execution for {os.path.basename(__file__)}")
     logging.info(f"[IN] getusers/missing.json: {inMissing}")
 
     # run actual function
