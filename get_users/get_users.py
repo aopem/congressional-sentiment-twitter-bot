@@ -227,12 +227,12 @@ def main(
     outMissing: func.Out[str],
     found: func.Out[str]
 ):
-    # if getUsersTimer.past_due:
-    found_json, missing_json = run(inMissing)
+    if getUsersTimer.past_due:
+        found_json, missing_json = run(inMissing)
 
-    # save JSON lists to storage account
-    found.set(found_json)
-    outMissing.set(missing_json)
+        # save JSON lists to storage account
+        found.set(found_json)
+        outMissing.set(missing_json)
 
 
 if __name__ == "__main__":
