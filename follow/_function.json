@@ -2,9 +2,11 @@
     "scriptFile": "follow.py",
     "bindings": [
         {
-            "schedule": "0 0 0 * * *",
-            "name": "followTimer",
-            "type": "timerTrigger",
+            "name": "inFound",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusers/found.json",
+            "connection": "AzureWebJobsStorage",
             "direction": "in"
         }
     ]
