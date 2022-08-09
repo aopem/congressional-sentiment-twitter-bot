@@ -1,12 +1,12 @@
 from azure.keyvault.secrets import SecretClient
-from azure.identity import DefaultAzureCredential
+from utils.functions import azure_authenticate
 
 class KeyVaultClient:
     def __init__(
         self,
         key_vault_name
     ):
-        self.__credential = DefaultAzureCredential()
+        self.__credential = azure_authenticate()
         self.__client = SecretClient(
             vault_url=f"https://{key_vault_name}.vault.azure.net",
             credential=self.__credential

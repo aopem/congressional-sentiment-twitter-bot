@@ -2,15 +2,15 @@ import os
 from threading import local
 
 from azure.storage.blob import BlobServiceClient
-from azure.identity import DefaultAzureCredential
 import azure.core.exceptions as e
+from utils.functions import azure_authenticate
 
 class StorageClient:
     def __init__(
         self,
         storage_account_name
     ):
-        self.__credential = DefaultAzureCredential()
+        self.__credential = azure_authenticate()
         self.__client = BlobServiceClient(
             account_url=f"https://{storage_account_name}.blob.core.windows.net/",
             credential=self.__credential
