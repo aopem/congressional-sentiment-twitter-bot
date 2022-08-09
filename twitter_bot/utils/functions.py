@@ -1,19 +1,16 @@
 import json
-from os.path import exists
-from azure.identity import DefaultAzureCredential
-from azure.core.exceptions import ClientAuthenticationError
 
-from twitter_bot.client.azure import KeyVaultClient
+import twitter_bot.client.azure as azclient
 from .constants import *
 
 
 def get_secrets_dict():
     secrets_dict = {}
-    if exists(SECRETS_FILEPATH):
+    if LOCAL_EXECUTION:
         secrets_dict = json.load(open(SECRETS_FILEPATH))
     else:
         azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-        keyvault = KeyVaultClient(
+        keyvault = azclient.KeyVaultClient(
             key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"]
         )
 
@@ -27,14 +24,10 @@ def get_secrets_dict():
     return secrets_dict
 
 
-def azure_authenticate():
-    credential = None
-    try:
-        credential = DefaultAzureCredential()
-    except ClientAuthenticationError:
+def get_msi_client_id():
+    msi_client_id = None
+    if not LOCAL_EXECUTION:
         azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-        credential = DefaultAzureCredential(
-            managed_identity_client_id=azure_config["resourceGroup"]["managedIdentity"]["clientId"]
-        )
+        msi_client_id = azure_config["resourceGroup"]["managedIdentity"]["clientId"]
 
-    return credential
+    return msi_client_id

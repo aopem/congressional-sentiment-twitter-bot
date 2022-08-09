@@ -1,16 +1,18 @@
 import os
-from threading import local
 
 from azure.storage.blob import BlobServiceClient
+from azure.identity import DefaultAzureCredential
 import azure.core.exceptions as e
-from twitter_bot.utils.functions import azure_authenticate
+import twitter_bot.utils.functions as f
 
 class StorageClient:
     def __init__(
         self,
         storage_account_name
     ):
-        self.__credential = azure_authenticate()
+        self.__credential = DefaultAzureCredential(
+            managed_identity_client_id=f.get_msi_client_id()
+        )
         self.__client = BlobServiceClient(
             account_url=f"https://{storage_account_name}.blob.core.windows.net/",
             credential=self.__credential

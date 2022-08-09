@@ -1,4 +1,5 @@
 from pathlib import Path
+from os.path import exists
 
 ROOT_DIR = Path(__file__).parent.parent.parent
 
@@ -21,3 +22,6 @@ TWITTER_ACCOUNTS_MISSING_FILENAME = "out_missing_twitter_accounts.json"
 # config files
 SECRETS_FILEPATH = f"{ROOT_DIR}/secrets.json"
 AZURE_CONFIG_FILEPATH = f"{ROOT_DIR}/config.azure.json"
+
+# see if local execution - secrets only stored locally
+LOCAL_EXECUTION = exists(SECRETS_FILEPATH)

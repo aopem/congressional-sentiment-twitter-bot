@@ -1,12 +1,15 @@
 from azure.keyvault.secrets import SecretClient
-from twitter_bot.utils.functions import azure_authenticate
+from azure.identity import DefaultAzureCredential
+import twitter_bot.utils.functions as f
 
 class KeyVaultClient:
     def __init__(
         self,
         key_vault_name
     ):
-        self.__credential = azure_authenticate()
+        self.__credential = DefaultAzureCredential(
+            managed_identity_client_id=f.get_msi_client_id()
+        )
         self.__client = SecretClient(
             vault_url=f"https://{key_vault_name}.vault.azure.net",
             credential=self.__credential
