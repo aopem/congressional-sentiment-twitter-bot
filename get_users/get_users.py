@@ -145,7 +145,7 @@ def run(
         elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
             in_missing_list.append(Representative(**constructor_args))
         else:
-            raise Exception(f"Invalid type {politician_json["type"]}")
+            raise Exception(f"Invalid type {politician_json['type']}")
 
     secrets = f.get_secrets_dict()
     bot = BotClient(
