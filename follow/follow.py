@@ -4,7 +4,6 @@ import logging
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
-import twitter_bot.utils.constants as c
 import twitter_bot.utils.functions as f
 
 
@@ -24,7 +23,7 @@ def run(
     # create set of users already following
     logging.info("Retrieving currently followed users from Twitter...")
     following = bot.getFollowing()
-    following_ids = {}
+    following_ids = set()
     for user in following:
         following_ids.add(user.id)
 
@@ -33,6 +32,7 @@ def run(
     twitter_user_json = json.loads(in_found)
 
     # follow all users - no errors if already following
+    num_users_followed = 0
     for user_json in twitter_user_json:
         if user_json["id"] not in following_ids:
             user = TwitterUser(
@@ -44,16 +44,22 @@ def run(
 
             try:
                 bot.followUser(user)
+                num_users_followed += 1
                 logging.info(f"Successfully followed @{user.username} ({user.name})")
             except Exception:
                 logging.warn(f"Could not follow user @{user.username} ({user.name})")
 
+    logging.info(f"New users followed: {num_users_followed}")
     return
 
 
 def main(
     inFound: str,
+    context: func.Context
 ):
+    logging.info(f"Executing function: {context.function_name}")
+    logging.info(f"Invocation ID: {context.invocation_id}")
+    logging.info(f"[IN] getusers/found.json: {inFound}")
     run(inFound)
 
 

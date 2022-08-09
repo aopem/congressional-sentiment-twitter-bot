@@ -3,7 +3,7 @@
     "bindings": [
         {
             "name": "inFound",
-            "type": "blob",
+            "type": "blobTrigger",
             "dataType": "string",
             "path": "getusers/found.json",
             "connection": "AzureWebJobsStorage",
