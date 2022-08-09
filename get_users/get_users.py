@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import logging
 import azure.functions as func
 
 from twitter_bot.client.twitter import BotClient
@@ -24,7 +25,7 @@ def get_politician_dict(
         if length == list_size:
             return df.to_dict(orient='index')
 
-    raise Exception(f"No entry found for list size: {list_size} at URL: {politician_list_wiki_url}")
+    raise logging.error(f"No entry found for list size: {list_size} at URL: {politician_list_wiki_url}")
 
 
 def get_politician_list(
@@ -61,7 +62,7 @@ def get_politician_list(
                 raise Exception(f"Invalid type: {politician_type}")
 
         except IndexError:
-            print(f"Name {politician[name_key]} not formatted correctly")
+            logging.warn(f"Name {politician[name_key]} not formatted correctly")
 
     return politician_list
 
@@ -149,7 +150,7 @@ def run(
             elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
                 in_missing_list.append(Representative(constructor_args))
             else:
-                raise Exception(f"Invalid type {politician_json['type']}")
+                logging.error(f"Invalid type {politician_json['type']}")
 
     secrets = f.get_secrets_dict()
     bot = BotClient(
@@ -192,6 +193,9 @@ def run(
             client=bot
         )
 
+        if len(twitter_users_found) == 5:
+            break
+
         if twitter_user:
             twitter_users_found.append(twitter_user)
 
@@ -200,19 +204,17 @@ def run(
             elif politician.type == PoliticianType.SENATOR:
                 num_senators_found += 1
 
-            print("\n")
-            print(f"Twitter User ({politician.first_name} {politician.last_name})")
-            print(f"id:       {twitter_user.id}")
-            print(f"name:     {twitter_user.name}")
-            print(f"username: {twitter_user.username}")
-            print(f"verified: {twitter_user.verified}")
-            print("\n")
+            logging.info(f"Twitter User ({politician.first_name} {politician.last_name})")
+            logging.info(f"id:       {twitter_user.id}")
+            logging.info(f"name:     {twitter_user.name}")
+            logging.info(f"username: {twitter_user.username}")
+            logging.info(f"verified: {twitter_user.verified}\n")
         else:
             twitter_users_missing.append(politician)
-            print(f"WARN: Could not find user: {politician.first_name} {politician.last_name}")
+            logging.warn(f"Could not find user: {politician.first_name} {politician.last_name}")
 
-    print(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
-    print(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
+    logging.info(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
+    logging.info(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
 
     # return data as 2 JSON lists
     found = json.dumps(twitter_users_found, cls=Encoder)
@@ -227,8 +229,13 @@ def main(
     outMissing: func.Out[str],
     found: func.Out[str]
 ):
+    logging.info(f"[IN] missing.json: {inMissing}")
+
     if getUsersTimer.past_due:
         found_json, missing_json = run(inMissing)
+
+        logging.info(f"[OUT] found.json: {found_json}")
+        logging.info(f"[OUT] missing.json: {missing_json}")
 
         # save JSON lists to storage account
         found.set(found_json)
