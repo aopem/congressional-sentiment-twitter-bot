@@ -228,9 +228,11 @@ def main(
     getUsersTimer: func.TimerRequest,
     inMissing: str,
     outMissing: func.Out[str],
-    found: func.Out[str]
+    found: func.Out[str],
+    context: func.Context
 ):
-    logging.info(f"Initializing execution for {os.path.basename(__file__)}")
+    logging.info(f"Executing function: {context.function_name}")
+    logging.info(f"Invocation ID: {context.invocation_id}")
     logging.info(f"[IN] getusers/missing.json: {inMissing}")
 
     # run actual function
