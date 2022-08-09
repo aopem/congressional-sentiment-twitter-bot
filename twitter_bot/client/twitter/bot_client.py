@@ -87,3 +87,14 @@ class BotClient:
         user
     ):
         return self.__client.follow_user(user.id)
+
+    def getFollowing(
+        self
+    ):
+        me = self.__client.get_me()
+        response = self.__client.get_users_following(
+            id=me.data.id,
+            max_results=1000
+        )
+
+        return response.data
