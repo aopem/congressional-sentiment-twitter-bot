@@ -3,7 +3,7 @@ from threading import local
 
 from azure.storage.blob import BlobServiceClient
 import azure.core.exceptions as e
-from utils.functions import azure_authenticate
+from twitter_bot.utils.functions import azure_authenticate
 
 class StorageClient:
     def __init__(

@@ -1,5 +1,3 @@
-import json
-from os import access
 import tweepy
 
 class BotClient:

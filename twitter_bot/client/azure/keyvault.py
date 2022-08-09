@@ -1,5 +1,5 @@
 from azure.keyvault.secrets import SecretClient
-from utils.functions import azure_authenticate
+from twitter_bot.utils.functions import azure_authenticate
 
 class KeyVaultClient:
     def __init__(
