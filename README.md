@@ -1,8 +1,8 @@
 # twitter-bot
 
-Creating a twitter bot using Tweepy.
+Creating a twitter bot using Tweepy, Azure Functions.
 
-## Environment Setup
+## Local Environment Setup
 
 Create & activate a virtual environment. The Azure Functions extension in VSCode will do this automatically if the local directory is deployed to an Azure Function resource.
 
