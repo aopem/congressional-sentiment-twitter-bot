@@ -130,13 +130,16 @@ def run(
     in_missing: str
 ):
     # load in_missing as JSON dict, create a list of Politician objects
-    in_missing_json = None
     missing_politician_list = []
-    if in_missing != None and len(in_missing) > 0:
+    in_missing_json = None
+    try:
         logging.info("Loading data from missing.json...")
         in_missing_json = json.loads(in_missing)
+    except Exception as e:
+        logging.warn(f"Caught exception: {e}")
 
-        # create politician list from incoming JSON
+    # create politician list from incoming JSON if valid
+    if in_missing_json != None and len(in_missing_json) > 0:
         for politician_json in in_missing_json:
             constructor_args = {
                 "name": politician_json["name"],
@@ -153,9 +156,9 @@ def run(
             else:
                 logging.error(f"Invalid type {politician_json['type']}")
     else:
-        logging.info("missing.json not found or empty, using wiki reference to form list")
+        logging.info("missing.json not found, invalid, or empty, using wiki reference to form list")
 
-        # if incoming JSON not found/empty, grab info from wiki URL
+        # if erroy with incoming JSON, grab info from wiki URL
         senator_list = get_politicians(
             politician_list_wiki_url=c.SENATORS_WIKI_URL,
             list_size=c.TOTAL_NUM_SENATORS,

@@ -2,7 +2,7 @@
     "scriptFile": "get_users.py",
     "bindings": [
         {
-            "schedule": "0 30 * * * *",
+            "schedule": "0 */10 * * * *",
             "name": "getUsersTimer",
             "type": "timerTrigger",
             "direction": "in"
