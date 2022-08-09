@@ -11,11 +11,11 @@ def get_secrets_dict():
     else:
         azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
         keyvault = KeyVaultClient(
-            key_vault_name=azure_config["resourceGroup"]["resources"]["keyVault"]["name"]
+            key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"]
         )
 
         # get secrets from keyvault and build dict
-        for secret_name in azure_config["resourceGroup"]["keyVault"]["secretNames"]:
+        for secret_name in azure_config["resourceGroup"]["keyVault"]["secrets"]:
             secret = keyvault.getSecret(
                 name=secret_name
             )

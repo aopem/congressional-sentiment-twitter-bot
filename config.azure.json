@@ -4,20 +4,16 @@
         "name": "bot-rg",
         "keyVault": {
             "name": "twitter-bot-akv",
-            "secrets": {
-                "twitter": [
-                    "apiKey",
-                    "apiKeySecret",
-                    "bearerToken",
-                    "clientId",
-                    "clientSecret",
-                    "accessToken",
-                    "accessTokenSecret"
-                ],
-                "azure": [
-                    "twitterbotsaConnectionString"
-                ]
-            }
+            "secrets": [
+                "apiKey",
+                "apiKeySecret",
+                "bearerToken",
+                "clientId",
+                "clientSecret",
+                "accessToken",
+                "accessTokenSecret",
+                "twitterbotsaConnectionString"
+            ]
         },
         "functionApp": {
             "name": "twitter-bot-func-app",
