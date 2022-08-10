@@ -19,7 +19,7 @@
             "name": "twitter-bot-func-app",
             "functions": [
                 "get_users",
-                "get_user_sentiment",
+                "get_sentiment",
                 "follow"
             ]
         },
@@ -33,7 +33,7 @@
                 "follow": {
                     "emptyFiles": []
                 },
-                "getusersentiment": {
+                "getsentiment": {
                     "emptyFiles": [
                         "current_index"
                     ]

@@ -1,9 +1,9 @@
 {
     "disabled": true,
-    "scriptFile": "get_user_sentiment.py",
+    "scriptFile": "get_sentiment.py",
     "bindings": [
         {
-            "schedule": "0 0 0 * * *",
+            "schedule": "0 0 12 * * *",
             "name": "timer",
             "type": "timerTrigger",
             "direction": "in"
@@ -20,7 +20,7 @@
             "name": "inCurrentIndex",
             "type": "blob",
             "dataType": "string",
-            "path": "getusersentiment/current_index",
+            "path": "getsentiment/current_index",
             "connection": "AzureWebJobsStorage",
             "direction": "in"
         },
@@ -28,7 +28,7 @@
             "name": "outCurrentIndex",
             "type": "blob",
             "dataType": "string",
-            "path": "getusersentiment/current_index",
+            "path": "getsentiment/current_index",
             "connection": "AzureWebJobsStorage",
             "direction": "out"
         }
