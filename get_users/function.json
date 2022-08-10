@@ -1,4 +1,5 @@
 {
+    "disabled": true,
     "scriptFile": "get_users.py",
     "bindings": [
         {

@@ -1,9 +1,8 @@
-from typing import Text
+from typing import List, Text
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.identity import DefaultAzureCredential
 
 import twitter_bot.utils.functions as f
-
 
 class AILanguageClient():
     def __init__(
@@ -20,5 +19,16 @@ class AILanguageClient():
 
     def getTextSentiment(
         self,
-        text: list
-    )
+        text: list[str],
+        *,
+        language: str = "en",
+        show_opinion_mining: bool = True,
+    ) -> list:
+        analyzed_text = self.__client.analyze_sentiment(
+            documents=text,
+            language=language,
+            show_opinion_mining=show_opinion_mining
+        )
+
+        # filter out any errors and return
+        return [text for text in analyzed_text if not text.is_error]

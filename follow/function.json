@@ -1,4 +1,5 @@
 {
+    "disabled": true,
     "scriptFile": "follow.py",
     "bindings": [
         {

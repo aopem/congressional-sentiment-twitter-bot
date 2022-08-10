@@ -1,9 +1,10 @@
 {
+    "disabled": true,
     "scriptFile": "get_user_sentiment.py",
     "bindings": [
         {
             "schedule": "0 0 0 * * *",
-            "name": "getUserSentimentTimer",
+            "name": "timer",
             "type": "timerTrigger",
             "direction": "in"
         },

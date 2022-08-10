@@ -80,7 +80,8 @@ class BotClient:
     ) -> dict:
         response = self.__client.get_users_mentions(
             id=user.id,
-            max_results=max_results
+            max_results=max_results,
+            tweet_fields=["lang"]
         )
 
         if response.data is None:
