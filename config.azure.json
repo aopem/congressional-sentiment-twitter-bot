@@ -29,11 +29,23 @@
         },
         "storageAccount": {
             "name": "twitterbotsa",
-            "emptyContainerFiles": [
-                "current.json",
-                "missing.json",
-                "found.json"
-            ]
+            "containers": {
+                "follow": {
+                    "emptyFiles": []
+                },
+                "getusersentiment": {
+                    "emptyFiles": [
+                        "current_index"
+                    ]
+                },
+                "getusers": {
+                    "emptyFiles": [
+                        "current.json",
+                        "missing.json",
+                        "found.json"
+                    ]
+                }
+            }
         }
     }
 }

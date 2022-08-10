@@ -1,4 +1,5 @@
 import json
+import logging
 
 import twitter_bot.client.azure as azclient
 from .constants import *
@@ -31,3 +32,18 @@ def get_msi_client_id():
         msi_client_id = azure_config["resourceGroup"]["managedIdentity"]["clientId"]
 
     return msi_client_id
+
+
+def load_json(
+    json_str: str
+):
+    try:
+        json_dict = json.loads(json_str)
+    except Exception as e:
+        logging.warn(f"Caught exception: {e}")
+        return None
+
+    if len(json_dict) == 0:
+        return None
+
+    return json_dict

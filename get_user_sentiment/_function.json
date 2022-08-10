@@ -6,6 +6,30 @@
             "name": "getUserSentimentTimer",
             "type": "timerTrigger",
             "direction": "in"
+        },
+        {
+            "name": "inFound",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusers/found.json",
+            "connection": "AzureWebJobsStorage",
+            "direction": "in"
+        },
+        {
+            "name": "inCurrentIndex",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusersentiment/current_index",
+            "connection": "AzureWebJobsStorage",
+            "direction": "in"
+        },
+        {
+            "name": "outCurrentIndex",
+            "type": "blob",
+            "dataType": "string",
+            "path": "getusersentiment/current_index",
+            "connection": "AzureWebJobsStorage",
+            "direction": "out"
         }
     ]
 }

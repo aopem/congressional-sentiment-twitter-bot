@@ -38,21 +38,6 @@ def search_possible_twitter_handles(
     return None
 
 
-def load_json(
-    json_str: str
-):
-    try:
-        json_dict = json.loads(json_str)
-    except Exception as e:
-        logging.warn(f"Caught exception: {e}")
-        return None
-
-    if len(json_dict) == 0:
-        return None
-
-    return json_dict
-
-
 def dump_output(
     out_current: func.Out[str],
     out_missing: func.Out[str],
@@ -86,13 +71,13 @@ def run(
 ):
     # load all input JSON
     logging.info("Loading data from getusers/current.json...")
-    in_current_json = load_json(in_current)
+    in_current_json = f.load_json(in_current)
 
     logging.info("Loading data from getusers/missing.json...")
-    in_missing_json = load_json(in_missing)
+    in_missing_json = f.load_json(in_missing)
 
     logging.info("Loading data from getusers/found.json...")
-    in_found_json = load_json(in_found)
+    in_found_json = f.load_json(in_found)
 
     # create politician list from incoming JSON if valid
     current_politician_list = []

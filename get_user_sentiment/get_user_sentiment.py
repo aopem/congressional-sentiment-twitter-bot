@@ -1,14 +1,16 @@
-import json
-import argparse
+import logging
 import azure.functions as func
 
-import twitter_bot.utils.constants as c
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 import twitter_bot.utils.functions as f
+import twitter_bot.utils.constants as c
 
 
-def run(index):
+def run(
+    current_index: int,
+    in_found: str
+):
     secrets = f.get_secrets_dict()
     bot = BotClient(
         api_key=secrets["apiKey"],
@@ -19,7 +21,13 @@ def run(index):
     )
 
     # read json containing twitter account info
-    user_json = json.load(open(c.TWITTER_ACCOUNTS_FOUND_FILENAME))[index]
+    user_json = f.load_json(in_found)
+    if user_json is None:
+        logging.error("Could not load getusers/found.json, exiting...")
+        return
+
+    # get element at current_index
+    user_json = user_json[current_index]
     user = TwitterUser(
         id=user_json["id"],
         name=user_json["name"],
@@ -35,31 +43,33 @@ def run(index):
 
     # return if no mentions found
     if mentions is None:
-        print(f"WARN: No mentions for @{user.username} ({user.name}) found, exiting...")
+        logging.warn(f"No mentions for @{user.username} ({user.name}) found, exiting...")
         return
 
     # get sentiment of tweets
     # TODO: use azure text analytics
     for mention in mentions:
-        # TODO: analyze sentiment of mention.text
+        # TODO: analyze sentiment of mention text
         pass
 
     return
 
 
-def main(timer: func.TimerRequest):
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-i',
-        '--index',
-        type=int,
-        required=True
+def main(
+    timer: func.TimerRequest,
+    inFound: str,
+    inCurrentIndex: str,
+    outCurrentIndex: func.Out[str]
+):
+    current_index = int(inCurrentIndex)
+
+    # run function, then increment index by 1 and output
+    run(
+        current_index=current_index,
+        in_found=inFound
     )
 
-    args = parser.parse_args()
-
-    if timer.past_due:
-        run(args.index)
+    outCurrentIndex.set(current_index + 1)
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ def main():
         )
 
         # now, add all needed empty container files
-        for filename in azure_config["resourceGroup"]["storageAccount"]["emptyContainerFiles"]:
+        for filename in azure_config["resourceGroup"]["storageAccount"]["containers"][container_name]["emptyFiles"]:
             print(f"Uploading {filename} to container")
             storage_account.uploadData(
                 data="",
