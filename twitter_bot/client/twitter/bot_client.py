@@ -7,7 +7,8 @@ class BotClient:
         api_key_secret,
         access_token,
         access_token_secret,
-        bearer_token
+        bearer_token,
+        wait_on_rate_limit=True
     ):
         # create tweepy client
         self.__client = tweepy.Client(
@@ -16,7 +17,7 @@ class BotClient:
             access_token=access_token,
             access_token_secret=access_token_secret,
             bearer_token=bearer_token,
-            wait_on_rate_limit=True
+            wait_on_rate_limit=wait_on_rate_limit
         )
 
     def searchUsername(

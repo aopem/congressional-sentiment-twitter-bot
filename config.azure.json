@@ -30,7 +30,9 @@
         "storageAccount": {
             "name": "twitterbotsa",
             "emptyContainerFiles": [
-                "missing.json"
+                "current.json",
+                "missing.json",
+                "found.json"
             ]
         }
     }

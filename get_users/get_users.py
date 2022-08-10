@@ -1,103 +1,16 @@
-import os
 import json
-import pandas as pd
 import logging
 import azure.functions as func
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
-from twitter_bot.model import Senator
-from twitter_bot.model import Representative
-from twitter_bot.enums import PoliticianType
-from twitter_bot.serialization import Encoder
+from .get_users_helper import *
+import twitter_bot.model.senator as s
+import twitter_bot.model.representative as r
+import twitter_bot.enums.politician_type as enums
+import twitter_bot.serialization.encoder as enc
 import twitter_bot.utils.constants as c
 import twitter_bot.utils.functions as f
-
-
-def get_politician_dict(
-    politician_list_wiki_url,
-    list_size
-):
-    wiki_data = pd.read_html(politician_list_wiki_url)
-
-    # find correct table according to list_size
-    for df in wiki_data:
-        length = df.shape[0]
-        if length == list_size:
-            return df.to_dict(orient='index')
-
-    raise logging.error(f"No entry found for list size: {list_size} at URL: {politician_list_wiki_url}")
-
-
-def get_politician_list(
-    politician_list_wiki_url,
-    list_size,
-    politician_type,
-    name_key,
-    party_key,
-    state_key,
-    residence_key,
-    date_born_key
-):
-    politician_dict = get_politician_dict(
-        politician_list_wiki_url=politician_list_wiki_url,
-        list_size=list_size
-    )
-    politician_list = []
-
-    for politician in politician_dict.values():
-        constructor_args = {
-            "name": politician[name_key],
-            "party": politician[party_key],
-            "state": politician[state_key],
-            "residence": politician[residence_key],
-            "date_born": politician[date_born_key]
-        }
-
-        try:
-            if politician_type == PoliticianType.REPRESENTATIVE:
-                politician_list.append(Representative(constructor_args))
-            elif politician_type == PoliticianType.SENATOR:
-                politician_list.append(Senator(constructor_args))
-            else:
-                raise Exception(f"Invalid type: {politician_type}")
-
-        except IndexError:
-            logging.warn(f"Name {politician[name_key]} not formatted correctly")
-
-    return politician_list
-
-
-def get_politicians(
-    politician_list_wiki_url,
-    list_size,
-    politician_type
-):
-    if politician_type == PoliticianType.REPRESENTATIVE:
-        keys = {
-            "name_key": "Member",
-            "party_key": "Party.1",
-            "state_key": "District",
-            "residence_key": "Residence",
-            "date_born_key": "Born[2]"
-        }
-    elif politician_type == PoliticianType.SENATOR:
-        keys = {
-            "name_key": "Senator",
-            "party_key": "Party.1",
-            "state_key": "State",
-            "residence_key": "Residence[2]",
-            "date_born_key": "Born"
-        }
-    else:
-        raise Exception(f"Invalid type: {politician_type}")
-
-    return get_politician_list(
-        politician_list_wiki_url=politician_list_wiki_url,
-        list_size=list_size,
-        politician_type=politician_type,
-        **keys
-    )
 
 
 def search_possible_twitter_handles(
@@ -127,52 +40,103 @@ def search_possible_twitter_handles(
     return None
 
 
-def run(
-    in_missing: str
+def load_json(
+    json_str: str
 ):
-    # load in_missing as JSON dict, create a list of Politician objects
-    missing_politician_list = []
-    in_missing_json = None
     try:
-        logging.info("Loading data from missing.json...")
-        in_missing_json = json.loads(in_missing)
+        json_dict = json.loads(json_str)
     except Exception as e:
         logging.warn(f"Caught exception: {e}")
+        return None
+
+    if len(json_dict) == 0:
+        return None
+
+    return json_dict
+
+
+def dump_output(
+    out_current: func.Out[str],
+    out_missing: func.Out[str],
+    out_found: func.Out[str],
+    current_list,
+    missing_list,
+    found_list
+):
+    current = json.dumps(current_list, cls=enc.Encoder)
+    missing = json.dumps(missing_list, cls=enc.Encoder)
+    found = json.dumps(found_list, cls=enc.Encoder)
+
+    out_current.set(current)
+    out_missing.set(missing)
+    out_found.set(found)
+
+    logging.info(f"Current total: {len(found_list)}/{c.TOTAL_NUM_REPRESENTATIVES + c.TOTAL_NUM_SENATORS} Twitter accounts")
+    logging.info(f"[OUT] getusers/found.json: {found}")
+    logging.info(f"[OUT] getusers/current.json: {current}")
+    logging.info(f"[OUT] getusers/missing.json: {missing}")
+
+
+def run(
+    timer: func.TimerRequest,
+    in_current: str,
+    in_missing: str,
+    in_found: str,
+    out_current: func.Out[str],
+    out_missing: func.Out[str],
+    out_found: func.Out[str]
+):
+    # load all input JSON
+    logging.info("Loading data from getusers/current.json...")
+    in_current_json = load_json(in_current)
+
+    logging.info("Loading data from getusers/missing.json...")
+    in_missing_json = load_json(in_missing)
+
+    logging.info("Loading data from getusers/found.json...")
+    in_found_json = load_json(in_found)
 
     # create politician list from incoming JSON if valid
-    if in_missing_json != None and len(in_missing_json) > 0:
-        for politician_json in in_missing_json:
-            constructor_args = {
-                "name": politician_json["name"],
-                "party": politician_json["party"],
-                "state": politician_json["state"],
-                "residence": politician_json["residence"],
-                "date_born": politician_json["date_born"]
-            }
+    current_politician_list = []
+    if in_current_json != None:
+        current_politician_list = create_politician_list_from_json(
+            json_dict=in_current_json
+        )
 
-            if politician_json["type"] == PoliticianType.SENATOR:
-                missing_politician_list.append(Senator(constructor_args))
-            elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
-                missing_politician_list.append(Representative(constructor_args))
-            else:
-                logging.error(f"Invalid type {politician_json['type']}")
     else:
-        logging.info("missing.json not found, invalid, or empty, using wiki reference to form list")
+        logging.info("current.json not found, invalid, or empty, using wiki reference to form list")
 
-        # if erroy with incoming JSON, grab info from wiki URL
+        # if error with incoming JSON, start with wiki URL
         senator_list = get_politicians(
             politician_list_wiki_url=c.SENATORS_WIKI_URL,
             list_size=c.TOTAL_NUM_SENATORS,
-            politician_type=PoliticianType.SENATOR
+            politician_type=enums.PoliticianType.SENATOR
         )
         rep_list = get_politicians(
             politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
             list_size=c.TOTAL_NUM_REPRESENTATIVES,
-            politician_type=PoliticianType.REPRESENTATIVE
+            politician_type=enums.PoliticianType.REPRESENTATIVE
         )
 
         # add lists
-        missing_politician_list = senator_list + rep_list
+        current_politician_list = senator_list + rep_list
+
+    # load JSON for found/missing lists
+    missing_politician_list = []
+    if in_missing_json != None:
+        missing_politician_list = create_politician_list_from_json(
+            json_dict=in_missing_json
+        )
+
+    found_twitter_users_list = []
+    if in_found_json != None:
+        for user in in_found_json:
+            found_twitter_users_list.append(TwitterUser(
+                id=user["id"],
+                name=user["name"],
+                username=user["username"],
+                verified=user["verified"]
+            ))
 
     # create bot client using secrets
     secrets = f.get_secrets_dict()
@@ -181,29 +145,38 @@ def run(
         api_key_secret=secrets["apiKeySecret"],
         access_token=secrets["accessToken"],
         access_token_secret=secrets["accessTokenSecret"],
-        bearer_token=secrets["bearerToken"]
+        bearer_token=secrets["bearerToken"],
+        wait_on_rate_limit=False
     )
 
-    # find politician twitter accounts
-    num_senators_found = 0
-    num_reps_found = 0
-    twitter_users_found = []
-    twitter_users_missing = []
+    # iterate over copy of list from current.json
+    # pop() items as they have been processed
+    for i, politician in enumerate(list(current_politician_list)):
+        try:
+            twitter_user = search_possible_twitter_handles(
+                politician=politician,
+                client=bot
+            )
 
-    # only searching missing politicians
-    for politician in missing_politician_list:
-        twitter_user = search_possible_twitter_handles(
-            politician=politician,
-            client=bot
-        )
+        # search will fail once twitter rate limit is achieved
+        except Exception as e:
+            logging.info(f"Caught exception: {e}")
+            logging.info(f"Twitter rate limit reached. Dumping progress to storage account")
+
+            # save all output, then return from function to end execution
+            dump_output(
+                out_current=out_current,
+                out_missing=out_missing,
+                out_found=out_found,
+                current_list=current_politician_list,
+                missing_list=missing_politician_list,
+                found_list=found_twitter_users_list
+            )
+
+            return
 
         if twitter_user:
-            twitter_users_found.append(twitter_user)
-
-            if politician.type == PoliticianType.REPRESENTATIVE:
-                num_reps_found += 1
-            elif politician.type == PoliticianType.SENATOR:
-                num_senators_found += 1
+            found_twitter_users_list.append(twitter_user)
 
             logging.info(f"Twitter User ({politician.first_name} {politician.last_name})")
             logging.info(f"id:       {twitter_user.id}")
@@ -211,39 +184,51 @@ def run(
             logging.info(f"username: {twitter_user.username}")
             logging.info(f"verified: {twitter_user.verified}\n")
         else:
-            twitter_users_missing.append(politician)
+            missing_politician_list.append(politician)
             logging.warn(f"Could not find user: {politician.first_name} {politician.last_name}")
 
-    logging.info(f"Found {num_reps_found}/{c.TOTAL_NUM_REPRESENTATIVES} representatives")
-    logging.info(f"Found {num_senators_found}/{c.TOTAL_NUM_SENATORS} senators")
+        # after processing, remove politician from list
+        current_politician_list.pop(i)
 
-    # return data as 2 JSON lists
-    found = json.dumps(twitter_users_found, cls=Encoder)
-    missing = json.dumps(twitter_users_missing, cls=Encoder)
+    # if everything completes, dump all output
+    dump_output(
+        out_current=out_current,
+        out_missing=out_missing,
+        out_found=out_found,
+        current_list=current_politician_list,
+        missing_list=missing_politician_list,
+        found_list=found_twitter_users_list
+    )
 
-    return found, missing
+    return
 
 
 def main(
-    getUsersTimer: func.TimerRequest,
+    timer: func.TimerRequest,
+    inCurrent: str,
     inMissing: str,
+    inFound: str,
+    outCurrent: func.Out[str],
     outMissing: func.Out[str],
-    found: func.Out[str],
+    outFound: func.Out[str],
     context: func.Context
 ):
     logging.info(f"Executing function: {context.function_name}")
     logging.info(f"Invocation ID: {context.invocation_id}")
+    logging.info(f"[IN] getusers/current.json: {inCurrent}")
     logging.info(f"[IN] getusers/missing.json: {inMissing}")
+    logging.info(f"[IN] getusers/found.json: {inFound}")
 
     # run actual function
-    found_json, missing_json = run(inMissing)
-
-    logging.info(f"[OUT] getusers/found.json: {found_json}")
-    logging.info(f"[OUT] getusers/missing.json: {missing_json}")
-
-    # save JSON lists to storage account
-    found.set(found_json)
-    outMissing.set(missing_json)
+    run(
+        timer=timer,
+        in_current=inCurrent,
+        in_missing=inMissing,
+        in_found=inFound,
+        out_current=outCurrent,
+        out_missing=outMissing,
+        out_found=outFound
+    )
 
 
 if __name__ == "__main__":
