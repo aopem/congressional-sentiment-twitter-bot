@@ -134,7 +134,7 @@ def run(
 
     # iterate over copy of list from current.json
     # pop() items as they have been processed
-    for i, politician in enumerate(list(current_politician_list)):
+    for politician in list(current_politician_list):
         try:
             twitter_user = search_possible_twitter_handles(
                 politician=politician,
@@ -171,7 +171,8 @@ def run(
             logging.warn(f"Could not find user: {politician.first_name} {politician.last_name}")
 
         # after processing, remove politician from list
-        current_politician_list.pop(i)
+        # this will always be the first item of current_politician_list
+        current_politician_list.pop(0)
 
     # if everything completes, dump all output
     dump_output(
