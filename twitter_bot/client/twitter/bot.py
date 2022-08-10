@@ -1,5 +1,6 @@
 import tweepy
 from twitter_bot.model import TwitterUser
+import twitter_bot.utils.constants as c
 
 class BotClient:
     def __init__(
@@ -20,6 +21,29 @@ class BotClient:
             bearer_token=bearer_token,
             wait_on_rate_limit=wait_on_rate_limit
         )
+
+    def tweet(
+        self,
+        text: str
+    ) -> dict:
+        response = None
+
+        # process tweet in chunks if too large
+        if len(text) > c.TWITTER_TWEET_CHAR_LIMIT:
+            chunks = self.__createTextChunks(
+                text=text
+            )
+
+            for chunk in chunks:
+                response = self.__client.create_tweet(
+                    text=chunk
+                )
+        else:
+            response = self.__client.create_tweet(
+                text=text
+            )
+
+        return response.data
 
     def searchUsername(
         self,
@@ -106,3 +130,21 @@ class BotClient:
         )
 
         return response.data
+
+    def __createTextChunks(
+        self,
+        text: str
+    ) -> list[str]:
+        i = 0
+        chunks = []
+        while i + c.TWITTER_TWEET_CHAR_LIMIT < len(text):
+            curr_chunk = text[i:i + c.TWITTER_TWEET_CHAR_LIMIT]
+            chunks.append(curr_chunk)
+
+            # increment for next chunk
+            i += c.TWITTER_TWEET_CHAR_LIMIT
+
+        # to get end bit of text
+        chunks.append(text[i:])
+
+        return chunks
