@@ -13,7 +13,7 @@ import twitter_bot.utils.constants as c
 def run(
     current_index: int,
     in_found: str
-):
+) -> int:
     # get secrets and create clients
     secrets = f.get_secrets_dict()
     bot = BotClient(
@@ -33,7 +33,7 @@ def run(
     user_json = f.load_json(in_found)
     if user_json is None:
         logging.error("Could not load getusers/found.json, exiting...")
-        return
+        return (current_index + 1) % len(user_json)
 
     # get element at current_index
     user_json = user_json[current_index]
@@ -96,7 +96,8 @@ def run(
     logging.info(f"FINAL TWEET ({len(tweet)} characters):")
     logging.info(f"{tweet}")
 
-    return
+    # mod by len(user_json) so index will wrap around at last item
+    return (current_index + 1) % len(user_json)
 
 
 def main(
@@ -117,12 +118,12 @@ def main(
         logging.warn(f"Caught exception {e}, current_index set to 0")
 
     # run function, then increment index by 1 and output
-    run(
+    next_index = run(
         current_index=current_index,
         in_found=inFound
     )
 
-    outCurrentIndex.set(str(current_index + 1))
+    outCurrentIndex.set(str(next_index))
     logging.info(f"[OUT] getusersentiment/current_index: {outCurrentIndex.get()}")
 
 
