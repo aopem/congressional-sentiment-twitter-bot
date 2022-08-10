@@ -97,6 +97,7 @@ def run(
                 verified=user["verified"]
             ))
 
+    current_politician_list = []
     if in_current_json is None and \
        in_missing_json is not None and \
        in_found_json   is not None:
@@ -113,7 +114,6 @@ def run(
         return
 
     # create politician list from input current.json if valid
-    current_politician_list = []
     if in_current_json != None:
         current_politician_list = create_politician_list_from_json(
             json_dict=in_current_json
