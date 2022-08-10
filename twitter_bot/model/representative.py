@@ -7,7 +7,7 @@ class Representative(Politician):
         kwargs
     ):
         super().__init__(**kwargs)
-        self.type = PoliticianType.SENATOR
+        self.type = PoliticianType.REPRESENTATIVE
 
     def getPossibleTwitterHandles(self):
         prefixes = []
