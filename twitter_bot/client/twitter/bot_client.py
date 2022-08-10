@@ -24,20 +24,24 @@ class BotClient:
         self,
         username
     ):
-        return self.__client.get_user(
+        response = self.__client.get_user(
             username=username,
             user_fields=["verified"]
         )
+
+        return response.data
 
     def getUserTweets(
         self,
         user,
         max_results
     ):
-        return self.__client.get_users_tweets(
+        response = self.__client.get_users_tweets(
             id=user.id,
             max_results=max_results
         )
+
+        return response.data
 
     def getTweetReplies(
         self,
@@ -87,7 +91,8 @@ class BotClient:
         self,
         user
     ):
-        return self.__client.follow_user(user.id)
+        response = self.__client.follow_user(user.id)
+        return response.data
 
     def getFollowing(
         self

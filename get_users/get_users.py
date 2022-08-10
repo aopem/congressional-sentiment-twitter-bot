@@ -18,21 +18,21 @@ def search_possible_twitter_handles(
     possible_twitter_handles = politician.getPossibleTwitterHandles()
 
     for handle in possible_twitter_handles:
-        response = client.searchUsername(handle)
+        possible_user = client.searchUsername(handle)
 
-        # if user is found, response.data will be populated
-        if response.data is None:
+        # if user is found, possible_user will be populated
+        if possible_user is None:
             continue
 
         # if user retrieved is not verified, then continue
-        if not response.data.verified:
+        if not possible_user.verified:
             continue
 
         # if above checks pass, can return as a real account
-        return TwitterUser(id=response.data.id,
-            name=response.data.name,
-            username=response.data.username,
-            verified=response.data.verified
+        return TwitterUser(id=possible_user.id,
+            name=possible_user.name,
+            username=possible_user.username,
+            verified=possible_user.verified
         )
 
     return None

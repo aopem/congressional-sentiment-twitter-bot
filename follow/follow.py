@@ -43,11 +43,15 @@ def run(
             )
 
             try:
-                bot.followUser(user)
-                num_users_followed += 1
-                logging.info(f"Successfully followed @{user.username} ({user.name})")
+                status = bot.followUser(user)
+                if status.following:
+                    num_users_followed += 1
+                    logging.info(f"Successfully followed @{user.username} ({user.name})")
+                else:
+                    logging.info(f"Attempted to follow @{user.username} ({user.name})")
+                    logging.info(f"Follow status = {status}")
             except Exception:
-                logging.warn(f"Could not follow user @{user.username} ({user.name})")
+                logging.warn(f"Could not follow @{user.username} ({user.name})")
 
     logging.info(f"New users followed: {num_users_followed}")
     return
