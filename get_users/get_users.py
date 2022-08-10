@@ -79,7 +79,39 @@ def run(
     logging.info("Loading data from getusers/found.json...")
     in_found_json = f.load_json(in_found)
 
-    # create politician list from incoming JSON if valid
+    # load JSON for found/missing lists
+    missing_politician_list = []
+    if in_missing_json != None:
+        missing_politician_list = create_politician_list_from_json(
+            json_dict=in_missing_json
+        )
+
+    found_twitter_users_list = []
+    if in_found_json != None:
+        for user in in_found_json:
+            found_twitter_users_list.append(TwitterUser(
+                id=user["id"],
+                name=user["name"],
+                username=user["username"],
+                verified=user["verified"]
+            ))
+
+    if in_current_json is None and \
+       in_missing_json is not None and \
+       in_found_json   is not None:
+        logging.info("getusers execution complete, exiting...")
+        dump_output(
+            out_current=out_current,
+            out_missing=out_missing,
+            out_found=out_found,
+            current_list=current_politician_list,
+            missing_list=missing_politician_list,
+            found_list=found_twitter_users_list
+        )
+
+        return
+
+    # create politician list from input current.json if valid
     current_politician_list = []
     if in_current_json != None:
         current_politician_list = create_politician_list_from_json(
@@ -103,23 +135,6 @@ def run(
 
         # add lists
         current_politician_list = senator_list + rep_list
-
-    # load JSON for found/missing lists
-    missing_politician_list = []
-    if in_missing_json != None:
-        missing_politician_list = create_politician_list_from_json(
-            json_dict=in_missing_json
-        )
-
-    found_twitter_users_list = []
-    if in_found_json != None:
-        for user in in_found_json:
-            found_twitter_users_list.append(TwitterUser(
-                id=user["id"],
-                name=user["name"],
-                username=user["username"],
-                verified=user["verified"]
-            ))
 
     # create bot client using secrets
     secrets = f.get_secrets_dict()
