@@ -9,7 +9,7 @@ class Representative(Politician):
         super().__init__(**kwargs)
         self.type = PoliticianType.REPRESENTATIVE
 
-    def getPossibleTwitterHandles(self):
+    def getPossibleTwitterHandles(self) -> list[str]:
         prefixes = []
         prefixes.append("Rep")
         prefixes.append("Congressman")
@@ -23,4 +23,6 @@ class Representative(Politician):
             unfiltered_possible_handles.append(f"{prefix}{self.last_name}")
             unfiltered_possible_handles.append(f"{prefix}{self.first_name}")
 
-        return super()._filterTwitterHandles(unfiltered_possible_handles)
+        return super()._filterTwitterHandles(
+            unfiltered_possible_handles=unfiltered_possible_handles
+        )

@@ -22,7 +22,7 @@ def run(
 
     # create set of users already following
     logging.info("Retrieving currently followed users from Twitter...")
-    following = bot.getFollowing()
+    following = bot.getMyFollowing()
     following_ids = set()
     for user in following:
         following_ids.add(user.id)

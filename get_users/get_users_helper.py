@@ -4,12 +4,13 @@ import logging
 import twitter_bot.enums.politician_type as enums
 import twitter_bot.model.representative as r
 import twitter_bot.model.senator as s
+import twitter_bot.model.politician as p
 
 
 def get_politician_dict(
-    politician_list_wiki_url,
-    list_size
-):
+    politician_list_wiki_url: str,
+    list_size: int
+) -> dict:
     wiki_data = pd.read_html(politician_list_wiki_url)
 
     # find correct table according to list_size
@@ -22,15 +23,15 @@ def get_politician_dict(
 
 
 def get_politician_list(
-    politician_list_wiki_url,
-    list_size,
-    politician_type,
-    name_key,
-    party_key,
-    state_key,
-    residence_key,
-    date_born_key
-):
+    politician_list_wiki_url: str,
+    list_size: int,
+    politician_type: enums.PoliticianType,
+    name_key: str,
+    party_key: str,
+    state_key: str,
+    residence_key: str,
+    date_born_key: str
+) -> list[p.Politician]:
     politician_dict = get_politician_dict(
         politician_list_wiki_url=politician_list_wiki_url,
         list_size=list_size
@@ -61,10 +62,10 @@ def get_politician_list(
 
 
 def get_politicians(
-    politician_list_wiki_url,
-    list_size,
-    politician_type
-):
+    politician_list_wiki_url: str,
+    list_size: int,
+    politician_type: enums.PoliticianType
+) -> list[p.Politician]:
     if politician_type == enums.PoliticianType.REPRESENTATIVE:
         keys = {
             "name_key": "Member",
@@ -93,8 +94,8 @@ def get_politicians(
 
 
 def create_politician_list_from_json(
-    json_dict
-):
+    json_dict: dict
+) -> list[p.Politician]:
     politician_list = []
     for politician_json in json_dict:
         constructor_args = {

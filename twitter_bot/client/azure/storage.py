@@ -1,4 +1,5 @@
 import os
+from typing import AnyStr
 
 from azure.storage.blob import BlobServiceClient
 from azure.identity import DefaultAzureCredential
@@ -8,7 +9,7 @@ import twitter_bot.utils.functions as f
 class StorageClient:
     def __init__(
         self,
-        storage_account_name
+        storage_account_name: str
     ):
         self.__credential = DefaultAzureCredential(
             managed_identity_client_id=f.get_msi_client_id()
@@ -20,7 +21,7 @@ class StorageClient:
 
     def createContainer(
         self,
-        name
+        name: str
     ):
         try:
             container = self.__client.create_container(
@@ -35,7 +36,7 @@ class StorageClient:
 
     def getContainer(
         self,
-        name
+        name: str
     ):
        return self.__client.get_container_client(
             container=name
@@ -43,8 +44,8 @@ class StorageClient:
 
     def uploadFile(
         self,
-        local_filepath,
-        container_name
+        local_filepath: str,
+        container_name: str
     ):
         filename = os.path.basename(local_filepath)
         blob_client = self.__client.get_blob_client(
@@ -59,10 +60,10 @@ class StorageClient:
 
     def uploadData(
         self,
-        data,
-        data_name,
-        container_name,
-        overwrite=False
+        data: AnyStr,
+        data_name: str,
+        container_name: str,
+        overwrite: bool = False
     ):
         blob_client = self.__client.get_blob_client(
             container=container_name,
@@ -76,8 +77,8 @@ class StorageClient:
 
     def downloadFile(
         self,
-        local_filepath,
-        container_name
+        local_filepath: str,
+        container_name: str
     ):
         filename = os.path.basename(local_filepath)
         container_client = self.__client.get_container_client(

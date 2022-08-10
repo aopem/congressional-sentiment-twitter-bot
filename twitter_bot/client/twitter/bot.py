@@ -1,14 +1,15 @@
 import tweepy
+from twitter_bot.model import TwitterUser
 
 class BotClient:
     def __init__(
         self,
-        api_key,
-        api_key_secret,
-        access_token,
-        access_token_secret,
-        bearer_token,
-        wait_on_rate_limit=True
+        api_key: str,
+        api_key_secret: str,
+        access_token: str,
+        access_token_secret: str,
+        bearer_token: str,
+        wait_on_rate_limit: bool = True
     ):
         # create tweepy client
         self.__client = tweepy.Client(
@@ -22,8 +23,8 @@ class BotClient:
 
     def searchUsername(
         self,
-        username
-    ):
+        username: str
+    ) -> dict:
         response = self.__client.get_user(
             username=username,
             user_fields=["verified"]
@@ -33,9 +34,9 @@ class BotClient:
 
     def getUserTweets(
         self,
-        user,
-        max_results
-    ):
+        user: TwitterUser,
+        max_results: int
+    ) -> dict:
         response = self.__client.get_users_tweets(
             id=user.id,
             max_results=max_results
@@ -74,9 +75,9 @@ class BotClient:
 
     def getUserMentions(
         self,
-        user,
-        max_results
-    ):
+        user: TwitterUser,
+        max_results: int
+    ) -> dict:
         response = self.__client.get_users_mentions(
             id=user.id,
             max_results=max_results
@@ -89,14 +90,14 @@ class BotClient:
 
     def followUser(
         self,
-        user
-    ):
+        user: TwitterUser
+    ) -> dict:
         response = self.__client.follow_user(user.id)
         return response.data
 
-    def getFollowing(
+    def getMyFollowing(
         self
-    ):
+    ) -> dict:
         me = self.__client.get_me()
         response = self.__client.get_users_following(
             id=me.data.id,

@@ -46,6 +46,12 @@
                     ]
                 }
             }
+        },
+        "cognitiveServices": {
+            "account": {
+                "name": "twitter-bot-nlp",
+                "endpoint": "https://twitter-bot-nlp.cognitiveservices.azure.com/"
+            }
         }
     }
 }

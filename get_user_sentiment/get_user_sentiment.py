@@ -27,17 +27,17 @@ def run(
         return
 
     # get element at current_index
-    user_json = user_json[current_index]
-    user = TwitterUser(
-        id=user_json["id"],
-        name=user_json["name"],
-        username=user_json["name"],
-        verified=user_json["verified"]
-    )
+    user = user_json[current_index]
+    logging.info(f"inFound[{current_index}]: {user}")
 
     # get tweets up to TWITTER_MAX_TWEETS_RETURNED to analyze
     mentions = bot.getUserMentions(
-        user=user,
+        user=TwitterUser(
+            id=user["id"],
+            name=user["name"],
+            username=user["name"],
+            verified=user["verified"]
+        ),
         max_results=c.TWITTER_MAX_TWEETS_RETURNED
     )
 
@@ -59,9 +59,18 @@ def main(
     timer: func.TimerRequest,
     inFound: str,
     inCurrentIndex: str,
-    outCurrentIndex: func.Out[str]
+    outCurrentIndex: func.Out[str],
+    context: func.Context
 ):
-    current_index = int(inCurrentIndex)
+    logging.info(f"Executing function: {context.function_name}")
+    logging.info(f"Invocation ID: {context.invocation_id}")
+    logging.info(f"[IN] getusersentiment/current_index: {inCurrentIndex}")
+
+    current_index = 0
+    try:
+        current_index = int(inCurrentIndex)
+    except Exception as e:
+        logging.warn(f"Caught exception {e}, current_index set to 0")
 
     # run function, then increment index by 1 and output
     run(
@@ -70,6 +79,7 @@ def main(
     )
 
     outCurrentIndex.set(current_index + 1)
+    logging.info(f"[OUT] getusersentiment/current_index: {outCurrentIndex.get()}")
 
 
 if __name__ == "__main__":

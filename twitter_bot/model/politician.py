@@ -4,11 +4,11 @@ from twitter_bot.utils import constants as c
 class Politician:
     def __init__(
         self,
-        name,
-        party,
-        state,
-        residence,
-        date_born
+        name: str,
+        party: str,
+        state: str,
+        residence: str,
+        date_born: str
     ):
         name_list = name.split()
         self.first_name = name_list[0]
@@ -24,11 +24,13 @@ class Politician:
 
     def _filterTwitterHandles(
         self,
-        unfiltered_possible_handles
-    ):
+        unfiltered_possible_handles: list[str]
+    ) -> list[str]:
         possible_handles = []
         for possible_handle in unfiltered_possible_handles:
-            valid_handle = self.__getValidTwitterHandle(possible_handle)
+            valid_handle = self.__getValidTwitterHandle(
+                possible_handle=possible_handle
+            )
             if valid_handle:
                 possible_handles.append(valid_handle)
 
@@ -36,8 +38,8 @@ class Politician:
 
     def __getValidTwitterHandle(
         self,
-        possible_handle
-    ):
+        possible_handle: str
+    ) -> str:
         if len(possible_handle) > c.TWITTER_USERNAME_CHARACTER_LIMIT:
             possible_handle = possible_handle[:c.TWITTER_USERNAME_CHARACTER_LIMIT]
 

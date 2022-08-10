@@ -1,3 +1,4 @@
+from typing import Any
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 import twitter_bot.utils.functions as f
@@ -5,7 +6,7 @@ import twitter_bot.utils.functions as f
 class KeyVaultClient:
     def __init__(
         self,
-        key_vault_name
+        key_vault_name: str
     ):
         self.__credential = DefaultAzureCredential(
             managed_identity_client_id=f.get_msi_client_id()
@@ -17,8 +18,8 @@ class KeyVaultClient:
 
     def setSecret(
         self,
-        name,
-        value
+        name: str,
+        value: Any
     ):
         self.__client.set_secret(
             name=name,
@@ -27,7 +28,7 @@ class KeyVaultClient:
 
     def getSecret(
         self,
-        name
+        name: str
     ):
         return self.__client.get_secret(
             name=name
@@ -35,7 +36,7 @@ class KeyVaultClient:
 
     def deleteSecret(
         self,
-        name
+        name: str
     ):
         poller = self.__client.begin_delete_secret(
             name=name

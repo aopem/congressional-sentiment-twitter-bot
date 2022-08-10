@@ -5,7 +5,7 @@ import twitter_bot.client.azure as azclient
 from .constants import *
 
 
-def get_secrets_dict():
+def get_secrets_dict() -> dict:
     secrets_dict = {}
     if LOCAL_EXECUTION:
         secrets_dict = json.load(open(SECRETS_FILEPATH))
@@ -25,7 +25,7 @@ def get_secrets_dict():
     return secrets_dict
 
 
-def get_msi_client_id():
+def get_msi_client_id() -> str:
     msi_client_id = None
     if not LOCAL_EXECUTION:
         azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
@@ -36,7 +36,7 @@ def get_msi_client_id():
 
 def load_json(
     json_str: str
-):
+) -> dict:
     try:
         json_dict = json.loads(json_str)
     except Exception as e:

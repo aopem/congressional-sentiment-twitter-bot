@@ -1,10 +1,10 @@
 class TwitterUser:
     def __init__(
         self,
-        id,
-        name,
-        username,
-        verified
+        id: str,
+        name: str,
+        username: str,
+        verified: bool
     ):
         self.id = id
         self.name = name

@@ -4,6 +4,7 @@ import azure.functions as func
 
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
+from twitter_bot.model import Politician
 from .get_users_helper import *
 import twitter_bot.enums.politician_type as enums
 import twitter_bot.serialization.encoder as enc
@@ -42,9 +43,9 @@ def dump_output(
     out_current: func.Out[str],
     out_missing: func.Out[str],
     out_found: func.Out[str],
-    current_list,
-    missing_list,
-    found_list
+    current_list: list[Politician],
+    missing_list: list[Politician],
+    found_list: list[TwitterUser]
 ):
     current = json.dumps(current_list, cls=enc.Encoder)
     missing = json.dumps(missing_list, cls=enc.Encoder)
