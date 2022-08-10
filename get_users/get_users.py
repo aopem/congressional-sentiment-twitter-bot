@@ -5,8 +5,6 @@ import azure.functions as func
 from twitter_bot.client.twitter import BotClient
 from twitter_bot.model import TwitterUser
 from .get_users_helper import *
-import twitter_bot.model.senator as s
-import twitter_bot.model.representative as r
 import twitter_bot.enums.politician_type as enums
 import twitter_bot.serialization.encoder as enc
 import twitter_bot.utils.constants as c

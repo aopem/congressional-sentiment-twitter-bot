@@ -1,5 +1,5 @@
-from enum import Enum, auto
+from strenum import StrEnum
 
-class PoliticianType(Enum):
-    REPRESENTATIVE = auto()
-    SENATOR = auto()
+class PoliticianType(StrEnum):
+    REPRESENTATIVE = 'REPRESENTATIVE'
+    SENATOR = 'SENATOR'
