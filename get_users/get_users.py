@@ -2,14 +2,14 @@ import json
 import logging
 import azure.functions as func
 
-from twitter_bot.client.twitter import BotClient
-from twitter_bot.model import TwitterUser
-from twitter_bot.model import Politician
+from src.client.twitter import BotClient
+from src.model import TwitterUser
+from src.model import Politician
 from .get_users_helper import *
-import twitter_bot.enums.politician_type as enums
-import twitter_bot.serialization.encoder as enc
-import twitter_bot.utils.constants as c
-import twitter_bot.utils.functions as f
+import src.enums.politician_type as enums
+import src.serialization.encoder as enc
+import src.utils.constants as c
+import src.utils.functions as f
 
 
 def search_possible_twitter_handles(
