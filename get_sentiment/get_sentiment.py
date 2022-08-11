@@ -89,7 +89,7 @@ def run(
 
     # now, create and post a tweet containing the found info
     tweet = f"@{user.username} based on your recent mentions, " \
-            f"here is the general sentiment about you on Twitter\n" \
+            f"here is the sentiment about you on Twitter\n" \
 
     # append sentiment values from dict to tweet
     for sentiment, confidence_score_list in sentiment_tracking_dict.items():
