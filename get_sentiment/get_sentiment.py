@@ -40,7 +40,7 @@ def run(
     user = TwitterUser(
         id=user_json["id"],
         name=user_json["name"],
-        username=user_json["name"],
+        username=user_json["username"],
         verified=user_json["verified"]
     )
     logging.info(f"inFound[{current_index}]: {user_json}")
@@ -61,11 +61,22 @@ def run(
     for i, mention in enumerate(mention_list):
         logging.info(f"mention_list[{i}] = {mention}")
 
+    # calculate variables for range()
+    # need to send requests in batches of 10 (max request size)
+    stop = len(mention_list)
+    step = c.AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
+
     # get sentiment of tweets, assuming all in English
     logging.info("Obtaining tweet sentiment...")
-    sentiment = language.getTextSentiment(
-        text=mention_list
-    )
+    sentiment = []
+    for i in range(0, stop, step):
+        batch = language.getTextSentiment(
+            text=mention_list[i:i + step]
+        )
+
+        # add all elements of batch to sentiment list
+        for analysis in batch:
+            sentiment.append(analysis)
 
     sentiment_tracking_dict = defaultdict(list)
     for item in sentiment:
@@ -74,13 +85,11 @@ def run(
             confidence_score = 0
 
         sentiment_tracking_dict[item.sentiment].append(confidence_score)
-        logging.info(f"General sentiment: {item.sentiment}")
-        logging.info(f"Confidence scores: {confidence_score}")
-
+        logging.info(f"Sentiment: {item.sentiment}, Confidence: {confidence_score}")
 
     # now, create and post a tweet containing the found info
     tweet = f"@{user.username} based on your recent mentions, " \
-            f"I have classified the tweets by sentiment:\n" \
+            f"here is the general sentiment about you on Twitter\n" \
 
     # append sentiment values from dict to tweet
     for sentiment, confidence_score_list in sentiment_tracking_dict.items():
@@ -93,8 +102,13 @@ def run(
 
         tweet += f"{avg_confidence_score}\n"
 
-    logging.info(f"FINAL TWEET ({len(tweet)} characters):")
+    logging.info(f"Full tweet text ({len(tweet)} characters):")
     logging.info(f"{tweet}")
+
+    # send tweet to Twitter
+    bot.tweet(
+        text=tweet
+    )
 
     # mod by len(user_json) so index will wrap around at last item
     return (current_index + 1) % len(user_json)
