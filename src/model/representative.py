@@ -1,4 +1,4 @@
-from twitter_bot.enums import PoliticianType
+from src.enums import PoliticianType
 from .politician import Politician
 
 class Representative(Politician):

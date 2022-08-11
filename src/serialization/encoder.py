@@ -1,6 +1,6 @@
 import json
-from twitter_bot.model import TwitterUser
-from twitter_bot.model.politician import Politician
+from src.model import TwitterUser
+from src.model.politician import Politician
 
 class Encoder(json.JSONEncoder):
     def default(self, o):

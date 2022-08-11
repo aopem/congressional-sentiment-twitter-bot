@@ -1,8 +1,7 @@
-from typing import List, Text
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.identity import DefaultAzureCredential
 
-import twitter_bot.utils.functions as f
+import src.utils.functions as f
 
 class AILanguageClient():
     def __init__(

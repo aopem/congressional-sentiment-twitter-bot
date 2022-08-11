@@ -1,8 +1,8 @@
 import json
 import argparse
 
-import twitter_bot.utils.constants as c
-from twitter_bot.client.azure import StorageClient
+import src.utils.constants as c
+from src.client.azure import StorageClient
 
 
 def run(

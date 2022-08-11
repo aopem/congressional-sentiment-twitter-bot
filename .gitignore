@@ -137,6 +137,5 @@ __azurite_db*__.json
 
 # Local files
 secrets*
-out*
 .vscode
 _twitter

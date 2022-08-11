@@ -1,10 +1,9 @@
 import os
-from typing import AnyStr
 
 from azure.storage.blob import BlobServiceClient
 from azure.identity import DefaultAzureCredential
 import azure.core.exceptions as e
-import twitter_bot.utils.functions as f
+import src.utils.functions as f
 
 class StorageClient:
     def __init__(
@@ -60,7 +59,7 @@ class StorageClient:
 
     def uploadData(
         self,
-        data: AnyStr,
+        data,
         data_name: str,
         container_name: str,
         overwrite: bool = False

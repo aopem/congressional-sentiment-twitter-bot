@@ -1,9 +1,9 @@
 import json
 import azure.core.exceptions as e
 
-import twitter_bot.utils.constants as c
-import twitter_bot.utils.functions as f
-from twitter_bot.client.azure import KeyVaultClient
+import src.utils.constants as c
+import src.utils.functions as f
+from src.client.azure import KeyVaultClient
 
 
 def main():

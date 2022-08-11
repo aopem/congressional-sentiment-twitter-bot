@@ -5,7 +5,6 @@ test
 .venv
 .DS_Store
 secrets*
-out*
 README.md
 __pycache__
 _twitter

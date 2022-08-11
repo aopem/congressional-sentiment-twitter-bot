@@ -1,7 +1,6 @@
-from typing import Any
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
-import twitter_bot.utils.functions as f
+import src.utils.functions as f
 
 class KeyVaultClient:
     def __init__(
@@ -19,7 +18,7 @@ class KeyVaultClient:
     def setSecret(
         self,
         name: str,
-        value: Any
+        value
     ):
         self.__client.set_secret(
             name=name,

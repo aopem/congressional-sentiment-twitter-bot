@@ -19,10 +19,6 @@ TWITTER_TWEET_CHAR_LIMIT = 280
 # azure limits
 AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST = 10
 
-# file output names
-TWITTER_ACCOUNTS_FOUND_FILENAME = "out_twitter_accounts.json"
-TWITTER_ACCOUNTS_MISSING_FILENAME = "out_missing_twitter_accounts.json"
-
 # config files
 SECRETS_FILEPATH = f"{ROOT_DIR}/secrets.json"
 AZURE_CONFIG_FILEPATH = f"{ROOT_DIR}/config.azure.json"

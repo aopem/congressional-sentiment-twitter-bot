@@ -1,7 +1,7 @@
 import json
 import logging
 
-import twitter_bot.client.azure as azclient
+import src.client.azure as azclient
 from .constants import *
 
 
