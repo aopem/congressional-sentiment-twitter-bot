@@ -1,5 +1,8 @@
 name: Deploy ${{ github.repository }}, ref ${{ github.ref }}, `#${{ github.run_number }}
 
+on:
+  workflow_dispatch
+
 env:
   AZURE_FUNCTIONAPP_NAME: twitter-bot-func-app # set this to your application's name
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'          # set this to the path to your web app project, defaults to the repository root
