@@ -1,10 +1,10 @@
 import pandas as pd
 import logging
 
-import twitter_bot.enums.politician_type as enums
-import twitter_bot.model.representative as r
-import twitter_bot.model.senator as s
-import twitter_bot.model.politician as p
+import src.enums.politician_type as enums
+import src.model.representative as r
+import src.model.senator as s
+import src.model.politician as p
 
 
 def get_politician_dict(

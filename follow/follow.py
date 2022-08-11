@@ -2,9 +2,9 @@ import json
 import azure.functions as func
 import logging
 
-from twitter_bot.client.twitter import BotClient
-from twitter_bot.model import TwitterUser
-import twitter_bot.utils.functions as f
+from src.client.twitter import BotClient
+from src.model import TwitterUser
+import src.utils.functions as f
 
 
 def run(

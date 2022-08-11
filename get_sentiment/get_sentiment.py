@@ -3,11 +3,11 @@ from collections import defaultdict
 import logging
 import azure.functions as func
 
-from twitter_bot.client.twitter import BotClient
-from twitter_bot.client.azure import AILanguageClient
-from twitter_bot.model import TwitterUser
-import twitter_bot.utils.functions as f
-import twitter_bot.utils.constants as c
+from src.client.twitter import BotClient
+from src.client.azure import AILanguageClient
+from src.model import TwitterUser
+import src.utils.functions as f
+import src.utils.constants as c
 
 
 def run(
