@@ -1,5 +1,5 @@
 {
-    "disabled": true,
+    "disabled": false,
     "scriptFile": "get_sentiment.py",
     "bindings": [
         {
