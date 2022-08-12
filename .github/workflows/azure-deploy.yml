@@ -1,4 +1,4 @@
-name: Deploy ${{ github.repository }}, ref ${{ github.ref }}, `#${{ github.run_number }}
+name: Deploy to Azure
 
 on:
   workflow_dispatch
@@ -20,14 +20,14 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: 'Resolve Project Dependencies Using Pip'
+    - name: Install requirements.txt with Pip
       shell: bash
       run: |
         pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
         python -m pip install --upgrade pip
         pip install -r requirements.txt --target=".python_packages/lib/site-packages"
         popd
-    - name: 'Run Azure Functions Action'
+    - name: Publish ${{ env.AZURE_FUNCTIONAPP_NAME }} to Azure Functions
       uses: Azure/functions-action@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
