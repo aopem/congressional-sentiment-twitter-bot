@@ -3,7 +3,7 @@
     "scriptFile": "get_sentiment.py",
     "bindings": [
         {
-            "schedule": "0 0 12 * * *",
+            "schedule": "0 0 19 * * *",
             "name": "timer",
             "type": "timerTrigger",
             "direction": "in"
