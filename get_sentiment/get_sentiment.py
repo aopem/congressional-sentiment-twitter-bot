@@ -30,13 +30,13 @@ def run(
     )
 
     # read json containing twitter account info
-    user_json = f.load_json(in_found)
-    if user_json is None:
+    user_list = f.load_json(in_found)
+    if user_list is None:
         logging.error("Could not load getusers/found.json, exiting...")
-        return (current_index + 1) % len(user_json)
+        return (current_index + 1) % len(user_list)
 
     # get element at current_index
-    user_json = user_json[current_index]
+    user_json = user_list[current_index]
     user = TwitterUser(
         id=user_json["id"],
         name=user_json["name"],
@@ -111,7 +111,7 @@ def run(
     )
 
     # mod by len(user_json) so index will wrap around at last item
-    return (current_index + 1) % len(user_json)
+    return (current_index + 1) % len(user_list)
 
 
 def main(
