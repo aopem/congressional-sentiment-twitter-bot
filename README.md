@@ -1,23 +1,12 @@
-# twitter-bot
+# congressional-sentiment-twitter-bot
 
-Creating a twitter bot using Tweepy, Azure Functions.
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/no_way_im_a_bot.svg?style=social&label=Follow%20%40no_way_im_a_bot)](https://twitter.com/no_way_im_a_bot)
 
-## Local Environment Setup
+Twitter bot that crowdsources Twitter user sentiment towards a random member of Congress each day, then tweets the results.
 
-Create & activate a virtual environment. The Azure Functions extension in VSCode will do this automatically if the local directory is deployed to an Azure Function resource.
+Built using:
 
-### Manual Virtual Environment Setup
-
-Create the virtual environment, using `$VENV_PATH=/replace/with/desired/venv/directory/path`
-
-```bash
-python3 -m venv $VENV_PATH
-```
-
-Then activate it using the OS-appropriate "activate" file from `$VENV_PATH/bin/`. Here is a MacOS example:
-
-```bash
-source "$VENV_PATH/bin/activate"
-```
-
-To deactivate the virtual environment on MacOS, run `deactivate` or start a new terminal session.
+* Python 3.8
+* Tweepy
+* Azure Functions
+* Azure Cognitive Services for Language
