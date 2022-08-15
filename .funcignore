@@ -7,6 +7,7 @@ secrets*
 README.md
 __pycache__
 _twitter
+*.PublishSettings
 
 # Azurite artifacts
 __blobstorage__
