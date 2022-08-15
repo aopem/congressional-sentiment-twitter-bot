@@ -1,4 +1,8 @@
-name: Azure Deployment
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
+
+name: Azure Deployment - twitter-bot-func-app
 
 on:
   workflow_dispatch
@@ -6,31 +10,58 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: twitter-bot-func-app # set this to your application's name
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'          # set this to the path to your web app project, defaults to the repository root
-  PYTHON_VERSION: '3.8'                        # set this to the Python version to use (supports 3.6, 3.7, 3.8)
+  PYTHON_VERSION: '3.9'                        # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
-  azure-build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Clone ${{ github.repository }}
-      uses: actions/checkout@v3
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v2
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install requirements.txt with Pip
-      shell: bash
-      run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-        popd
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
 
-    - name: Publish ${{ env.AZURE_FUNCTIONAPP_NAME }} to Azure Functions
-      uses: Azure/functions-action@v1
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # TODO: Add step to run tests here
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          path: |
+            .
+            !venv/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          path: .
+
+      - name: Publish ${{ env.AZURE_FUNCTIONAPP_NAME }} to Azure Functions
+        uses: Azure/functions-action@v1
+        id: deploy
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
