@@ -28,7 +28,14 @@ def get_secrets_dict() -> dict:
 
 def get_msi_client_id() -> str:
     azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-    msi_client_id = os.environ[azure_config["resourceGroup"]["managedIdentity"]["clientId"]]
+
+    msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
+    if not msi_client_id:
+        exception = "Could not retrieve MSI client ID\n"
+        exception += f"os.environ = {os.environ}"
+        logging.error(exception)
+        raise Exception(exception)
+
     return msi_client_id
 
 
