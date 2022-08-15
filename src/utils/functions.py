@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -26,11 +27,8 @@ def get_secrets_dict() -> dict:
 
 
 def get_msi_client_id() -> str:
-    msi_client_id = None
-    if not LOCAL_EXECUTION:
-        azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-        msi_client_id = azure_config["resourceGroup"]["managedIdentity"]["clientId"]
-
+    azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
+    msi_client_id = os.environ[azure_config["resourceGroup"]["managedIdentity"]["clientId"]]
     return msi_client_id
 
 

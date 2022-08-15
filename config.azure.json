@@ -25,7 +25,7 @@
         },
         "managedIdentity": {
             "name": "twitter-bot-msi",
-            "clientId": "7889ea16-4a52-46df-ba5c-0ca51ab70b32"
+            "clientId": "APPSETTING.MsiClientId"
         },
         "storageAccount": {
             "name": "twitterbotsa",
