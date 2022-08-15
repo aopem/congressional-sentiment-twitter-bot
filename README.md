@@ -6,7 +6,7 @@ Twitter bot that crowdsources Twitter user sentiment towards a random member of 
 
 Built using:
 
-* Python 3.8
+* Python 3.9
 * Tweepy
 * Azure Functions
 * Azure Cognitive Services for Language
