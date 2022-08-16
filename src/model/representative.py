@@ -1,7 +1,21 @@
+"""
+Representative class
+"""
 from src.enums import PoliticianType
 from .politician import Politician
 
 class Representative(Politician):
+    """
+    Class defining a Representative
+
+    Attributes:
+        name (str): Representative name
+        party (str): affiliated party
+        state (str): state representing
+        residence (str): where Representative is located
+        date_born (str): when Representative was born
+        type (PoliticianType): type as defined by PoliticianType enum
+    """
     def __init__(
         self,
         kwargs
@@ -10,6 +24,12 @@ class Representative(Politician):
         self.type = PoliticianType.REPRESENTATIVE
 
     def getPossibleTwitterHandles(self) -> list[str]:
+        """
+        Returns a list of possible Twitter handles/usernames for this Representative
+
+        Returns:
+            list[str]: list of possible Twitter usernames for this Representative
+        """
         prefixes = []
         prefixes.append("Rep")
         prefixes.append("Congressman")
