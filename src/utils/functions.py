@@ -1,3 +1,6 @@
+"""
+Miscellaneous utility functions
+"""
 import os
 import json
 import logging
@@ -7,6 +10,14 @@ from .constants import *
 
 
 def get_secrets_dict() -> dict:
+    """
+    Obtains a dictionary of all the required secrets. Uses secrets.json if running locally,
+    otherwise uses the configured Azure Key Vault
+
+    Returns:
+        dict: dictionary object containing all secrets listed in keyvault.secrets from the
+        Azure config file
+    """
     secrets_dict = {}
     if LOCAL_EXECUTION:
         secrets_dict = json.load(open(SECRETS_FILEPATH))
@@ -27,6 +38,15 @@ def get_secrets_dict() -> dict:
 
 
 def get_msi_client_id() -> str:
+    """
+    Gets the MSI client ID for the identity in the Azure config file
+
+    Raises:
+        Exception: Indicates the MSI client ID could not be obtained
+
+    Returns:
+        str: MSI client ID string
+    """
     azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
 
     msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
@@ -42,6 +62,16 @@ def get_msi_client_id() -> str:
 def load_json(
     json_str: str
 ) -> dict:
+    """
+    Loads a JSON string into a dictionary. Will load JSON with a length = 0 as None
+    and will also return None if there is an error loading the JSON
+
+    Args:
+        json_str (str): String in JSON format
+
+    Returns:
+        dict: JSON as a dictionary
+    """
     try:
         json_dict = json.loads(json_str)
     except Exception as e:

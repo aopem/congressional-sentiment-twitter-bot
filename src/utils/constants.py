@@ -1,3 +1,6 @@
+"""
+All constant values are stored here
+"""
 from pathlib import Path
 from os.path import exists
 
