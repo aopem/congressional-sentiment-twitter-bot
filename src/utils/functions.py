@@ -4,6 +4,7 @@ Miscellaneous utility functions
 import os
 import json
 import logging
+import requests
 
 import src.client.azure as azclient
 from .constants import *
@@ -67,8 +68,8 @@ def get_msi_client_id(test: bool = False) -> str:
         # NOTE: end of testing
 
         r = requests.get(url=auth_uri, headers=x_identity_header)
-        print(r)
-        msi_client_id = r["client_id"]
+        print(r.json())
+        msi_client_id = r.json()["client_id"]
     else:
         msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
 
