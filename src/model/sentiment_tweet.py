@@ -45,20 +45,21 @@ class SentimentTweet():
         """
         sentiment_score = self.__calculateSentimentScore()
 
-        text = f"@{self.__user.username} based on your recent mentions, " \
-               f"you have received a Twitter sentiment score of {sentiment_score} " \
-
         if sentiment_score > 0:
-            text += "(positive). "
+            score_category = "good"
         elif sentiment_score < 0:
-            text += "(negative). "
+            score_category = "poor"
+
+        text = f"Based on @{self.__user.username}'s 100 most recent mentions, they have " \
+               f"received a Twitter sentiment score of {sentiment_score:.3f} ({score_category}) " \
+               f"on a scale of -1 to +1. "
 
         text += "I found:\n"
         text += f"{int(self.sentiment_tracking_dict[Sentiment.POSITIVE])} positive tweet(s)\n"
-        text += f"{int(self.sentiment_tracking_dict[Sentiment.NEGATIVE])} negative tweet(s)\n"
+        text += f"{int(self.sentiment_tracking_dict[Sentiment.NEGATIVE])} negative tweet(s)\n\n"
 
         # hashtags
-        text += "#Congress"
+        text += "#congress"
 
         return text
 

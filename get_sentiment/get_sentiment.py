@@ -67,7 +67,7 @@ def run(
 
     # return if no mentions found
     if mentions is None:
-        logging.warn(f"No mentions for @{user.username} ({user.name}) found, exiting...")
+        logging.warning(f"No mentions for @{user.username} ({user.name}) found, exiting...")
         return
 
     # create single list of all mention text, output in logs
@@ -124,7 +124,7 @@ def main(
     try:
         current_index = int(inCurrentIndex)
     except Exception as e:
-        logging.warn(f"Caught exception {e}, current_index set to 0")
+        logging.warning(f"Caught exception {e}, current_index set to 0")
 
     # run function, then increment index by 1 and output
     next_index = run(
