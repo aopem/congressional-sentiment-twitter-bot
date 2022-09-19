@@ -1,34 +1,32 @@
+"""
+Azure Text Analytics Client class
+"""
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.identity import DefaultAzureCredential
-
-import src.utils.functions as f
 
 class AILanguageClient():
     """
     Client for interacting with Azure Cognitive Services
 
     Attributes:
-        __credential (DefaultAzureCredential): credential to use
-        for accessing Azure
         __client (TextAnalyticsClient): internal client for interacting
         with AI cognitive services
     """
     def __init__(
         self,
+        credential: DefaultAzureCredential,
         endpoint: str
     ):
         """
         Constructor for AILanguageClient
 
         Args:
+            azure_config (DefaultAzureCredential): credential object for Azure authentication
             endpoint (str): Azure cognitive services endpoint
         """
-        self.__credential = DefaultAzureCredential(
-            managed_identity_client_id=f.get_msi_client_id()
-        )
         self.__client = TextAnalyticsClient(
             endpoint=endpoint,
-            credential=self.__credential
+            credential=credential
         )
 
     def getTextSentiment(

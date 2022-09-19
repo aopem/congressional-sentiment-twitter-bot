@@ -1,36 +1,35 @@
+"""
+Azure Storage Client class
+"""
 import os
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from azure.identity import DefaultAzureCredential
 import azure.core.exceptions as e
-import src.utils.functions as f
 
 class StorageClient:
     """
     Client for interacting with Azure Storage account
 
     Attributes:
-        __credential (DefaultAzureCredential): credential to use
-        for accessing Azure
         __client (BlobServiceClient): internal client for interacting
         with storage blobs
     """
     def __init__(
         self,
+        credential: DefaultAzureCredential,
         storage_account_name: str
     ):
         """
         Constructor for StorageClient
 
         Args:
-            storage_account_name (str): name of Azure Storage account
+            credential (DefaultAzureCredential): credential object for Azure authentication
+            storage_account_name (str): name of storage account to access
         """
-        self.__credential = DefaultAzureCredential(
-            managed_identity_client_id=f.get_msi_client_id()
-        )
         self.__client = BlobServiceClient(
             account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=self.__credential
+            credential=credential
         )
 
     def createContainer(

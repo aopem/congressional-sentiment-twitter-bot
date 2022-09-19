@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 import logging
 import azure.functions as func
+from azure.identity import DefaultAzureCredential
 
 from src.client.twitter import BotClient
 from src.client.azure import AILanguageClient
@@ -25,7 +26,16 @@ def run(
     )
 
     azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
+    credential = DefaultAzureCredential(
+        managed_identity_client_id=f.get_msi_client_id(
+            subscription_id=azure_config["subscriptionId"],
+            resource_group=azure_config["resourceGroup"]["name"],
+            msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
+            api_version=azure_config["resourceGroup"]["managedIdentity"]["restApiVersion"]
+        )
+    )
     language = AILanguageClient(
+        credential=credential,
         endpoint=azure_config["resourceGroup"]["cognitiveServices"]["account"]["endpoint"]
     )
 

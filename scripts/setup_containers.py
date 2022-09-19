@@ -1,7 +1,18 @@
+"""
+Script for setting up needed storage account containers
+"""
+# needed to import src functions
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
+import logging
 import argparse
+from azure.identity import DefaultAzureCredential
 
 import src.utils.constants as c
+import src.utils.functions as f
 from src.client.azure import StorageClient
 
 
@@ -9,9 +20,18 @@ def run(
     skips: list
 ):
     azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
+    credential = DefaultAzureCredential(
+        managed_identity_client_id=f.get_msi_client_id(
+            subscription_id=azure_config["subscriptionId"],
+            resource_group=azure_config["resourceGroup"]["name"],
+            msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
+            api_version=azure_config["resourceGroup"]["managedIdentity"]["restApiVersion"]
+        )
+    )
 
-    print("Creating StorageClient...")
+    logging.info("Creating StorageClient...")
     storage_account = StorageClient(
+        credential=credential,
         storage_account_name=azure_config["resourceGroup"]["storageAccount"]["name"]
     )
 
@@ -23,22 +43,20 @@ def run(
             if container_name in skips:
                 continue
 
-        print(f"Creating container: {container_name}")
+        logging.info(f"Creating container: {container_name}")
         storage_account.createContainer(
             name=container_name
         )
 
         # now, add all needed empty container files
         for filename in azure_config["resourceGroup"]["storageAccount"]["containers"][container_name]["emptyFiles"]:
-            print(f"Uploading {filename} to container")
+            logging.info(f"Uploading {filename} to container")
             storage_account.uploadData(
                 data="",
                 data_name=filename,
                 container_name=container_name,
                 overwrite=True
             )
-
-    return
 
 
 def main():
