@@ -5,9 +5,10 @@ import os
 import json
 import logging
 import requests
+from azure.identity import DefaultAzureCredential
 
 import src.client.azure as azclient
-from .constants import *
+from .constants import SECRETS_FILEPATH, AZURE_CONFIG_FILEPATH, LOCAL_EXECUTION
 
 
 def get_secrets_dict() -> dict:
@@ -16,32 +17,54 @@ def get_secrets_dict() -> dict:
     otherwise uses the configured Azure Key Vault
 
     Returns:
-        dict: dictionary object containing all secrets listed in keyvault.secrets from the
+        dict: dictionary object containing all secrets listed in keyvault secrets from the
         Azure config file
     """
-    secrets_dict = {}
     if LOCAL_EXECUTION:
-        secrets_dict = json.load(open(SECRETS_FILEPATH))
-    else:
-        azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-        keyvault = azclient.KeyVaultClient(
-            key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"],
-            test=True
-        )
+        return json.load(open(SECRETS_FILEPATH))
 
-        # get secrets from keyvault and build dict
-        for secret_name in azure_config["resourceGroup"]["keyVault"]["secrets"]:
-            secret = keyvault.getSecret(
-                name=secret_name
-            )
-            secrets_dict[secret_name] = secret.value
+    azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
+    credential = DefaultAzureCredential(
+        managed_identity_client_id=get_msi_client_id(
+            subscription_id=azure_config["subscriptionId"],
+            resource_group=azure_config["resourceGroup"]["name"],
+            msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
+            api_version=azure_config["resourceGroup"]["managedIdentity"]["restApiVersion"]
+        )
+    )
+    keyvault = azclient.KeyVaultClient(
+        credential=credential,
+        key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"],
+    )
+
+    # get secrets from keyvault and build dict
+    secrets_dict = {}
+    for secret_name in azure_config["resourceGroup"]["keyVault"]["secrets"]:
+        secret = keyvault.getSecret(
+            name=secret_name
+        )
+        secrets_dict[secret_name] = secret.value
 
     return secrets_dict
 
 
-def get_msi_client_id(test: bool = False) -> str:
+def get_msi_client_id(
+    subscription_id: str,
+    resource_group: str,
+    msi_name: str,
+    api_version: str
+) -> str:
     """
-    Gets the MSI client ID for the identity in the Azure config file
+    Gets the MSI client ID for the specified managed identity from the MSI REST endpoint
+
+    REST endpoint reference:
+    https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity?tabs=portal%2Chttp#rest-endpoint-reference
+
+    Args:
+        subscription_id (str): subscription ID for MSI
+        resource_group (str): name of resource group for MSI
+        msi_name (str): name of MSI
+        api_version (str): MSI REST API endpoint version to use
 
     Raises:
         Exception: Indicates the MSI client ID could not be obtained
@@ -49,37 +72,29 @@ def get_msi_client_id(test: bool = False) -> str:
     Returns:
         str: MSI client ID string
     """
-    azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
+    # if running locally, get MSI from secrets.json
+    if LOCAL_EXECUTION:
+        return json.load(open(SECRETS_FILEPATH))["msiClientId"]
 
-    # TODO: clean up, currently testing
-    msi_client_id = None
-    if test:
-        subscription_id = azure_config["subscriptionId"]
-        resource_group = azure_config["resourceGroup"]["name"]
-        msi_name = azure_config["resourceGroup"]["managedIdentity"]["name"]
-        msi_auth_endpoint = os.getenv("IDENTITY_ENDPOINT")
-        x_identity_header = {"X-IDENTITY-HEADER": os.getenv("IDENTITY_HEADER")}
-        resource_uri = f"https://{azure_config['resourceGroup']['functionApp']['name']}.azurewebsites.net"
-        api_version = "2019-08-01"
-        auth_uri = f"{msi_auth_endpoint}?resource={resource_uri}&api-version={api_version}"
+    endpoint = os.getenv("IDENTITY_ENDPOINT")
+    headers = {"X-IDENTITY-HEADER": os.getenv("IDENTITY_HEADER")}
 
-        msi_resource_id = f"/subscriptions/{subscription_id}/resourcegroups/{resource_group}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{msi_name}"
-        auth_uri += f"&mi_res_id={msi_resource_id}"
-        # NOTE: end of testing
+    # build MSI resource ID for API query
+    msi_resource_id = f"/subscriptions/{subscription_id}/resourcegroups/{resource_group}" \
+                      f"/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{msi_name}"
 
-        r = requests.get(url=auth_uri, headers=x_identity_header)
-        print(r.json())
-        msi_client_id = r.json()["client_id"]
-    else:
-        msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
+    # build auth URI for REST API query
+    auth_uri = f"{endpoint}?resource=https://vault.azure.net&api-version={api_version}" \
+               f"&mi_res_id={msi_resource_id}"
 
-    if not msi_client_id:
-        exception = "Could not retrieve MSI client ID\n"
-        exception += f"os.environ = {os.environ}"
+    response = requests.get(url=auth_uri, headers=headers)
+    if response.status_code == 500:
+        exception = f"Received status code 500, could not retrieve MSI client ID from endpoint\n" \
+                    f"Request URI: {auth_uri}"
         logging.error(exception)
         raise Exception(exception)
 
-    return msi_client_id
+    return response.json()["client_id"]
 
 
 def load_json(
@@ -98,7 +113,7 @@ def load_json(
     try:
         json_dict = json.loads(json_str)
     except Exception as e:
-        logging.warn(f"Caught exception: {e}")
+        logging.warning(f"Caught exception: {e}")
         return None
 
     if len(json_dict) == 0:
