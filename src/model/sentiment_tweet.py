@@ -50,9 +50,9 @@ class SentimentTweet():
         elif sentiment_score < 0:
             score_category = "poor"
 
-        text = f"Based on @{self.__user.username}'s 100 most recent mentions, they have " \
-               f"received a Twitter sentiment score of {sentiment_score:.3f} ({score_category}) " \
-               f"on a scale of -1 to +1. "
+        text = f"Based on the 100 most recent mentions of @{self.__user.username}, I have " \
+               f"concluded that the Twitter sentiment towards them is {score_category} " \
+               f"with a score of {sentiment_score:.3f} (scale -1 to +1). "
 
         text += "I found:\n"
         text += f"{int(self.sentiment_tracking_dict[Sentiment.POSITIVE])} positive tweet(s)\n"
