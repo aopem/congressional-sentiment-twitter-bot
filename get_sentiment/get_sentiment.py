@@ -1,5 +1,7 @@
+"""
+Azure Function for analyzing sentiment of a Twitter user
+"""
 import json
-from collections import defaultdict
 import logging
 import azure.functions as func
 from azure.identity import DefaultAzureCredential
@@ -7,8 +9,10 @@ from azure.identity import DefaultAzureCredential
 from src.client.twitter import BotClient
 from src.client.azure import AILanguageClient
 from src.model import TwitterUser
-import src.utils.functions as f
-import src.utils.constants as c
+from src.model import SentimentTweet
+from src.utils.functions import get_secrets_dict, get_msi_client_id, load_json
+from src.utils.constants import AZURE_CONFIG_FILEPATH, \
+    AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, TWITTER_MAX_TWEETS_RETURNED
 
 
 def run(
@@ -16,7 +20,7 @@ def run(
     in_found: str
 ) -> int:
     # get secrets and create clients
-    secrets = f.get_secrets_dict()
+    secrets = get_secrets_dict()
     bot = BotClient(
         api_key=secrets["apiKey"],
         api_key_secret=secrets["apiKeySecret"],
@@ -25,9 +29,9 @@ def run(
         bearer_token=secrets["bearerToken"]
     )
 
-    azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
+    azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
     credential = DefaultAzureCredential(
-        managed_identity_client_id=f.get_msi_client_id(
+        managed_identity_client_id=get_msi_client_id(
             subscription_id=azure_config["subscriptionId"],
             resource_group=azure_config["resourceGroup"]["name"],
             msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
@@ -40,7 +44,7 @@ def run(
     )
 
     # read json containing twitter account info
-    user_list = f.load_json(in_found)
+    user_list = load_json(in_found)
     if user_list is None:
         logging.error("Could not load getusers/found.json, exiting...")
         return (current_index + 1) % len(user_list)
@@ -58,7 +62,7 @@ def run(
     # get tweets up to TWITTER_MAX_TWEETS_RETURNED to analyze
     mentions = bot.getUserMentions(
         user=user,
-        max_results=c.TWITTER_MAX_TWEETS_RETURNED
+        max_results=TWITTER_MAX_TWEETS_RETURNED
     )
 
     # return if no mentions found
@@ -74,11 +78,11 @@ def run(
     # calculate variables for range()
     # need to send requests in batches of 10 (max request size)
     stop = len(mention_list)
-    step = c.AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
+    step = AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
 
     # get sentiment of tweets, assuming all in English
     logging.info("Obtaining tweet sentiment...")
-    sentiment = []
+    sentiments = []
     for i in range(0, stop, step):
         batch = language.getTextSentiment(
             text=mention_list[i:i + step]
@@ -86,38 +90,19 @@ def run(
 
         # add all elements of batch to sentiment list
         for analysis in batch:
-            sentiment.append(analysis)
+            sentiments.append(analysis)
 
-    sentiment_tracking_dict = defaultdict(list)
-    for item in sentiment:
-        confidence_score = item.confidence_scores.get(item.sentiment)
-        if confidence_score is None:
-            confidence_score = 0
+    tweet = SentimentTweet(
+        user_analyzed=user,
+        sentiments=sentiments
+    )
 
-        sentiment_tracking_dict[item.sentiment].append(confidence_score)
-        logging.info(f"Sentiment: {item.sentiment}, Confidence: {confidence_score}")
-
-    # now, create and post a tweet containing the found info
-    tweet = f"@{user.username} based on your recent mentions, " \
-            f"here is the sentiment about you on Twitter:\n" \
-
-    # append sentiment values from dict to tweet
-    for sentiment, confidence_score_list in sentiment_tracking_dict.items():
-        tweet += f"{len(confidence_score_list)} {sentiment} tweet(s), confidence = "
-
-        avg_confidence_score = sum(confidence_score_list)/float(len(confidence_score_list))
-        avg_confidence_score = f"{avg_confidence_score:.2f}"
-        if sentiment == "mixed":
-            avg_confidence_score = "N/A"
-
-        tweet += f"{avg_confidence_score}\n"
-
-    logging.info(f"Full tweet text ({len(tweet)} characters):")
-    logging.info(f"{tweet}")
+    logging.info(f"Full tweet text ({len(tweet.getText())} characters):")
+    logging.info(f"{tweet.getText()}")
 
     # send tweet to Twitter
     bot.tweet(
-        text=tweet
+        text=tweet.getText()
     )
 
     # mod by len(user_json) so index will wrap around at last item
