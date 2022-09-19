@@ -14,7 +14,8 @@ class KeyVaultClient:
     """
     def __init__(
         self,
-        key_vault_name: str
+        key_vault_name: str,
+        test: bool = False
     ):
         """
         Constructor for KeyVaultClient
@@ -23,7 +24,7 @@ class KeyVaultClient:
             key_vault_name (str): name of key vault to access
         """
         self.__credential = DefaultAzureCredential(
-            managed_identity_client_id=f.get_msi_client_id()
+            managed_identity_client_id=f.get_msi_client_id(test=test)
         )
         self.__client = SecretClient(
             vault_url=f"https://{key_vault_name}.vault.azure.net",

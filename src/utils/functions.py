@@ -24,7 +24,8 @@ def get_secrets_dict() -> dict:
     else:
         azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
         keyvault = azclient.KeyVaultClient(
-            key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"]
+            key_vault_name=azure_config["resourceGroup"]["keyVault"]["name"],
+            test=True
         )
 
         # get secrets from keyvault and build dict
@@ -37,7 +38,7 @@ def get_secrets_dict() -> dict:
     return secrets_dict
 
 
-def get_msi_client_id() -> str:
+def get_msi_client_id(test: bool = False) -> str:
     """
     Gets the MSI client ID for the identity in the Azure config file
 
@@ -50,24 +51,27 @@ def get_msi_client_id() -> str:
     azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
 
     # TODO: clean up, currently testing
-    subscription_id = azure_config["subscriptionId"]
-    resource_group = azure_config["resourceGroup"]["name"]
-    msi_name = azure_config["resourceGroup"]["managedIdentity"]["name"]
-    msi_auth_endpoint = os.getenv("IDENTITY_ENDPOINT")
-    x_identity_header = {"X-IDENTITY-HEADER": os.getenv("IDENTITY_HEADER")}
-    resource_uri = f"https://{azure_config['resourceGroup']['functionApp']['name']}.azurewebsites.net"
-    api_version = "2019-08-01"
-    auth_uri = f"{msi_auth_endpoint}?resource={resource_uri}&api-version={api_version}"
+    msi_client_id = None
+    if test:
+        subscription_id = azure_config["subscriptionId"]
+        resource_group = azure_config["resourceGroup"]["name"]
+        msi_name = azure_config["resourceGroup"]["managedIdentity"]["name"]
+        msi_auth_endpoint = os.getenv("IDENTITY_ENDPOINT")
+        x_identity_header = {"X-IDENTITY-HEADER": os.getenv("IDENTITY_HEADER")}
+        resource_uri = f"https://{azure_config['resourceGroup']['functionApp']['name']}.azurewebsites.net"
+        api_version = "2019-08-01"
+        auth_uri = f"{msi_auth_endpoint}?resource={resource_uri}&api-version={api_version}"
 
-    msi_resource_id = f"/subscriptions/{subscription_id}/resourcegroups/{resource_group}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{msi_name}"
-    auth_uri += f"&mi_res_id={msi_resource_id}"
-    # NOTE: end of testing
+        msi_resource_id = f"/subscriptions/{subscription_id}/resourcegroups/{resource_group}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{msi_name}"
+        auth_uri += f"&mi_res_id={msi_resource_id}"
+        # NOTE: end of testing
 
-    r = requests.get(url=auth_uri, headers=x_identity_header)
-    print(r)
-    msi_client_id = r["client_id"]
+        r = requests.get(url=auth_uri, headers=x_identity_header)
+        print(r)
+        msi_client_id = r["client_id"]
+    else:
+        msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
 
-    # msi_client_id = os.getenv(f"{azure_config['resourceGroup']['managedIdentity']['clientId']}")
     if not msi_client_id:
         exception = "Could not retrieve MSI client ID\n"
         exception += f"os.environ = {os.environ}"
