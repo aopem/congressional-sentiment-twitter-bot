@@ -1,7 +1,7 @@
 """
 Azure Text Analytics Client class
 """
-from azure.ai.textanalytics import TextAnalyticsClient
+from azure.ai.textanalytics import TextAnalyticsClient, AnalyzeSentimentResult
 from azure.identity import DefaultAzureCredential
 
 class AILanguageClient():
@@ -35,7 +35,7 @@ class AILanguageClient():
         *,
         language: str = "en",
         show_opinion_mining: bool = True,
-    ) -> list:
+    ) -> list[AnalyzeSentimentResult]:
         """
         Gets sentiment for "text" sent to cognitive services endpoint
 
