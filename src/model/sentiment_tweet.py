@@ -51,7 +51,7 @@ class SentimentTweet():
             score_category = "poor"
 
         text = f"Based on the 100 most recent mentions of @{self.__user.username}, I have " \
-               f"concluded that the Twitter sentiment towards them is {score_category} " \
+               f"concluded that Twitter sentiment towards them is {score_category} " \
                f"with a score of {sentiment_score:.3f} (scale -1 to +1). "
 
         text += "I found:\n"
