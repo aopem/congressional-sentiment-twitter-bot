@@ -6,6 +6,7 @@ from azure.ai.textanalytics import AnalyzeSentimentResult
 
 from src.model.twitter_user import TwitterUser
 from src.enums.sentiment import Sentiment
+from src.utils.constants import TWITTER_MAX_TWEETS_RETURNED
 
 class SentimentTweet():
     """
@@ -15,6 +16,7 @@ class SentimentTweet():
         __user (TwitterUser): twitter user being analyzed for sentiment
         sentiment_tracking_dict (dict): tracks all 4 sentiemnt types as defined
         in Sentiment() StrEnum
+        sentiment_score (float): number representing positive/negative sentiment discovered
     """
     def __init__(
         self,
@@ -36,6 +38,8 @@ class SentimentTweet():
         for item in sentiments:
             self.sentiment_tracking_dict[item.sentiment] += 1.0
 
+        self.sentiment_score = self.__calculateSentimentScore()
+
     def getText(self) -> str:
         """
         Returns desired, formatted text containing tweet sentiment
@@ -43,23 +47,18 @@ class SentimentTweet():
         Returns:
             str: final tweet text (may be over character limit)
         """
-        sentiment_score = self.__calculateSentimentScore()
+        if self.sentiment_score > 0:
+            score_category = "GOOD"
+        elif self.sentiment_score < 0:
+            score_category = "POOR"
 
-        if sentiment_score > 0:
-            score_category = "good"
-        elif sentiment_score < 0:
-            score_category = "poor"
-
-        text = f"Based on the 100 most recent mentions of @{self.__user.username}, I have " \
-               f"concluded that Twitter sentiment towards them is {score_category} " \
-               f"with a score of {sentiment_score:.3f} (scale -1 to +1). "
-
-        text += "I found:\n"
-        text += f"{int(self.sentiment_tracking_dict[Sentiment.POSITIVE])} positive tweet(s)\n"
-        text += f"{int(self.sentiment_tracking_dict[Sentiment.NEGATIVE])} negative tweet(s)\n\n"
-
-        # hashtags
-        text += "#congress"
+        # final sentiment tweet text here
+        text = f"Based on the {TWITTER_MAX_TWEETS_RETURNED} most recent mentions "               \
+               f"of #congress member @{self.__user.username}, I have given them "                \
+               f"a {score_category} Twitter sentiment score of {self.sentiment_score:.3f} "      \
+               f"(-1 to +1). I found "                                                           \
+               f"{int(self.sentiment_tracking_dict[Sentiment.POSITIVE])} positive tweet(s) and " \
+               f"{int(self.sentiment_tracking_dict[Sentiment.NEGATIVE])} negative tweet(s)"
 
         return text
 
