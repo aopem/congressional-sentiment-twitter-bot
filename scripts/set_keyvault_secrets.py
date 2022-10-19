@@ -4,29 +4,23 @@ Script for setting keyvault secrets
 # needed to import src functions
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import json
 import logging
 import azure.core.exceptions as e
-from azure.identity import DefaultAzureCredential
 
 import src.utils.constants as c
 import src.utils.functions as f
 from src.client.azure import KeyVaultClient
+from src.brokers import AzureCloudBroker
 
 
 def main():
     secrets = f.get_secrets_dict()
-    azure_config = json.load(open(c.AZURE_CONFIG_FILEPATH))
-    credential = DefaultAzureCredential(
-        managed_identity_client_id=f.get_msi_client_id(
-            subscription_id=azure_config["subscriptionId"],
-            resource_group=azure_config["resourceGroup"]["name"],
-            msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
-            api_version=azure_config["resourceGroup"]["managedIdentity"]["restApiVersion"]
-        )
-    )
+    azure_broker = AzureCloudBroker()
+    credential = azure_broker.authenticate()
     key_vault_name = azure_config["resourceGroup"]["keyVault"]["name"]
 
     logging.info("Creating KeyVaultClient...")
