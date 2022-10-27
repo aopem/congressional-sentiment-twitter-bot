@@ -32,10 +32,6 @@ class AzureCloudBroker():
         self.__msi_name = self.__config["resourceGroup"]["managedIdentity"]["name"]
         self.__api_version = self.__config["resourceGroup"]["managedIdentity"]["restApiVersion"]
         self.__msi_client_id = self.__get_msi_client_id()
-        self.__resource_mgmt_client = ResourceManagementClient(
-            credential=self.authenticate(),
-            subscription_id=self.__subscription_id
-        )
 
     def authenticate(self) -> AccessToken:
         """

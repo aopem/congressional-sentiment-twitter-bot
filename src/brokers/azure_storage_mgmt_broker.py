@@ -1,18 +1,9 @@
-from azure.storage.blob import BlobServiceClient, ContainerClient
+from azure.storage.blob import ContainerClient
 import azure.core.exceptions as e
 
-from .azure_cloud_mgmt_broker import AzureCloudMgmtBroker
+from .azure_storage_broker import AzureStorageBroker
 
-class AzureStorageMgmtBroker(AzureCloudMgmtBroker):
-    def __init__(self):
-        super().__init__()
-        self.__storage_account_name = self.__config["resourceGroup"]["storageAccount"]["name"]
-        self.__storage_account_url = f"https://{self.__storage_account_name}.blob.core.windows.net/"
-        self.__storage_client = BlobServiceClient(
-            credential=self.authenticate(),
-            account_url=self.__storage_account_url
-        )
-
+class AzureStorageMgmtBroker(AzureStorageBroker):
     def create_container(
         self,
         name: str
