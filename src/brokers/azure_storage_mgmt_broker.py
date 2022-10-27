@@ -1,9 +1,17 @@
 from azure.storage.blob import ContainerClient
+from azure.mgmt.storage import StorageManagementClient
 import azure.core.exceptions as e
 
 from .azure_storage_broker import AzureStorageBroker
 
 class AzureStorageMgmtBroker(AzureStorageBroker):
+    def __init__(self):
+        super().__init__()
+        self.__storage_mgmt_client = StorageManagementClient(
+            credential=self.authenticate(),
+            subscription_id=self.__subscription_id
+        )
+
     def create_container(
         self,
         name: str
