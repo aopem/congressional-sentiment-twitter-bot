@@ -23,13 +23,13 @@ class AzureCloudBroker():
         __msi_client_id (str): client ID of MSI for authentication
     """
     def __init__(self):
-        self.__config = json.load(
+        self._config = json.load(
             open(AZURE_CONFIG_FILEPATH)
         )
-        self.__subscription_id = self.__config["subscriptionId"]
-        self.__resource_group = self.__config["resourceGroup"]["name"]
-        self.__msi_name = self.__config["resourceGroup"]["managedIdentity"]["name"]
-        self.__api_version = self.__config["resourceGroup"]["managedIdentity"]["restApiVersion"]
+        self._subscription_id = self._config["subscriptionId"]
+        self._resource_group = self._config["resourceGroup"]["name"]
+        self.__msi_name = self._config["resourceGroup"]["managedIdentity"]["name"]
+        self.__api_version = self._config["resourceGroup"]["managedIdentity"]["restApiVersion"]
         self.__msi_client_id = self.__get_msi_client_id()
 
     def authenticate(self) -> AccessToken:

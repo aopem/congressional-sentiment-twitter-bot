@@ -19,7 +19,7 @@ class AzureStorageMgmtBroker(AzureStorageBroker):
         super().__init__()
         self.__storage_mgmt_client = StorageManagementClient(
             credential=self.authenticate(),
-            subscription_id=self.__subscription_id
+            subscription_id=self._subscription_id
         )
 
     def create_container(

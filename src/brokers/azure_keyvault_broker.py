@@ -10,15 +10,17 @@ class AzureKeyVaultBroker(AzureCloudBroker):
     Class for performing Azure Key Vault operations
 
     Args:
-        __vault_url (str): URL of key vault
-        __key_vault_client (SecretClient): client for interacting
+        _key_vault_name (str): name of key vault
+        _vault_url (str): URL of key vault
+        _key_vault_client (SecretClient): client for interacting
         with key vault secrets
     """
-    def __init__(self, key_vault_name):
+    def __init__(self):
         super().__init__()
-        self.__vault_url = f"https://{key_vault_name}.vault.azure.net"
-        self.__key_vault_client = SecretClient(
-            vault_url=self.__vault_url,
+        self._key_vault_name = self._config["resourceGroup"]["keyVault"]["name"]
+        self._vault_url = f"https://{self._key_vault_name}.vault.azure.net"
+        self._key_vault_client = SecretClient(
+            vault_url=self._vault_url,
             credential=self.authenticate()
         )
 
@@ -34,7 +36,7 @@ class AzureKeyVaultBroker(AzureCloudBroker):
             name (str): name of secret
             value (Any): value of secret
         """
-        self.__key_vault_client.set_secret(
+        self._key_vault_client.set_secret(
             name=name,
             value=value
         )
@@ -52,7 +54,7 @@ class AzureKeyVaultBroker(AzureCloudBroker):
         Returns:
             KeyVaultSecret: secret from key vault
         """
-        return self.__key_vault_client.get_secret(
+        return self._key_vault_client.get_secret(
             name=name
         )
 
@@ -69,7 +71,7 @@ class AzureKeyVaultBroker(AzureCloudBroker):
         Returns:
             Any: status of deletion
         """
-        poller = self.__key_vault_client.begin_delete_secret(
+        poller = self._key_vault_client.begin_delete_secret(
             name=name
         )
         return poller.result()

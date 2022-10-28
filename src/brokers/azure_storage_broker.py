@@ -11,18 +11,18 @@ class AzureStorageBroker(AzureCloudBroker):
     Broker for performing Azure Storage operations
 
     Attributes:
-        __storage_account_name (str): storage account name
-        __storage_account_url (str): storage account URL
-        __storage_client (BlobServiceClient): client for interacting
+        _storage_account_name (str): storage account name
+        _storage_account_url (str): storage account URL
+        _storage_client (BlobServiceClient): client for interacting
         with Azure Storage blobs
     """
     def __init__(self):
         super().__init__()
-        self.__storage_account_name = self.__config["resourceGroup"]["storageAccount"]["name"]
-        self.__storage_account_url = f"https://{self.__storage_account_name}.blob.core.windows.net/"
-        self.__storage_client = BlobServiceClient(
+        self._storage_account_name = self._config["resourceGroup"]["storageAccount"]["name"]
+        self._storage_account_url = f"https://{self._storage_account_name}.blob.core.windows.net/"
+        self._storage_client = BlobServiceClient(
             credential=self.authenticate(),
-            account_url=self.__storage_account_url
+            account_url=self._storage_account_url
         )
 
     def upload_file(
@@ -38,7 +38,7 @@ class AzureStorageBroker(AzureCloudBroker):
             container_name (str): name of container to upload file to
         """
         filename = os.path.basename(local_filepath)
-        blob_client = self.__storage_client.get_blob_client(
+        blob_client = self._storage_client.get_blob_client(
             container=container_name,
             blob=filename
         )
@@ -65,7 +65,7 @@ class AzureStorageBroker(AzureCloudBroker):
             overwrite (bool, optional): If true, will overwrite data with data_name
             if data_name already exists in container_name. Defaults to False.
         """
-        blob_client = self.__storage_client.get_blob_client(
+        blob_client = self._storage_client.get_blob_client(
             container=container_name,
             blob=data_name
         )
@@ -89,7 +89,7 @@ class AzureStorageBroker(AzureCloudBroker):
             container_name (str): name of container to download file from
         """
         filename = os.path.basename(local_filepath)
-        container_client = self.__storage_client.get_container_client(
+        container_client = self._storage_client.get_container_client(
             container=container_name
         )
 
