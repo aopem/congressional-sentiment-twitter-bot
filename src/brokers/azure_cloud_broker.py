@@ -5,7 +5,6 @@ import os
 import json
 import logging
 import requests
-from azure.mgmt.resource import ResourceManagementClient
 from azure.identity import DefaultAzureCredential
 from azure.core.credentials import AccessToken
 

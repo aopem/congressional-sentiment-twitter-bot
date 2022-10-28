@@ -1,3 +1,6 @@
+"""
+Azure Storage Management Broker class
+"""
 from azure.storage.blob import ContainerClient
 from azure.mgmt.storage import StorageManagementClient
 import azure.core.exceptions as e
@@ -5,6 +8,13 @@ import azure.core.exceptions as e
 from .azure_storage_broker import AzureStorageBroker
 
 class AzureStorageMgmtBroker(AzureStorageBroker):
+    """
+    Class for performing storage management operations
+
+    Attributes:
+        __storage_mgmt_client (StorageManagementClient): internal storage
+        management client for interacting with Azure
+    """
     def __init__(self):
         super().__init__()
         self.__storage_mgmt_client = StorageManagementClient(

@@ -1,12 +1,24 @@
+"""
+Azure Key Vault Broker class
+"""
 from azure.keyvault.secrets import SecretClient, KeyVaultSecret
 
 from .azure_cloud_broker import AzureCloudBroker
 
 class AzureKeyVaultBroker(AzureCloudBroker):
+    """
+    Class for performing Azure Key Vault operations
+
+    Args:
+        __vault_url (str): URL of key vault
+        __key_vault_client (SecretClient): client for interacting
+        with key vault secrets
+    """
     def __init__(self, key_vault_name):
         super().__init__()
+        self.__vault_url = f"https://{key_vault_name}.vault.azure.net"
         self.__key_vault_client = SecretClient(
-            vault_url=f"https://{key_vault_name}.vault.azure.net",
+            vault_url=self.__vault_url,
             credential=self.authenticate()
         )
 

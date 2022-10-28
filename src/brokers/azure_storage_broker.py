@@ -1,9 +1,21 @@
+"""
+Azure Storage Broker class
+"""
 import os
 from azure.storage.blob import BlobServiceClient
 
 from .azure_cloud_broker import AzureCloudBroker
 
 class AzureStorageBroker(AzureCloudBroker):
+    """
+    Broker for performing Azure Storage operations
+
+    Attributes:
+        __storage_account_name (str): storage account name
+        __storage_account_url (str): storage account URL
+        __storage_client (BlobServiceClient): client for interacting
+        with Azure Storage blobs
+    """
     def __init__(self):
         super().__init__()
         self.__storage_account_name = self.__config["resourceGroup"]["storageAccount"]["name"]
