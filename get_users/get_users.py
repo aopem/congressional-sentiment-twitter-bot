@@ -6,7 +6,8 @@ import logging
 import azure.functions as func
 
 from twitter_bot.brokers import TwitterBroker
-from twitter_bot.model import TwitterUser, Politician
+from twitter_bot.data import Politician
+from twitter_bot.model import TwitterUser
 from twitter_bot.enums import PoliticianType
 from twitter_bot.serialization import Encoder
 from twitter_bot.utils.functions import load_json
@@ -36,7 +37,8 @@ def search_possible_twitter_handles(
             continue
 
         # if above checks pass, can return as a real account
-        return TwitterUser(id=possible_user.id,
+        return TwitterUser(
+            id=possible_user.id,
             name=possible_user.name,
             username=possible_user.username,
             verified=possible_user.verified

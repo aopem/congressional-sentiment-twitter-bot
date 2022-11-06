@@ -5,8 +5,7 @@ import logging
 import pandas as pd
 
 from twitter_bot.enums import PoliticianType
-from twitter_bot.model import Politician, Representative, Senator
-
+from twitter_bot.data import Politician
 
 def get_politician_dict(
     politician_list_wiki_url: str,
@@ -42,21 +41,18 @@ def get_politician_list(
     politician_list = []
 
     for politician in politician_dict.values():
-        constructor_args = {
-            "name": politician[name_key],
-            "party": politician[party_key],
-            "state": politician[state_key],
-            "residence": politician[residence_key],
-            "date_born": politician[date_born_key]
-        }
-
         try:
-            if politician_type == PoliticianType.REPRESENTATIVE:
-                politician_list.append(Representative(constructor_args))
-            elif politician_type == PoliticianType.SENATOR:
-                politician_list.append(Senator(constructor_args))
-            else:
-                raise Exception(f"Invalid type: {politician_type}")
+            name = politician[name_key].split()
+
+            politician_list.append(Politician(
+                first_name=name[0],
+                last_name=name[1] if len(name) <= 2 else name[2],
+                party=politician[party_key],
+                state=politician[state_key],
+                residence=politician[residence_key],
+                date_born=politician[date_born_key],
+                politician_type=politician_type
+            ))
 
         except IndexError:
             logging.warn(f"Name {politician[name_key]} not formatted correctly")
@@ -97,23 +93,25 @@ def get_politicians(
 
 
 def create_politician_list_from_json(
-    json_dict: dict
+    json_data: dict
 ) -> list[Politician]:
     politician_list = []
-    for politician_json in json_dict:
-        constructor_args = {
-            "name": politician_json["name"],
-            "party": politician_json["party"],
-            "state": politician_json["state"],
-            "residence": politician_json["residence"],
-            "date_born": politician_json["date_born"]
-        }
-
-        if politician_json["type"] == PoliticianType.SENATOR:
-            politician_list.append(Senator(constructor_args))
-        elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
-            politician_list.append(Representative(constructor_args))
+    for politician in json_data:
+        if politician["type"] == PoliticianType.REPRESENTATIVE:
+            type = PoliticianType.REPRESENTATIVE
+        elif politician["type"] == PoliticianType.SENATOR:
+            type = PoliticianType.SENATOR
         else:
-            logging.error(f"Invalid type {politician_json['type']}")
+            logging.error(f"Invalid politician type {politician['type']}")
+
+        politician_list.append(Politician(
+            first_name=politician["first_name"],
+            last_name=politician["last_name"],
+            party=politician["party"],
+            state=politician["state"],
+            residence=politician["residence"],
+            date_born=politician["date_born"],
+            politician_type=type
+        ))
 
     return politician_list
