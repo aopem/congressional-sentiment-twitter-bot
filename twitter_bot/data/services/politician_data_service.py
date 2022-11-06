@@ -14,6 +14,11 @@ from twitter_bot.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
 class PoliticianDataService:
     """
     Service for interacting with politician data
+
+    Attributes:
+        __rep_data_broker (WikipediaDataBroker): broker for interacting with representative data
+        __sen_data_broker (WikipediaDataBroker): broker for interacting with senator data
+        __twitter_broker (TwitterBroker): broker for interacting with Twitter API
     """
     def __init__(
         self,
@@ -157,6 +162,16 @@ class PoliticianDataService:
         self,
         possible_usernames: list[str]
     ) -> TwitterUser:
+        """
+        Searches usernames in possible_usernames and returns a TwitterUser
+        object when a match is found
+
+        Args:
+            possible_usernames (list[str]): list of possible Twitter usernames
+
+        Returns:
+            TwitterUser: object representing the found Twitter user
+        """
         for username in possible_usernames:
             possible_user = self.__twitter_broker.search_username(
                 username=username
