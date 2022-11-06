@@ -29,7 +29,7 @@ class SentimentTweet():
         Args:
             user_analyzed (TwitterUser): user whose sentiment is being analyzed
             sentiments (list[AnalyzeSentimentResult]): list of sentiments obtained from
-            AILanguageClient.getTextSentiment()
+            AzureTextAnalyticsBroker.get_text_sentiment()
         """
         self.__user = user_analyzed
 

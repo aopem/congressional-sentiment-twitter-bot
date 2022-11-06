@@ -1,2 +1,0 @@
-from .politician.politician_service import PoliticianService
-from .twitter.twitter_username_service import TwitterUsernameService
