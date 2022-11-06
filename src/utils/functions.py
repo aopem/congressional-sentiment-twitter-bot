@@ -112,8 +112,8 @@ def load_json(
     """
     try:
         json_dict = json.loads(json_str)
-    except Exception as e:
-        logging.warning(f"Caught exception: {e}")
+    except Exception as ex:
+        logging.warning(f"Caught exception: {ex}")
         return None
 
     if len(json_dict) == 0:
