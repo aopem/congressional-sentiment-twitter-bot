@@ -2,7 +2,7 @@
 Politician base class
 """
 import re
-from src.utils import constants as c
+from twitter_bot.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, TWITTER_USERNAME_REGEX_PATTERN
 
 class Politician:
     """
@@ -19,16 +19,19 @@ class Politician:
     """
     def __init__(
         self,
-        name: str,
+        first_name: str,
+        last_name: str,
         party: str,
         state: str,
         residence: str,
         date_born: str
     ):
-        name_list = name.split()
-        self.first_name = name_list[0]
-        self.last_name = name_list[1] if len(name_list) <= 2 else name_list[2]
-        self.name = name
+        # name_list = name.split()
+        # self.first_name = name_list[0]
+        # self.last_name = name_list[1] if len(name_list) <= 2 else name_list[2]
+        self.first_name = first_name
+        self.last_name = last_name
+        self.name = f"{first_name} {last_name}"
         self.party = party
         self.state = state
         self.residence = residence
@@ -83,10 +86,10 @@ class Politician:
         Returns:
             str: a valid Twitter handle, else returns None
         """
-        if len(possible_handle) > c.TWITTER_USERNAME_CHARACTER_LIMIT:
-            possible_handle = possible_handle[:c.TWITTER_USERNAME_CHARACTER_LIMIT]
+        if len(possible_handle) > TWITTER_USERNAME_CHARACTER_LIMIT:
+            possible_handle = possible_handle[:TWITTER_USERNAME_CHARACTER_LIMIT]
 
-        if not re.match(c.TWITTER_USERNAME_REGEX_PATTERN, possible_handle):
+        if not re.match(TWITTER_USERNAME_REGEX_PATTERN, possible_handle):
             return None
 
         return possible_handle

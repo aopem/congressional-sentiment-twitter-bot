@@ -1,6 +1,6 @@
 import tweepy
-from src.model import TwitterUser
-import src.utils.constants as c
+from twitter_bot.model import TwitterUser
+import twitter_bot.utils.constants as c
 
 class BotClient:
     """

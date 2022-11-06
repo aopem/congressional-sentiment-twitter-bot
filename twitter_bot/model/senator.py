@@ -1,19 +1,19 @@
 """
-Representative class
+Senator class
 """
-from src.enums import PoliticianType
+from twitter_bot.enums import PoliticianType
 from .politician import Politician
 
-class Representative(Politician):
+class Senator(Politician):
     """
-    Class defining a Representative
+    Class defining a Senator
 
     Attributes:
-        name (str): Representative name
+        name (str): Senator name
         party (str): affiliated party
         state (str): state representing
-        residence (str): where Representative is located
-        date_born (str): when Representative was born
+        residence (str): where Senator is located
+        date_born (str): when Senator was born
         type (PoliticianType): type as defined by PoliticianType enum
     """
     def __init__(
@@ -21,20 +21,18 @@ class Representative(Politician):
         kwargs
     ):
         super().__init__(**kwargs)
-        self.type = PoliticianType.REPRESENTATIVE
+        self.type = PoliticianType.SENATOR
 
     def getPossibleTwitterHandles(self) -> list[str]:
         """
-        Returns a list of possible Twitter handles/usernames for this Representative
+        Returns a list of possible Twitter handles/usernames for this Senator
 
         Returns:
-            list[str]: list of possible Twitter usernames for this Representative
+            list[str]: list of possible Twitter usernames for this Senator
         """
         prefixes = []
-        prefixes.append("Rep")
-        prefixes.append("Congressman")
-        prefixes.append("Congresswoman")
-        prefixes.append("Congressmember")
+        prefixes.append("Sen")
+        prefixes.append("Senator")
 
         unfiltered_possible_handles = []
         unfiltered_possible_handles.append(f"{self.first_name}{self.last_name}")

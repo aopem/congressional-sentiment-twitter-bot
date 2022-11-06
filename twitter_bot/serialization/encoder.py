@@ -2,8 +2,8 @@
 Custom JSON encoder class
 """
 import json
-from src.model import TwitterUser
-from src.model.politician import Politician
+from twitter_bot.model import TwitterUser
+from twitter_bot.model.politician import Politician
 
 class Encoder(json.JSONEncoder):
     """

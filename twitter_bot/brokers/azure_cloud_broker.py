@@ -8,7 +8,7 @@ import requests
 from azure.identity import DefaultAzureCredential
 from azure.core.credentials import AccessToken
 
-from src.utils.constants import AZURE_CONFIG_FILEPATH, SECRETS_FILEPATH, LOCAL_EXECUTION
+from twitter_bot.utils.constants import AZURE_CONFIG_FILEPATH, SECRETS_FILEPATH, LOCAL_EXECUTION
 
 class AzureCloudBroker():
     """

@@ -7,7 +7,7 @@ import logging
 import requests
 from azure.identity import DefaultAzureCredential
 
-import src.client.azure as azclient
+import twitter_bot.client.azure as azclient
 from .constants import SECRETS_FILEPATH, AZURE_CONFIG_FILEPATH, LOCAL_EXECUTION
 
 
