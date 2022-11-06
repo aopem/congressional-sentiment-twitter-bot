@@ -5,12 +5,12 @@ import json
 import logging
 import azure.functions as func
 
-from src.brokers import TwitterBroker
-from src.model import TwitterUser, Politician
-from src.enums import PoliticianType
-from src.serialization import Encoder
-from src.utils.functions import load_json
-from src.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
+from twitter_bot.brokers import TwitterBroker
+from twitter_bot.model import TwitterUser, Politician
+from twitter_bot.enums import PoliticianType
+from twitter_bot.serialization import Encoder
+from twitter_bot.utils.functions import load_json
+from twitter_bot.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
     TOTAL_NUM_REPRESENTATIVES, TOTAL_NUM_SENATORS
 
 from .get_users_helper import *

@@ -4,8 +4,8 @@ Helper functions for get_users Azure function
 import logging
 import pandas as pd
 
-from src.enums import PoliticianType
-from src.model import Politician, Representative, Senator
+from twitter_bot.enums import PoliticianType
+from twitter_bot.model import Politician, Representative, Senator
 
 
 def get_politician_dict(
