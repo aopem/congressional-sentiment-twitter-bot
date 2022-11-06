@@ -1,25 +1,31 @@
+"""
+Azure function for obtaining all Congress members on Twitter
+"""
 import json
 import logging
 import azure.functions as func
 
-from src.client.twitter import BotClient
-from src.model import TwitterUser
-from src.model import Politician
+from src.brokers import TwitterBroker
+from src.model import TwitterUser, Politician
+from src.enums import PoliticianType
+from src.serialization import Encoder
+from src.utils.functions import load_json
+from src.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
+    TOTAL_NUM_REPRESENTATIVES, TOTAL_NUM_SENATORS
+
 from .get_users_helper import *
-import src.enums.politician_type as enums
-import src.serialization.encoder as enc
-import src.utils.constants as c
-import src.utils.functions as f
 
 
 def search_possible_twitter_handles(
-    politician,
-    client
+    politician: Politician,
+    client: TwitterBroker
 ):
     possible_twitter_handles = politician.getPossibleTwitterHandles()
 
     for handle in possible_twitter_handles:
-        possible_user = client.searchUsername(handle)
+        possible_user = client.search_username(
+            username=handle
+        )
 
         # if user is found, possible_user will be populated
         if possible_user is None:
@@ -47,15 +53,17 @@ def dump_output(
     missing_list: list[Politician],
     found_list: list[TwitterUser]
 ):
-    current = json.dumps(current_list, cls=enc.Encoder)
-    missing = json.dumps(missing_list, cls=enc.Encoder)
-    found = json.dumps(found_list, cls=enc.Encoder)
+    current = json.dumps(current_list, cls=Encoder)
+    missing = json.dumps(missing_list, cls=Encoder)
+    found = json.dumps(found_list, cls=Encoder)
 
     out_current.set(current)
     out_missing.set(missing)
     out_found.set(found)
 
-    logging.info(f"Current total: {len(found_list)}/{c.TOTAL_NUM_REPRESENTATIVES + c.TOTAL_NUM_SENATORS} Twitter accounts")
+    num_found = len(found_list)
+    num_total = TOTAL_NUM_REPRESENTATIVES + TOTAL_NUM_REPRESENTATIVES
+    logging.info(f"Current total: {num_found}/{num_total} Twitter accounts")
     logging.info(f"[OUT] getusers/found.json: {found}")
     logging.info(f"[OUT] getusers/current.json: {current}")
     logging.info(f"[OUT] getusers/missing.json: {missing}")
@@ -72,13 +80,13 @@ def run(
 ):
     # load all input JSON
     logging.info("Loading data from getusers/current.json...")
-    in_current_json = f.load_json(in_current)
+    in_current_json = load_json(in_current)
 
     logging.info("Loading data from getusers/missing.json...")
-    in_missing_json = f.load_json(in_missing)
+    in_missing_json = load_json(in_missing)
 
     logging.info("Loading data from getusers/found.json...")
-    in_found_json = f.load_json(in_found)
+    in_found_json = load_json(in_found)
 
     # load JSON for found/missing lists
     missing_politician_list = []
@@ -110,7 +118,6 @@ def run(
             missing_list=missing_politician_list,
             found_list=found_twitter_users_list
         )
-
         return
 
     # create politician list from input current.json if valid
@@ -124,27 +131,21 @@ def run(
 
         # if error with incoming JSON, start with wiki URL
         senator_list = get_politicians(
-            politician_list_wiki_url=c.SENATORS_WIKI_URL,
-            list_size=c.TOTAL_NUM_SENATORS,
-            politician_type=enums.PoliticianType.SENATOR
+            politician_list_wiki_url=SENATORS_WIKI_URL,
+            list_size=TOTAL_NUM_SENATORS,
+            politician_type=PoliticianType.SENATOR
         )
         rep_list = get_politicians(
-            politician_list_wiki_url=c.REPRESENTATIVES_WIKI_URL,
-            list_size=c.TOTAL_NUM_REPRESENTATIVES,
-            politician_type=enums.PoliticianType.REPRESENTATIVE
+            politician_list_wiki_url=REPRESENTATIVES_WIKI_URL,
+            list_size=TOTAL_NUM_REPRESENTATIVES,
+            politician_type=PoliticianType.REPRESENTATIVE
         )
 
         # add lists
         current_politician_list = senator_list + rep_list
 
     # create bot client using secrets
-    secrets = f.get_secrets_dict()
-    bot = BotClient(
-        api_key=secrets["apiKey"],
-        api_key_secret=secrets["apiKeySecret"],
-        access_token=secrets["accessToken"],
-        access_token_secret=secrets["accessTokenSecret"],
-        bearer_token=secrets["bearerToken"],
+    bot = TwitterBroker(
         wait_on_rate_limit=False
     )
 
@@ -158,8 +159,8 @@ def run(
             )
 
         # search will fail once twitter rate limit is achieved
-        except Exception as e:
-            logging.info(f"Caught exception: {e}")
+        except Exception as ex:
+            logging.info(f"Caught exception: {ex}")
             logging.info(f"Twitter rate limit reached. Dumping progress to storage account")
 
             # save all output, then return from function to end execution

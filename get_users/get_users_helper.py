@@ -1,10 +1,11 @@
-import pandas as pd
+"""
+Helper functions for get_users Azure function
+"""
 import logging
+import pandas as pd
 
-import src.enums.politician_type as enums
-import src.model.representative as r
-import src.model.senator as s
-import src.model.politician as p
+from src.enums import PoliticianType
+from src.model import Politician, Representative, Senator
 
 
 def get_politician_dict(
@@ -19,19 +20,21 @@ def get_politician_dict(
         if length == list_size:
             return df.to_dict(orient='index')
 
-    raise logging.error(f"No entry found for list size: {list_size} at URL: {politician_list_wiki_url}")
+    error = f"No politician table found at URL: {politician_list_wiki_url}"
+    logging.error(error)
+    raise Exception(error)
 
 
 def get_politician_list(
     politician_list_wiki_url: str,
     list_size: int,
-    politician_type: enums.PoliticianType,
+    politician_type: PoliticianType,
     name_key: str,
     party_key: str,
     state_key: str,
     residence_key: str,
     date_born_key: str
-) -> list[p.Politician]:
+) -> list[Politician]:
     politician_dict = get_politician_dict(
         politician_list_wiki_url=politician_list_wiki_url,
         list_size=list_size
@@ -48,10 +51,10 @@ def get_politician_list(
         }
 
         try:
-            if politician_type == enums.PoliticianType.REPRESENTATIVE:
-                politician_list.append(r.Representative(constructor_args))
-            elif politician_type == enums.PoliticianType.SENATOR:
-                politician_list.append(s.Senator(constructor_args))
+            if politician_type == PoliticianType.REPRESENTATIVE:
+                politician_list.append(Representative(constructor_args))
+            elif politician_type == PoliticianType.SENATOR:
+                politician_list.append(Senator(constructor_args))
             else:
                 raise Exception(f"Invalid type: {politician_type}")
 
@@ -64,9 +67,9 @@ def get_politician_list(
 def get_politicians(
     politician_list_wiki_url: str,
     list_size: int,
-    politician_type: enums.PoliticianType
-) -> list[p.Politician]:
-    if politician_type == enums.PoliticianType.REPRESENTATIVE:
+    politician_type: PoliticianType
+) -> list[Politician]:
+    if politician_type == PoliticianType.REPRESENTATIVE:
         keys = {
             "name_key": "Member",
             "party_key": "Party.1",
@@ -74,7 +77,7 @@ def get_politicians(
             "residence_key": "Residence",
             "date_born_key": "Born[2]"
         }
-    elif politician_type == enums.PoliticianType.SENATOR:
+    elif politician_type == PoliticianType.SENATOR:
         keys = {
             "name_key": "Senator",
             "party_key": "Party.1",
@@ -95,7 +98,7 @@ def get_politicians(
 
 def create_politician_list_from_json(
     json_dict: dict
-) -> list[p.Politician]:
+) -> list[Politician]:
     politician_list = []
     for politician_json in json_dict:
         constructor_args = {
@@ -106,10 +109,10 @@ def create_politician_list_from_json(
             "date_born": politician_json["date_born"]
         }
 
-        if politician_json["type"] == enums.PoliticianType.SENATOR:
-            politician_list.append(s.Senator(constructor_args))
-        elif politician_json["type"] == enums.PoliticianType.REPRESENTATIVE:
-            politician_list.append(r.Representative(constructor_args))
+        if politician_json["type"] == PoliticianType.SENATOR:
+            politician_list.append(Senator(constructor_args))
+        elif politician_json["type"] == PoliticianType.REPRESENTATIVE:
+            politician_list.append(Representative(constructor_args))
         else:
             logging.error(f"Invalid type {politician_json['type']}")
 

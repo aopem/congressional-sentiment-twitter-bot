@@ -1,47 +1,24 @@
 """
 Azure Function for analyzing sentiment of a Twitter user
 """
-import json
 import logging
 import azure.functions as func
-from azure.identity import DefaultAzureCredential
 
-from src.client.twitter import BotClient
-from src.client.azure import AILanguageClient
+from src.brokers import TwitterBroker, AzureTextAnalyticsBroker
 from src.model import TwitterUser
 from src.model import SentimentTweet
-from src.utils.functions import get_secrets_dict, get_msi_client_id, load_json
-from src.utils.constants import AZURE_CONFIG_FILEPATH, \
-    AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, TWITTER_MAX_TWEETS_RETURNED
+from src.utils.functions import load_json
+from src.utils.constants import AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, \
+    TWITTER_MAX_TWEETS_RETURNED
 
 
 def run(
     current_index: int,
     in_found: str
 ) -> int:
-    # get secrets and create clients
-    secrets = get_secrets_dict()
-    bot = BotClient(
-        api_key=secrets["apiKey"],
-        api_key_secret=secrets["apiKeySecret"],
-        access_token=secrets["accessToken"],
-        access_token_secret=secrets["accessTokenSecret"],
-        bearer_token=secrets["bearerToken"]
-    )
-
-    azure_config = json.load(open(AZURE_CONFIG_FILEPATH))
-    credential = DefaultAzureCredential(
-        managed_identity_client_id=get_msi_client_id(
-            subscription_id=azure_config["subscriptionId"],
-            resource_group=azure_config["resourceGroup"]["name"],
-            msi_name=azure_config["resourceGroup"]["managedIdentity"]["name"],
-            api_version=azure_config["resourceGroup"]["managedIdentity"]["restApiVersion"]
-        )
-    )
-    language = AILanguageClient(
-        credential=credential,
-        endpoint=azure_config["resourceGroup"]["cognitiveServices"]["account"]["endpoint"]
-    )
+    # create Azure, Twitter brokers
+    bot = TwitterBroker()
+    text_analytics_broker = AzureTextAnalyticsBroker()
 
     # read json containing twitter account info
     user_list = load_json(in_found)
@@ -60,7 +37,7 @@ def run(
     logging.info(f"inFound[{current_index}]: {user_json}")
 
     # get tweets up to TWITTER_MAX_TWEETS_RETURNED to analyze
-    mentions = bot.getUserMentions(
+    mentions = bot.get_user_mentions(
         user=user,
         max_results=TWITTER_MAX_TWEETS_RETURNED
     )
@@ -84,7 +61,7 @@ def run(
     logging.info("Obtaining tweet sentiment...")
     sentiments = []
     for i in range(0, stop, step):
-        batch = language.getTextSentiment(
+        batch = text_analytics_broker.get_text_sentiment(
             text=mention_list[i:i + step]
         )
 
@@ -123,8 +100,8 @@ def main(
     current_index = 0
     try:
         current_index = int(inCurrentIndex)
-    except Exception as e:
-        logging.warning(f"Caught exception {e}, current_index set to 0")
+    except Exception as ex:
+        logging.warning(f"Caught exception {ex}, current_index set to 0")
 
     # run function, then increment index by 1 and output
     next_index = run(
