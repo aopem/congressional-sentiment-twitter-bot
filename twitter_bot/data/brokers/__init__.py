@@ -1,1 +1,1 @@
-from .wikipedia_table_broker import WikipediaTableBroker
+from .wikipedia_data_broker import WikipediaDataBroker

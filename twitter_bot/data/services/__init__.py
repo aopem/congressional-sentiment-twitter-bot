@@ -1,1 +1,1 @@
-from .politician_service import PoliticianService
+from .politician_data_service import PoliticianDataService

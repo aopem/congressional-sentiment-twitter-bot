@@ -4,7 +4,7 @@ Class for interacting with tables on a Wikipedia page
 import logging
 import pandas as pd
 
-class WikipediaTableBroker:
+class WikipediaDataBroker:
     def __init__(
         self,
         wiki_url: str,

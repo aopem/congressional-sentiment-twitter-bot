@@ -6,43 +6,13 @@ import logging
 import azure.functions as func
 
 from twitter_bot.brokers import TwitterBroker
-from twitter_bot.data import PoliticianService, WikipediaTableBroker, Politician
+from twitter_bot.data import PoliticianDataService, WikipediaDataBroker, Politician
 from twitter_bot.model import TwitterUser
 from twitter_bot.enums import PoliticianType
 from twitter_bot.serialization import Encoder
 from twitter_bot.utils.functions import load_json
 from twitter_bot.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
     TOTAL_NUM_REPRESENTATIVES, TOTAL_NUM_SENATORS
-
-
-def search_possible_twitter_usernames(
-    politician_service: PoliticianService,
-    client: TwitterBroker
-):
-    possible_twitter_usernames = politician_service.get_possible_twitter_usernames()
-
-    for username in possible_twitter_usernames:
-        possible_user = client.search_username(
-            username=username
-        )
-
-        # if user is found, possible_user will be populated
-        if possible_user is None:
-            continue
-
-        # if user retrieved is not verified, then continue
-        if not possible_user.verified:
-            continue
-
-        # if above checks pass, can return as a real account
-        return TwitterUser(
-            id=possible_user.id,
-            name=possible_user.name,
-            username=possible_user.username,
-            verified=possible_user.verified
-        )
-
-    return None
 
 
 def dump_output(
@@ -88,18 +58,37 @@ def run(
     logging.info("Loading data from getusers/found.json...")
     in_found_json = load_json(in_found)
 
-    # create politician service
-    politician_service = PoliticianService()
+    # create data brokers
+    sen_data_broker =  WikipediaDataBroker(
+        wiki_url=SENATORS_WIKI_URL,
+        size=TOTAL_NUM_SENATORS
+    )
+    rep_data_broker =  WikipediaDataBroker(
+        wiki_url=REPRESENTATIVES_WIKI_URL,
+        size=TOTAL_NUM_REPRESENTATIVES
+    )
+
+    # create twitter broker for interacting with API
+    bot = TwitterBroker(
+        wait_on_rate_limit=False
+    )
+
+    # create politician data service
+    politician_data_service = PoliticianDataService(
+        rep_wiki_data_broker=rep_data_broker,
+        sen_wiki_data_broker=sen_data_broker,
+        twitter_broker=bot
+    )
 
     # load JSON for found/missing lists
     missing_politician_list = []
-    if in_missing_json != None:
-        missing_politician_list = politician_service.create_politician_list(
+    if in_missing_json is not None:
+        missing_politician_list = politician_data_service.create_politician_list(
             data=in_missing_json
         )
 
     found_twitter_users_list = []
-    if in_found_json != None:
+    if in_found_json is not None:
         for user in in_found_json:
             found_twitter_users_list.append(TwitterUser(
                 id=user["id"],
@@ -123,19 +112,9 @@ def run(
         )
         return
 
-    # create data brokers
-    sen_data_broker =  WikipediaTableBroker(
-        wiki_url=SENATORS_WIKI_URL,
-        size=TOTAL_NUM_SENATORS
-    )
-    rep_data_broker =  WikipediaTableBroker(
-        wiki_url=REPRESENTATIVES_WIKI_URL,
-        size=TOTAL_NUM_REPRESENTATIVES
-    )
-
     # create politician list from input current.json if valid
-    if in_current_json != None:
-        current_politician_list = politician_service.create_politician_list(
+    if in_current_json is not None:
+        current_politician_list = politician_data_service.create_politician_list(
             data=in_current_json
         )
 
@@ -143,30 +122,25 @@ def run(
         logging.info("current.json not found, invalid, or empty, using wiki reference to form list")
 
         # if error with incoming JSON, start with wiki URL data
-        senator_list = politician_service.get_politician_list(
-            politician_type=PoliticianType.SENATOR,
-            wiki_table_broker=sen_data_broker
+        senator_list = politician_data_service.get_politician_list(
+            politician_type=PoliticianType.SENATOR
         )
-        rep_list = politician_service.get_politician_list(
-            politician_type=PoliticianType.REPRESENTATIVE,
-            wiki_table_broker=rep_data_broker
+        rep_list = politician_data_service.get_politician_list(
+            politician_type=PoliticianType.REPRESENTATIVE
         )
 
         # combine lists
         current_politician_list = senator_list + rep_list
 
-    # create bot client using secrets
-    bot = TwitterBroker(
-        wait_on_rate_limit=False
-    )
-
     # iterate over copy of list from current.json
     # pop() items as they have been processed
     for politician in list(current_politician_list):
         try:
-            twitter_user = search_possible_twitter_usernames(
-                politician_service=politician_service,
-                client=bot
+            possible_usernames = politician_data_service.get_possible_twitter_usernames(
+                politician=politician
+            )
+            twitter_user = politician_data_service.search_possible_twitter_usernames(
+                possible_usernames=possible_usernames
             )
 
         # search will fail once twitter rate limit is achieved

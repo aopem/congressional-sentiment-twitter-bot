@@ -1,25 +1,33 @@
 """
-Service for a Politician object
+Service for interacting with politician data
 """
 import re
 import logging
 
-from twitter_bot.data import Politician, WikipediaTableBroker
+from twitter_bot.data import Politician, WikipediaDataBroker
+from twitter_bot.brokers import TwitterBroker
+from twitter_bot.model import TwitterUser
 from twitter_bot.enums import PoliticianType
 from twitter_bot.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
     TWITTER_USERNAME_REGEX_PATTERN
 
-class PoliticianService:
+class PoliticianDataService:
     """
-    Service for a Politician object
+    Service for interacting with politician data
     """
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        rep_wiki_data_broker: WikipediaDataBroker,
+        sen_wiki_data_broker: WikipediaDataBroker,
+        twitter_broker: TwitterBroker
+    ):
+        self.__rep_data_broker = rep_wiki_data_broker
+        self.__sen_data_broker = sen_wiki_data_broker
+        self.__twitter_broker = twitter_broker
 
     def get_politician_list(
         self,
-        politician_type: PoliticianType,
-        wiki_table_broker: WikipediaTableBroker
+        politician_type: PoliticianType
     ) -> list[Politician]:
         """
         Gets a list of Politician objects
@@ -41,6 +49,8 @@ class PoliticianService:
                 "residence_key": "Residence",
                 "date_born_key": "Born[2]"
             }
+
+            data = self.__rep_data_broker.get_table()
         elif politician_type == PoliticianType.SENATOR:
             keys = {
                 "name_key": "Senator",
@@ -49,13 +59,12 @@ class PoliticianService:
                 "residence_key": "Residence[2]",
                 "date_born_key": "Born"
             }
+
+            data = self.__sen_data_broker.get_table()
         else:
             error = f"Invalid politician type: {politician_type}"
             logging.error(error)
             raise Exception(error)
-
-        # get raw data from wikipedia table
-        data = wiki_table_broker.get_table()
 
         # process data and add to a list
         politician_list = []
@@ -143,6 +152,33 @@ class PoliticianService:
             politician=politician,
             prefixes=prefixes
         )
+
+    def search_possible_twitter_usernames(
+        self,
+        possible_usernames: list[str]
+    ) -> TwitterUser:
+        for username in possible_usernames:
+            possible_user = self.__twitter_broker.search_username(
+                username=username
+            )
+
+            # if user is found, possible_user will be populated
+            if possible_user is None:
+                continue
+
+            # if user retrieved is not verified, then continue
+            if not possible_user.verified:
+                continue
+
+            # if above checks pass, will return as a real account
+            return TwitterUser(
+                id=possible_user.id,
+                name=possible_user.name,
+                username=possible_user.username,
+                verified=possible_user.verified
+            )
+
+        return None
 
     def __get_twitter_usernames(
         self,

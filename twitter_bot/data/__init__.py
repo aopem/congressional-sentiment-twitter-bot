@@ -1,3 +1,3 @@
 from .model import Politician
-from .services import PoliticianService
-from .brokers import WikipediaTableBroker
+from .services import PoliticianDataService
+from .brokers import WikipediaDataBroker
