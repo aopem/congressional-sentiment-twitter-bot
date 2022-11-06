@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.utils.functions import get_secrets_dict
 from src.brokers import AzureKeyVaultBroker
 
+
 def main():
     secrets = get_secrets_dict()
     logging.info("Creating AzureKeyVaultBroker...")
