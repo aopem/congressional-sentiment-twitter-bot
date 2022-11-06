@@ -5,8 +5,8 @@ import json
 import logging
 import azure.functions as func
 
-from twitter_bot.brokers import TwitterBroker
-from twitter_bot.model import TwitterUser
+from twitter_bot_func_app.brokers import TwitterBroker
+from twitter_bot_func_app.model import TwitterUser
 
 
 def run(

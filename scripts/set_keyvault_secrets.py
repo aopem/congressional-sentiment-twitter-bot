@@ -10,8 +10,8 @@ from azure.core.exceptions import ResourceNotFoundError
 # needed to import twitter_bot functions
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from twitter_bot.brokers import AzureKeyVaultBroker
-from twitter_bot.utils.constants import AZURE_CONFIG_FILEPATH
+from twitter_bot_func_app.brokers import AzureKeyVaultBroker
+from twitter_bot_func_app.utils.constants import AZURE_CONFIG_FILEPATH
 
 def get_secrets_dict(
     key_vault_broker: AzureKeyVaultBroker

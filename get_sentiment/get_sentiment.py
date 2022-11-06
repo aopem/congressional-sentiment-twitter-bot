@@ -4,11 +4,11 @@ Azure Function for analyzing sentiment of a Twitter user
 import logging
 import azure.functions as func
 
-from twitter_bot.brokers import TwitterBroker, AzureTextAnalyticsBroker
-from twitter_bot.model import TwitterUser
-from twitter_bot.model import SentimentTweet
-from twitter_bot.utils.functions import load_json
-from twitter_bot.utils.constants import AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, \
+from twitter_bot_func_app.brokers import TwitterBroker, AzureTextAnalyticsBroker
+from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.model import SentimentTweet
+from twitter_bot_func_app.utils.functions import load_json
+from twitter_bot_func_app.utils.constants import AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, \
     TWITTER_MAX_TWEETS_RETURNED
 
 

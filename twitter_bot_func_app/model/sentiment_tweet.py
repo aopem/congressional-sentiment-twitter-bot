@@ -4,9 +4,9 @@ Class representing a tweet about user sentiment
 from collections import defaultdict
 from azure.ai.textanalytics import AnalyzeSentimentResult
 
-from twitter_bot.model.twitter_user import TwitterUser
-from twitter_bot.enums.sentiment import Sentiment
-from twitter_bot.utils.constants import TWITTER_MAX_TWEETS_RETURNED
+from twitter_bot_func_app.model.twitter_user import TwitterUser
+from twitter_bot_func_app.enums.sentiment import Sentiment
+from twitter_bot_func_app.utils.constants import TWITTER_MAX_TWEETS_RETURNED
 
 class SentimentTweet():
     """

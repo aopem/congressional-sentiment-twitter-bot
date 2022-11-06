@@ -1,7 +1,7 @@
 """
 Politician base class
 """
-from twitter_bot.enums import PoliticianType
+from twitter_bot_func_app.enums import PoliticianType
 
 class Politician:
     """

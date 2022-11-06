@@ -5,8 +5,8 @@ import json
 import tweepy
 
 from .azure_keyvault_broker import AzureKeyVaultBroker
-from twitter_bot.model import TwitterUser
-from twitter_bot.utils.constants import SECRETS_FILEPATH, LOCAL_EXECUTION, TWITTER_TWEET_CHAR_LIMIT
+from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.utils.constants import SECRETS_FILEPATH, LOCAL_EXECUTION, TWITTER_TWEET_CHAR_LIMIT
 
 class TwitterBroker():
     """
