@@ -10,8 +10,8 @@ import argparse
 # needed to import src functions
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.brokers import AzureStorageBroker, AzureStorageMgmtBroker
-from src.utils.constants import AZURE_CONFIG_FILEPATH
+from twitter_bot.brokers import AzureStorageBroker, AzureStorageMgmtBroker
+from twitter_bot.utils.constants import AZURE_CONFIG_FILEPATH
 
 
 def run(

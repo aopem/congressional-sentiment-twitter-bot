@@ -9,8 +9,8 @@ from azure.core.exceptions import ResourceNotFoundError
 # needed to import src functions
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.utils.functions import get_secrets_dict
-from src.brokers import AzureKeyVaultBroker
+from twitter_bot.utils.functions import get_secrets_dict
+from twitter_bot.brokers import AzureKeyVaultBroker
 
 
 def main():
