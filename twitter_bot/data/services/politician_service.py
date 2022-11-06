@@ -13,15 +13,13 @@ class PoliticianService:
     """
     Service for a Politician object
     """
-    def __init__(
-        self,
-        wikipedia_table_broker: WikipediaTableBroker
-    ):
-        self.__wiki_table_broker = wikipedia_table_broker
+    def __init__(self):
+        pass
 
     def get_politician_list(
         self,
-        politician_type: PoliticianType
+        politician_type: PoliticianType,
+        wiki_table_broker: WikipediaTableBroker
     ) -> list[Politician]:
         """
         Gets a list of Politician objects
@@ -57,7 +55,7 @@ class PoliticianService:
             raise Exception(error)
 
         # get raw data from wikipedia table
-        data = self.__wiki_table_broker.get_table()
+        data = wiki_table_broker.get_table()
 
         # process data and add to a list
         politician_list = []
@@ -145,9 +143,6 @@ class PoliticianService:
             politician=politician,
             prefixes=prefixes
         )
-
-    def __get_politician_list_helper(self):
-        pass
 
     def __get_twitter_usernames(
         self,
