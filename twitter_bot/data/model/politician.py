@@ -14,6 +14,7 @@ class Politician:
         state (str): state representing
         residence (str): where Politician is located
         date_born (str): when Politician was born
+        politician_type (PoliticianType): type of Politician
     """
     def __init__(
         self,

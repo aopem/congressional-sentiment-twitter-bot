@@ -5,6 +5,7 @@ import re
 import logging
 
 from twitter_bot.data import Politician
+from twitter_bot.enums import PoliticianType
 from twitter_bot.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
     TWITTER_USERNAME_REGEX_PATTERN
 
@@ -26,14 +27,14 @@ class PoliticianService:
         Raises:
             Exception: Raised if incorrect object type passed
         """
-        if isinstance(politician, Representative):
+        if politician.politician_type == PoliticianType.REPRESENTATIVE:
             prefixes = [
                 "Rep",
                 "Congressman",
                 "Congresswoman",
                 "Congressmember"
             ]
-        elif isinstance(politician, Senator):
+        elif politician.politician_type == PoliticianType.SENATOR:
             prefixes = [
                 "Sen",
                 "Senator"
