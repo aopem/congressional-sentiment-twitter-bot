@@ -15,7 +15,7 @@ class AzureTextAnalyticsBroker(AzureCloudBroker):
     """
     def __init__(self):
         super().__init__()
-        self.__text_analytics_endpoint = self.__config["resourceGroup"]["cognitiveServices"]["account"]["endpoint"]
+        self.__text_analytics_endpoint = self._config["resourceGroup"]["cognitiveServices"]["account"]["endpoint"]
         self.__text_analytics_client = TextAnalyticsClient(
             endpoint=self.__text_analytics_endpoint,
             credential=self.authenticate()

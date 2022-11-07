@@ -5,8 +5,8 @@ import logging
 import azure.functions as func
 
 from twitter_bot_func_app.brokers import TwitterBroker, AzureTextAnalyticsBroker
-from twitter_bot_func_app.model import TwitterUser
-from twitter_bot_func_app.model import SentimentTweet
+from twitter_bot_func_app.services import TwitterService, TextAnalyticsService
+from twitter_bot_func_app.model import TwitterUser, SentimentTweet
 from twitter_bot_func_app.utils.functions import load_json
 from twitter_bot_func_app.utils.constants import AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, \
     TWITTER_MAX_TWEETS_RETURNED
@@ -69,17 +69,22 @@ def run(
         for analysis in batch:
             sentiments.append(analysis)
 
-    tweet = SentimentTweet(
-        user_analyzed=user,
+    text_analytics_service = TextAnalyticsService()
+    twitter_service = TwitterService()
+    sentiment_score = text_analytics_service.get_sentiment_score(
         sentiments=sentiments
     )
+    sentiment_tweet = twitter_service.create_sentiment_tweet(
+        user=user,
+        sentiment_score=sentiment_score
+    )
 
-    logging.info(f"Full tweet text ({len(tweet.getText())} characters):")
-    logging.info(f"{tweet.getText()}")
+    logging.info(f"Full tweet text ({len(sentiment_tweet)} characters):")
+    logging.info(f"{sentiment_tweet}")
 
     # send tweet to Twitter
     bot.tweet(
-        text=tweet.getText()
+        text=sentiment_tweet
     )
 
     # mod by len(user_json) so index will wrap around at last item

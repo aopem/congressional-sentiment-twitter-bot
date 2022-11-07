@@ -4,17 +4,17 @@ Class representing a tweet about user sentiment
 from collections import defaultdict
 from azure.ai.textanalytics import AnalyzeSentimentResult
 
-from twitter_bot_func_app.model.twitter_user import TwitterUser
-from twitter_bot_func_app.enums.sentiment import Sentiment
+from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.enums import Sentiment
 from twitter_bot_func_app.utils.constants import TWITTER_MAX_TWEETS_RETURNED
 
-class SentimentTweet():
+class SentimentTweet:
     """
     Represents a final tweet that details twitter sentiment about a user
 
     Attributes:
         __user (TwitterUser): twitter user being analyzed for sentiment
-        sentiment_tracking_dict (dict): tracks all 4 sentiemnt types as defined
+        sentiment_tracking_dict (dict): tracks all 4 sentiment types as defined
         in Sentiment() StrEnum
         sentiment_score (float): number representing positive/negative sentiment discovered
     """
