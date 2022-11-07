@@ -5,6 +5,9 @@ from twitter_bot_func_app.model import SentimentScore
 from twitter_bot_func_app.enums import Sentiment, SentimentScoreCategory
 
 class TextAnalyticsService:
+    """
+    Service for performing text analytics
+    """
     def get_sentiment_score(
         self,
         sentiments: list[AnalyzeSentimentResult]
