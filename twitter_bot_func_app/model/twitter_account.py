@@ -2,7 +2,7 @@
 Twitter user model class
 """
 
-class TwitterUser:
+class TwitterAccount:
     """
     Generic Twitter user class
 

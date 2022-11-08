@@ -1,28 +1,23 @@
+"""
+Azure function for following users
+"""
 import json
-import azure.functions as func
 import logging
+import azure.functions as func
 
-from src.client.twitter import BotClient
-from src.model import TwitterUser
-import src.utils.functions as f
+from twitter_bot_func_app.brokers import TwitterBroker
+from twitter_bot_func_app.model import TwitterAccount
 
 
 def run(
     in_found: str
 ):
     # create bot client
-    secrets = f.get_secrets_dict()
-    bot = BotClient(
-        api_key=secrets["apiKey"],
-        api_key_secret=secrets["apiKeySecret"],
-        access_token=secrets["accessToken"],
-        access_token_secret=secrets["accessTokenSecret"],
-        bearer_token=secrets["bearerToken"]
-    )
+    bot = TwitterBroker()
 
     # create set of users already following
     logging.info("Retrieving currently followed users from Twitter...")
-    following = bot.getMyFollowing()
+    following = bot.get_my_following()
     following_ids = set()
     for user in following:
         following_ids.add(user.id)
@@ -35,7 +30,7 @@ def run(
     num_users_followed = 0
     for user_json in twitter_user_json:
         if user_json["id"] not in following_ids:
-            user = TwitterUser(
+            user = TwitterAccount(
                 id=user_json["id"],
                 name=user_json["name"],
                 username=user_json["username"],
@@ -43,7 +38,7 @@ def run(
             )
 
             try:
-                status = bot.followUser(user)
+                status = bot.follow_user(user)
                 if status.following:
                     num_users_followed += 1
                     logging.info(f"Successfully followed @{user.username} ({user.name})")
