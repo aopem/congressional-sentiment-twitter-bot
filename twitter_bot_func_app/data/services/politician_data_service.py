@@ -6,7 +6,7 @@ import logging
 
 from twitter_bot_func_app.data import Politician, WikipediaDataBroker
 from twitter_bot_func_app.brokers import TwitterBroker
-from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.model import TwitterAccount
 from twitter_bot_func_app.enums import PoliticianType
 from twitter_bot_func_app.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
     TWITTER_USERNAME_REGEX_PATTERN
@@ -161,16 +161,16 @@ class PoliticianDataService:
     def search_possible_twitter_usernames(
         self,
         possible_usernames: list[str]
-    ) -> TwitterUser:
+    ) -> TwitterAccount:
         """
-        Searches usernames in possible_usernames and returns a TwitterUser
+        Searches usernames in possible_usernames and returns a TwitterAccount
         object when a match is found
 
         Args:
             possible_usernames (list[str]): list of possible Twitter usernames
 
         Returns:
-            TwitterUser: object representing the found Twitter user
+            TwitterAccount: object representing the found Twitter user
         """
         for username in possible_usernames:
             possible_user = self.__twitter_broker.search_username(
@@ -186,7 +186,7 @@ class PoliticianDataService:
                 continue
 
             # if above checks pass, will return as a real account
-            return TwitterUser(
+            return TwitterAccount(
                 id=possible_user.id,
                 name=possible_user.name,
                 username=possible_user.username,

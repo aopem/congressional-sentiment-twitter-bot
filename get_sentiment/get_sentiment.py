@@ -6,7 +6,7 @@ import azure.functions as func
 
 from twitter_bot_func_app.brokers import TwitterBroker, AzureTextAnalyticsBroker
 from twitter_bot_func_app.services import TwitterService, TextAnalyticsService
-from twitter_bot_func_app.model import TwitterUser, SentimentTweet
+from twitter_bot_func_app.model import TwitterAccount, SentimentTweet
 from twitter_bot_func_app.utils.functions import load_json
 from twitter_bot_func_app.utils.constants import AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST, \
     TWITTER_MAX_TWEETS_RETURNED
@@ -28,7 +28,7 @@ def run(
 
     # get element at current_index
     user_json = user_list[current_index]
-    user = TwitterUser(
+    user = TwitterAccount(
         id=user_json["id"],
         name=user_json["name"],
         username=user_json["username"],

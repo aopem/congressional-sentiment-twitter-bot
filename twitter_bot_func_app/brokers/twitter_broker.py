@@ -5,7 +5,7 @@ import json
 import tweepy
 
 from .azure_keyvault_broker import AzureKeyVaultBroker
-from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.model import TwitterAccount
 from twitter_bot_func_app.utils.constants import SECRETS_FILEPATH, LOCAL_EXECUTION, TWITTER_TWEET_CHAR_LIMIT
 
 class TwitterBroker():
@@ -92,14 +92,14 @@ class TwitterBroker():
 
     def get_user_tweets(
         self,
-        user: TwitterUser,
+        user: TwitterAccount,
         max_results: int
     ) -> dict:
         """
         Returns up to max_results tweets from user
 
         Args:
-            user (TwitterUser): user to obtain tweets from
+            user (TwitterAccount): user to obtain tweets from
             max_results (int): max number of tweets to return
 
         Returns:
@@ -114,14 +114,14 @@ class TwitterBroker():
 
     def get_user_mentions(
         self,
-        user: TwitterUser,
+        user: TwitterAccount,
         max_results: int
     ) -> dict:
         """
         Get tweets mentioning user
 
         Args:
-            user (TwitterUser): user being mentioned
+            user (TwitterAccount): user being mentioned
             max_results (int): max number of tweets to return
 
         Returns:
@@ -140,13 +140,13 @@ class TwitterBroker():
 
     def follow_user(
         self,
-        user: TwitterUser
+        user: TwitterAccount
     ) -> dict:
         """
         Method for bot account to follow user
 
         Args:
-            user (TwitterUser): user to follow
+            user (TwitterAccount): user to follow
 
         Returns:
             dict: response JSON dict from Twitter API

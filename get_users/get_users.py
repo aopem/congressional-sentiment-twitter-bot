@@ -7,7 +7,7 @@ import azure.functions as func
 
 from twitter_bot_func_app.brokers import TwitterBroker
 from twitter_bot_func_app.data import PoliticianDataService, WikipediaDataBroker, Politician
-from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.model import TwitterAccount
 from twitter_bot_func_app.enums import PoliticianType
 from twitter_bot_func_app.serialization import Encoder
 from twitter_bot_func_app.utils.functions import load_json
@@ -21,7 +21,7 @@ def dump_output(
     out_found: func.Out[str],
     current_list: list[Politician],
     missing_list: list[Politician],
-    found_list: list[TwitterUser]
+    found_list: list[TwitterAccount]
 ):
     current = json.dumps(current_list, cls=Encoder)
     missing = json.dumps(missing_list, cls=Encoder)
@@ -90,7 +90,7 @@ def run(
     found_twitter_users_list = []
     if in_found_json is not None:
         for user in in_found_json:
-            found_twitter_users_list.append(TwitterUser(
+            found_twitter_users_list.append(TwitterAccount(
                 id=user["id"],
                 name=user["name"],
                 username=user["username"],

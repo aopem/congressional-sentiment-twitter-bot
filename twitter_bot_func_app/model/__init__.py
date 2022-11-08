@@ -1,2 +1,3 @@
 from .sentiment_score import SentimentScore
-from .twitter_user import TwitterUser
+from .twitter_account import TwitterAccount
+from .politician_twitter_account import PoliticianTwitterAccount

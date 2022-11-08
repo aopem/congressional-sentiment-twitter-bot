@@ -6,7 +6,7 @@ import logging
 import azure.functions as func
 
 from twitter_bot_func_app.brokers import TwitterBroker
-from twitter_bot_func_app.model import TwitterUser
+from twitter_bot_func_app.model import TwitterAccount
 
 
 def run(
@@ -30,7 +30,7 @@ def run(
     num_users_followed = 0
     for user_json in twitter_user_json:
         if user_json["id"] not in following_ids:
-            user = TwitterUser(
+            user = TwitterAccount(
                 id=user_json["id"],
                 name=user_json["name"],
                 username=user_json["username"],

@@ -66,15 +66,19 @@ class AzureCloudBroker():
         headers = {"X-IDENTITY-HEADER": os.getenv("IDENTITY_HEADER")}
 
         # build MSI resource ID for API query
-        msi_resource_id = f"/subscriptions/{self.__subscription_id}/resourcegroups" \
-                          f"/{self.__resource_group}/providers" \
+        msi_resource_id = f"/subscriptions/{self._subscription_id}/resourcegroups" \
+                          f"/{self._resource_group}/providers" \
                           f"/Microsoft.ManagedIdentity/userAssignedIdentities/{self.__msi_name}"
 
         # build auth URI for REST API query
         auth_uri = f"{endpoint}?resource=https://vault.azure.net&api-version={self.__api_version}" \
                    f"&mi_res_id={msi_resource_id}"
 
-        response = requests.get(url=auth_uri, headers=headers)
+        response = requests.get(
+            url=auth_uri,
+            headers=headers
+        )
+
         if response.status_code == 500:
             exception = f"Status code = 500, could not retrieve MSI client ID from endpoint\n" \
                         f"Request URI: {auth_uri}"

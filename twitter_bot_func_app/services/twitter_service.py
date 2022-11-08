@@ -1,4 +1,4 @@
-from twitter_bot_func_app.model import TwitterUser, SentimentScore
+from twitter_bot_func_app.model import TwitterAccount, SentimentScore
 from twitter_bot_func_app.utils.constants import TWITTER_MAX_TWEETS_RETURNED
 
 class TwitterService:
@@ -7,7 +7,7 @@ class TwitterService:
     """
     def create_sentiment_tweet(
         self,
-        user: TwitterUser,
+        user: TwitterAccount,
         sentiment_score: SentimentScore
     ) -> str:
         text = f"Based on the {TWITTER_MAX_TWEETS_RETURNED} most recent mentions " \
