@@ -36,7 +36,7 @@ class AzureStorageMgmtBroker(AzureStorageBroker):
             ContainerClient: client for interacting with container
         """
         try:
-            container = self.__storage_client.create_container(
+            container = self._storage_client.create_container(
                 name=name
             )
         except e.ResourceExistsError:
@@ -59,6 +59,6 @@ class AzureStorageMgmtBroker(AzureStorageBroker):
         Returns:
             ContainerClient: _description_
         """
-        return self.__storage_client.get_container_client(
+        return self._storage_client.get_container_client(
             container=name
         )
