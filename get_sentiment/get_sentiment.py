@@ -71,12 +71,12 @@ def run(
 
     text_analytics_service = TextAnalyticsService()
     twitter_service = TwitterService()
-    sentiment_score = text_analytics_service.get_sentiment_score(
+    sentiment_analysis = text_analytics_service.get_sentiment_analysis(
         sentiments=sentiments
     )
     sentiment_tweet = twitter_service.create_sentiment_tweet(
         user=user,
-        sentiment_score=sentiment_score
+        sentiment_analysis=sentiment_analysis
     )
 
     logging.info(f"Full tweet text ({len(sentiment_tweet)} characters):")

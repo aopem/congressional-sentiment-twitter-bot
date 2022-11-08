@@ -1,24 +1,24 @@
 from collections import defaultdict
 from azure.ai.textanalytics import AnalyzeSentimentResult
 
-from twitter_bot_func_app.model import SentimentScore
+from twitter_bot_func_app.model import SentimentAnalysis
 from twitter_bot_func_app.enums import Sentiment, SentimentScoreCategory
 
 class TextAnalyticsService:
     """
     Service for performing text analytics
     """
-    def get_sentiment_score(
+    def get_sentiment_analysis(
         self,
         sentiments: list[AnalyzeSentimentResult]
-    ) -> SentimentScore:
+    ) -> SentimentAnalysis:
         """
         Calculates a sentiment score based on all sentiments given, which
         will be between -1.0 and +1.0. A positive number indicates positive
         sentiment and a negative number indicates negative sentiment.
 
         Returns:
-            SentimentScore: sentiment score between -1.0 and +1.0
+            SentimentAnalysis: sentiment score between -1.0 and +1.0
         """
         # create dictionary from sentiments
         sentiment_dict = defaultdict(float)
@@ -32,18 +32,18 @@ class TextAnalyticsService:
             sentiment_dict[Sentiment.NEGATIVE] + \
             sentiment_dict[Sentiment.NEUTRAL]
 
-        sentiment_score = SentimentScore(
-            value=raw_score / num_valid_sentiments,
+        sentiment_analysis = SentimentAnalysis(
+            score=raw_score / num_valid_sentiments,
             num_positive=sentiment_dict[Sentiment.POSITIVE],
             num_negative=sentiment_dict[Sentiment.NEGATIVE],
             num_neutral=sentiment_dict[Sentiment.NEUTRAL],
             num_mixed=sentiment_dict[Sentiment.MIXED],
         )
 
-        if sentiment_score.value > 0:
-            sentiment_score.category = SentimentScoreCategory.GOOD
+        if sentiment_analysis.score > 0:
+            sentiment_analysis.category = SentimentScoreCategory.GOOD
 
-        if sentiment_score.value < 0:
-            sentiment_score.category = SentimentScoreCategory.POOR
+        if sentiment_analysis.score < 0:
+            sentiment_analysis.category = SentimentScoreCategory.POOR
 
-        return sentiment_score
+        return sentiment_analysis

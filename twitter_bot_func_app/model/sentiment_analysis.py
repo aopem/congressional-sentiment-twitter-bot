@@ -3,7 +3,7 @@ Sentiment Score class
 """
 from twitter_bot_func_app.enums import SentimentScoreCategory
 
-class SentimentScore:
+class SentimentAnalysis:
     """
     Score calculated based on a list of given sentiments. Value should be
     between -1.0 and +1.0, where negative/positive indicate negative or positive
@@ -19,14 +19,14 @@ class SentimentScore:
     """
     def __init__(
         self,
-        value: float,
+        score: float,
         num_positive: int,
         num_negative: int,
         num_neutral: int,
         num_mixed: int,
         category: SentimentScoreCategory = SentimentScoreCategory.NEUTRAL
     ):
-        self.value = value
+        self.score = score
         self.num_positive = num_positive
         self.num_negative = num_negative
         self.num_neutral = num_neutral
