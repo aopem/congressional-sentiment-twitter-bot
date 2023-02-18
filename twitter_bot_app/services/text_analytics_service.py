@@ -1,8 +1,8 @@
 from collections import defaultdict
 from azure.ai.textanalytics import AnalyzeSentimentResult
 
-from twitter_bot_func_app.model import SentimentAnalysis
-from twitter_bot_func_app.enums import Sentiment, SentimentScoreCategory
+from twitter_bot_app.model import SentimentAnalysis
+from twitter_bot_app.enums import Sentiment, SentimentScoreCategory
 
 class TextAnalyticsService:
     """

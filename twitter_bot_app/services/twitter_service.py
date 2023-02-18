@@ -1,5 +1,5 @@
-from twitter_bot_func_app.model import TwitterAccount, SentimentAnalysis
-from twitter_bot_func_app.utils.constants import TWITTER_MAX_TWEETS_RETURNED
+from twitter_bot_app.model import TwitterAccount, SentimentAnalysis
+from twitter_bot_app.utils.constants import TWITTER_MAX_TWEETS_RETURNED
 
 class TwitterService:
     """

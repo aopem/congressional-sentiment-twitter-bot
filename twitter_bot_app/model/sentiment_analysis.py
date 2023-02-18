@@ -1,7 +1,7 @@
 """
 Sentiment Score class
 """
-from twitter_bot_func_app.enums import SentimentScoreCategory
+from twitter_bot_app.enums import SentimentScoreCategory
 
 class SentimentAnalysis:
     """

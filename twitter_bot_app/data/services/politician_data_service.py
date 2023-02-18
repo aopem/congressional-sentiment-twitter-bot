@@ -4,11 +4,11 @@ Service for interacting with politician data
 import re
 import logging
 
-from twitter_bot_func_app.data import Politician, WikipediaDataBroker
-from twitter_bot_func_app.brokers import TwitterBroker
-from twitter_bot_func_app.model import TwitterAccount
-from twitter_bot_func_app.enums import PoliticianType
-from twitter_bot_func_app.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
+from twitter_bot_app.data import Politician, WikipediaDataBroker
+from twitter_bot_app.brokers import TwitterBroker
+from twitter_bot_app.model import TwitterAccount
+from twitter_bot_app.enums import PoliticianType
+from twitter_bot_app.utils.constants import TWITTER_USERNAME_CHARACTER_LIMIT, \
     TWITTER_USERNAME_REGEX_PATTERN
 
 class PoliticianDataService:

@@ -1,4 +1,4 @@
-from twitter_bot_func_app.data import Politician
+from twitter_bot_app.data import Politician
 from .twitter_account import TwitterAccount
 
 class PoliticianTwitterAccount(TwitterAccount):
