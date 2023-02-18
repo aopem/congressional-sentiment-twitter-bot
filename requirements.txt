@@ -12,7 +12,7 @@ azure-storage-blob==12.13.1
 certifi==2022.6.15
 cffi==1.15.1
 charset-normalizer==2.1.0
-cryptography==37.0.4
+cryptography==39.0.1
 idna==3.3
 isodate==0.6.1
 lxml==4.9.1
