@@ -7,7 +7,7 @@ class Sentiment(StrEnum):
     """
     Maps sentiment keys from Azure to enum values
     """
-    POSITIVE = 'positive'
-    NEUTRAL = 'neutral'
-    NEGATIVE = 'negative'
-    MIXED = 'mixed'
+    POSITIVE = 'POSITIVE'
+    NEUTRAL = 'NEUTRAL'
+    NEGATIVE = 'NEGATIVE'
+    MIXED = 'MIXED'

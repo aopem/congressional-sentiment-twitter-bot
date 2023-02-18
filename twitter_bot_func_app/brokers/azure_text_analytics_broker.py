@@ -1,35 +1,27 @@
 """
-Azure Text Analytics Client class
+Azure Text Analytics Broker class
 """
 from azure.ai.textanalytics import TextAnalyticsClient, AnalyzeSentimentResult
-from azure.identity import DefaultAzureCredential
 
-class AILanguageClient():
+from .azure_cloud_broker import AzureCloudBroker
+
+class AzureTextAnalyticsBroker(AzureCloudBroker):
     """
     Client for interacting with Azure Cognitive Services
 
     Attributes:
-        __client (TextAnalyticsClient): internal client for interacting
-        with AI cognitive services
+        __text_analytics_client (TextAnalyticsClient): internal client
+        for interacting with AI cognitive services
     """
-    def __init__(
-        self,
-        credential: DefaultAzureCredential,
-        endpoint: str
-    ):
-        """
-        Constructor for AILanguageClient
-
-        Args:
-            azure_config (DefaultAzureCredential): credential object for Azure authentication
-            endpoint (str): Azure cognitive services endpoint
-        """
-        self.__client = TextAnalyticsClient(
-            endpoint=endpoint,
-            credential=credential
+    def __init__(self):
+        super().__init__()
+        self.__text_analytics_endpoint = self._config["resourceGroup"]["cognitiveServices"]["account"]["endpoint"]
+        self.__text_analytics_client = TextAnalyticsClient(
+            endpoint=self.__text_analytics_endpoint,
+            credential=self.authenticate()
         )
 
-    def getTextSentiment(
+    def get_text_sentiment(
         self,
         text: list[str],
         *,
@@ -49,7 +41,7 @@ class AILanguageClient():
         Returns:
             list: list of analyzed sentiments
         """
-        analyzed_text = self.__client.analyze_sentiment(
+        analyzed_text = self.__text_analytics_client.analyze_sentiment(
             documents=text,
             language=language,
             show_opinion_mining=show_opinion_mining

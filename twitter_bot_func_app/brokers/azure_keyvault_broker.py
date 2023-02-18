@@ -1,35 +1,30 @@
 """
-Azure Key Vault Client class
+Azure Key Vault Broker class
 """
 from azure.keyvault.secrets import SecretClient, KeyVaultSecret
-from azure.identity import DefaultAzureCredential
 
-class KeyVaultClient:
+from .azure_cloud_broker import AzureCloudBroker
+
+class AzureKeyVaultBroker(AzureCloudBroker):
     """
-    Client for interacting with Azure Key Vault
+    Class for performing Azure Key Vault operations
 
-    Attributes:
-        __client (Secret Client): internal client for interacting
+    Args:
+        _key_vault_name (str): name of key vault
+        _vault_url (str): URL of key vault
+        _key_vault_client (SecretClient): client for interacting
         with key vault secrets
     """
-    def __init__(
-        self,
-        credential: DefaultAzureCredential,
-        key_vault_name: str
-    ):
-        """
-        Constructor for KeyVaultClient
-
-        Args:
-            credential (DefaultAzureCredential): credential object for Azure authentication
-            key_vault_name (str): name of key vault to access
-        """
-        self.__client = SecretClient(
-            vault_url=f"https://{key_vault_name}.vault.azure.net",
-            credential=credential
+    def __init__(self):
+        super().__init__()
+        self._key_vault_name = self._config["resourceGroup"]["keyVault"]["name"]
+        self._vault_url = f"https://{self._key_vault_name}.vault.azure.net"
+        self._key_vault_client = SecretClient(
+            vault_url=self._vault_url,
+            credential=self.authenticate()
         )
 
-    def setSecret(
+    def set_secret(
         self,
         name: str,
         value
@@ -41,12 +36,12 @@ class KeyVaultClient:
             name (str): name of secret
             value (Any): value of secret
         """
-        self.__client.set_secret(
+        self._key_vault_client.set_secret(
             name=name,
             value=value
         )
 
-    def getSecret(
+    def get_secret(
         self,
         name: str
     ) -> KeyVaultSecret:
@@ -59,11 +54,11 @@ class KeyVaultClient:
         Returns:
             KeyVaultSecret: secret from key vault
         """
-        return self.__client.get_secret(
+        return self._key_vault_client.get_secret(
             name=name
         )
 
-    def deleteSecret(
+    def delete_secret(
         self,
         name: str
     ):
@@ -76,7 +71,7 @@ class KeyVaultClient:
         Returns:
             Any: status of deletion
         """
-        poller = self.__client.begin_delete_secret(
+        poller = self._key_vault_client.begin_delete_secret(
             name=name
         )
         return poller.result()

@@ -1,79 +1,31 @@
 """
-Azure Storage Client class
+Azure Storage Broker class
 """
 import os
+from azure.storage.blob import BlobServiceClient
 
-from azure.storage.blob import BlobServiceClient, ContainerClient
-from azure.identity import DefaultAzureCredential
-import azure.core.exceptions as e
+from .azure_cloud_broker import AzureCloudBroker
 
-class StorageClient:
+class AzureStorageBroker(AzureCloudBroker):
     """
-    Client for interacting with Azure Storage account
+    Broker for performing Azure Storage operations
 
     Attributes:
-        __client (BlobServiceClient): internal client for interacting
-        with storage blobs
+        _storage_account_name (str): storage account name
+        _storage_account_url (str): storage account URL
+        _storage_client (BlobServiceClient): client for interacting
+        with Azure Storage blobs
     """
-    def __init__(
-        self,
-        credential: DefaultAzureCredential,
-        storage_account_name: str
-    ):
-        """
-        Constructor for StorageClient
-
-        Args:
-            credential (DefaultAzureCredential): credential object for Azure authentication
-            storage_account_name (str): name of storage account to access
-        """
-        self.__client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=credential
+    def __init__(self):
+        super().__init__()
+        self._storage_account_name = self._config["resourceGroup"]["storageAccount"]["name"]
+        self._storage_account_url = f"https://{self._storage_account_name}.blob.core.windows.net/"
+        self._storage_client = BlobServiceClient(
+            credential=self.authenticate(),
+            account_url=self._storage_account_url
         )
 
-    def createContainer(
-        self,
-        name: str
-    ) -> ContainerClient:
-        """
-        Creates a container within an Azure Storage account
-
-        Args:
-            name (str): name of container
-
-        Returns:
-            ContainerClient: client for interacting with container
-        """
-        try:
-            container = self.__client.create_container(
-                name=name
-            )
-        except e.ResourceExistsError:
-            container = self.getContainer(
-                name=name
-            )
-
-        return container
-
-    def getContainer(
-        self,
-        name: str
-    ) -> ContainerClient:
-        """
-        Gets a container client for interacting with a container
-
-        Args:
-            name (str): name of container to get
-
-        Returns:
-            ContainerClient: _description_
-        """
-        return self.__client.get_container_client(
-            container=name
-        )
-
-    def uploadFile(
+    def upload_file(
         self,
         local_filepath: str,
         container_name: str
@@ -86,7 +38,7 @@ class StorageClient:
             container_name (str): name of container to upload file to
         """
         filename = os.path.basename(local_filepath)
-        blob_client = self.__client.get_blob_client(
+        blob_client = self._storage_client.get_blob_client(
             container=container_name,
             blob=filename
         )
@@ -96,7 +48,7 @@ class StorageClient:
                 data=upload_file
             )
 
-    def uploadData(
+    def upload_data(
         self,
         data,
         data_name: str,
@@ -113,7 +65,7 @@ class StorageClient:
             overwrite (bool, optional): If true, will overwrite data with data_name
             if data_name already exists in container_name. Defaults to False.
         """
-        blob_client = self.__client.get_blob_client(
+        blob_client = self._storage_client.get_blob_client(
             container=container_name,
             blob=data_name
         )
@@ -123,7 +75,7 @@ class StorageClient:
             overwrite=overwrite
         )
 
-    def downloadFile(
+    def download_file(
         self,
         local_filepath: str,
         container_name: str
@@ -137,7 +89,7 @@ class StorageClient:
             container_name (str): name of container to download file from
         """
         filename = os.path.basename(local_filepath)
-        container_client = self.__client.get_container_client(
+        container_client = self._storage_client.get_container_client(
             container=container_name
         )
 
