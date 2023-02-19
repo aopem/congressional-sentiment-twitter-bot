@@ -1,7 +1,7 @@
-using CongressMemberTrackingService.Models;
+using CongressMemberService.Models;
 using Common.Brokers;
 
-namespace CongressMemberTrackingService.Services
+namespace CongressMemberService.Services
 {
     public class CongressMemberService
     {

@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using CongressMemberTrackingService.Models;
-using CongressMemberTrackingService.Services;
+using CongressMemberService.Models;
+using CongressMemberService.Services;
 
-namespace CongressMemberTrackingService.Controllers
+namespace CongressMemberService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CongressMemberTrackingController : ControllerBase
+    public class CongressMemberController : ControllerBase
     {
-        private readonly ILogger<CongressMemberTrackingController> _logger;
+        private readonly ILogger<CongressMemberController> _logger;
         private readonly CongressMemberService _congressMemberService;
 
-        public CongressMemberTrackingController(
-            ILogger<CongressMemberTrackingController> logger,
+        public CongressMemberController(
+            ILogger<CongressMemberController> logger,
             CongressMemberService congressMemberService)
         {
             _logger = logger;

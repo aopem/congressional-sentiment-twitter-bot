@@ -1,6 +1,6 @@
 using Common.Enums;
 
-namespace CongressMemberTrackingService.Models
+namespace CongressMemberService.Models
 {
     public class CongressMember
     {
