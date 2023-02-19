@@ -5,13 +5,13 @@ import json
 import logging
 import azure.functions as func
 
-from twitter_bot_func_app.brokers import TwitterBroker
-from twitter_bot_func_app.data import PoliticianDataService, WikipediaDataBroker, Politician
-from twitter_bot_func_app.model import TwitterAccount
-from twitter_bot_func_app.enums import PoliticianType
-from twitter_bot_func_app.serialization import Encoder
-from twitter_bot_func_app.utils.functions import load_json
-from twitter_bot_func_app.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
+from twitter_bot_app.brokers import TwitterBroker
+from twitter_bot_app.data import PoliticianDataService, WikipediaDataBroker, Politician
+from twitter_bot_app.model import TwitterAccount
+from twitter_bot_app.enums import PoliticianType
+from twitter_bot_app.serialization import Encoder
+from twitter_bot_app.utils.functions import load_json
+from twitter_bot_app.utils.constants import REPRESENTATIVES_WIKI_URL, SENATORS_WIKI_URL, \
     TOTAL_NUM_REPRESENTATIVES, TOTAL_NUM_SENATORS
 
 
