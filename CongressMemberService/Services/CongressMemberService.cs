@@ -1,40 +1,40 @@
-using CongressMemberService.Models;
+using Common.Models;
 using Common.Brokers;
 
 namespace CongressMemberService.Services
 {
     public class CongressMemberService
     {
-        private readonly DatabaseBroker _databaseBroker;
+        private readonly CongressMemberDbBroker _congressMemberDbBroker;
 
-        public CongressMemberService(DatabaseBroker databaseBroker)
+        public CongressMemberService(CongressMemberDbBroker congressMemberDbBroker)
         {
-            this._databaseBroker = databaseBroker;
+            this._congressMemberDbBroker = congressMemberDbBroker;
         }
 
         public async ValueTask<CongressMember> CreateCongressMemberAsync(CongressMember congressMember)
         {
-            return await this._databaseBroker.InsertAsync<CongressMember>(congressMember);
+            return await this._congressMemberDbBroker.InsertAsync(congressMember);
         }
 
-        public async ValueTask<CongressMember> RetrieveCongressMemberAsync(Guid id)
+        public async ValueTask<CongressMember> RetrieveCongressMemberAsync(int id)
         {
-            return await this._databaseBroker.SelectByIdAsync<CongressMember>(id);
+            return await this._congressMemberDbBroker.SelectByIdAsync(id);
         }
 
-        public IQueryable<CongressMember> RetrieveAllCongressMembersAsync()
+        public IQueryable<CongressMember> RetrieveAllCongressMembers()
         {
-            return this._databaseBroker.SelectAllAsync<CongressMember>();
+            return this._congressMemberDbBroker.SelectAll();
         }
 
         public async ValueTask<CongressMember> UpdateCongressMemberAsync(CongressMember congressMember)
         {
-            return await this._databaseBroker.UpdateAsync<CongressMember>(congressMember);
+            return await this._congressMemberDbBroker.UpdateAsync(congressMember);
         }
 
-        public async ValueTask<CongressMember> DeleteCongressMemberAsync(Guid id)
+        public async ValueTask<CongressMember> DeleteCongressMemberAsync(int id)
         {
-            return await this._databaseBroker.DeleteByIdAsync<CongressMember>(id);
+            return await this._congressMemberDbBroker.DeleteByIdAsync(id);
         }
     }
 }
