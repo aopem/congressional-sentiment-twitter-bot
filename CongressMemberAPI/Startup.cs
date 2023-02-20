@@ -14,22 +14,16 @@ namespace CongressMemberAPI
             this.Configuration = configuration;
         }
 
-        public static void Configure(WebApplicationBuilder builder)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
-            var app = builder.Build();
-
             // Configure the HTTP request pipeline.
-            if (builder.Environment.IsDevelopment())
+            if (environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
             app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
         }
 
         public void ConfigureServices(IServiceCollection services)
