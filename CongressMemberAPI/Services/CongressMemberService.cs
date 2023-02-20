@@ -1,7 +1,7 @@
 using Common.Models;
 using Common.Brokers;
 
-namespace CongressMemberService.Services
+namespace CongressMemberAPI.Services
 {
     public class CongressMemberService
     {

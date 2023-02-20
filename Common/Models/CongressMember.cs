@@ -12,7 +12,7 @@ namespace Common.Models
         public string State { get; set; }
         public string TwitterAccountName { get; set; }
         public Chamber Chamber { get; set; }
-        public string? MiddleName { get; set; }
+        public string MiddleName { get; set; }
 
         public CongressMember(
             string firstName,
@@ -22,7 +22,7 @@ namespace Common.Models
             string state,
             string twitterAccountName,
             Chamber chamber,
-            string? middleName = null)
+            string middleName = "")
         {
             this.FirstName = firstName;
             this.LastName = lastName;

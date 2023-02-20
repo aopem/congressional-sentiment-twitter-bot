@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CongressMemberService.Models;
 using CongressMemberService.Services;
 
-namespace CongressMemberService.Controllers
+namespace CongressMemberAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
