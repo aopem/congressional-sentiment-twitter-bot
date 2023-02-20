@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using CongressMemberService.Models;
-using CongressMemberService.Services;
+using Common.Models;
+using CongressMemberAPI.Services;
 
 namespace CongressMemberAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CongressMemberController : ControllerBase
     {
         private readonly ILogger<CongressMemberController> _logger;
@@ -20,27 +20,40 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<CongressMember> CreateOrUpdate(CongressMember congressMember)
+        public async ValueTask<IActionResult> CreateOrUpdate(CongressMember congressMember)
         {
-            return await _congressMemberService.CreateCongressMemberAsync(congressMember);
+            var updatedCongressMember = await _congressMemberService.CreateCongressMemberAsync(congressMember);
+            return CreatedAtAction(nameof(Get), new { id = updatedCongressMember.ID }, updatedCongressMember);
+        }
+
+        [HttpGet("{id:int}")]
+        public async ValueTask<IActionResult> Get(int id)
+        {
+            var congressMember = await _congressMemberService.RetrieveCongressMemberAsync(id);
+            if (congressMember is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(congressMember);
         }
 
         [HttpGet]
-        public IQueryable<CongressMember> Get()
+        public IActionResult GetAll()
         {
-            return _congressMemberService.RetrieveAllCongressMembersAsync();
+            return Ok(_congressMemberService.RetrieveAllCongressMembers());
         }
 
-        [HttpGet]
-        public async ValueTask<CongressMember> GetAll(Guid id)
+        [HttpDelete("{id:int}")]
+        public async ValueTask<IActionResult> Delete(int id)
         {
-            return await _congressMemberService.RetrieveCongressMemberAsync(id);
-        }
+            var congressMember = await _congressMemberService.DeleteCongressMemberAsync(id);
+            if (congressMember is null)
+            {
+                return NotFound();
+            }
 
-        [HttpDelete]
-        public async ValueTask<CongressMember> Delete(Guid id)
-        {
-            return await _congressMemberService.DeleteCongressMemberAsync(id);
+            return Ok(congressMember);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace CongressMemberAPI.Services
             return await this._congressMemberDbBroker.InsertAsync(congressMember);
         }
 
-        public async ValueTask<CongressMember> RetrieveCongressMemberAsync(int id)
+        public async ValueTask<CongressMember?> RetrieveCongressMemberAsync(int id)
         {
             return await this._congressMemberDbBroker.SelectByIdAsync(id);
         }

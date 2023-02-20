@@ -1,19 +1,18 @@
 using Common.Models;
 using Common.Enums;
+using Common.Clients;
 using MemberTracker.ResponseTypes;
 
 namespace MemberTracker.Clients
 {
-    public class ProPublicaClient
+    public class ProPublicaClient : HttpApiClient
     {
-        private readonly HttpClient _client;
         private readonly int congress = 117;
 
         public ProPublicaClient(string apiKey)
         {
-            this._client = new HttpClient();
-            this._client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
             this._client.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
+            this._client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
         }
 
         public async Task<List<CongressMember>> GetHouseMembersAsync()
