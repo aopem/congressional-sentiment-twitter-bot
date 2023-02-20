@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CongressTracker.ResponseTypes
+namespace MemberTracker.ResponseTypes
 {
     public class Member
     {

@@ -1,16 +1,15 @@
-using System.ComponentModel;
 using Common.Models;
 using Common.Enums;
-using CongressTracker.ResponseTypes;
+using MemberTracker.ResponseTypes;
 
-namespace CongressTracker.Library
+namespace MemberTracker.Clients
 {
-    public class ProPublicaAPI
+    public class ProPublicaClient
     {
         private readonly HttpClient _client;
         private readonly int congress = 117;
 
-        public ProPublicaAPI(string apiKey)
+        public ProPublicaClient(string apiKey)
         {
             this._client = new HttpClient();
             this._client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
@@ -27,6 +26,10 @@ namespace CongressTracker.Library
             {
                 responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
             }
+            else
+            {
+                throw new Exception();
+            }
 
             return this.DeserializeProPublicaResponse(responseContent, Chamber.House);
         }
@@ -40,6 +43,10 @@ namespace CongressTracker.Library
             if (response.IsSuccessStatusCode)
             {
                 responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
+            }
+            else
+            {
+                throw new Exception();
             }
 
             return this.DeserializeProPublicaResponse(responseContent, Chamber.Senate);
