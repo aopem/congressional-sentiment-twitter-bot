@@ -1,20 +1,49 @@
+using Microsoft.EntityFrameworkCore;
+using Common.Brokers;
+using Common.Contexts;
+using CongressMemberAPI.Services;
+
 namespace CongressMemberAPI
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            // initialization
             var builder = WebApplication.CreateBuilder(args);
-            var startup = new Startup(builder.Configuration);
-            startup.ConfigureServices(builder.Services);
+            builder.Services.AddDbContext<CongressMemberSqlDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // build app
+            // Add builder.Services to the container.
+            AddBrokers(builder.Services);
+            AddServices(builder.Services);
+            builder.Services.AddControllers();
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
-            startup.Configure(app, builder.Environment);
 
-            // run application
+            // Configure the HTTP request pipeline.
+            if (builder.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseAuthorization();
+            app.MapControllers();
             app.Run();
+        }
+
+        private static void AddBrokers(IServiceCollection services)
+        {
+            services.AddScoped<CongressMemberDbBroker>();
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddScoped<CongressMemberService>();
         }
     }
 }
