@@ -4,14 +4,17 @@ namespace CongressMemberAPI
     {
         public static void Main(string[] args)
         {
+            // initialization
             var builder = WebApplication.CreateBuilder(args);
-        }
+            var startup = new Startup(builder.Configuration);
+            startup.ConfigureServices(builder.Services);
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder.UseStartup<Startup>());
+            // build app
+            var app = builder.Build();
+            startup.Configure(app, builder.Environment);
+
+            // run application
+            app.Run();
         }
     }
 }

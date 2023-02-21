@@ -14,7 +14,7 @@ namespace CongressMemberAPI
             this.Configuration = configuration;
         }
 
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
+        public void Configure(WebApplication app, IWebHostEnvironment environment)
         {
             // Configure the HTTP request pipeline.
             if (environment.IsDevelopment())
@@ -24,6 +24,7 @@ namespace CongressMemberAPI
             }
 
             app.UseAuthorization();
+            app.MapControllers();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -34,8 +35,8 @@ namespace CongressMemberAPI
             // Add services to the container.
             AddBrokers(services);
             AddServices(services);
-
             services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
