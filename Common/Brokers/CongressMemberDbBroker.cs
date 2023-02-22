@@ -63,10 +63,10 @@ namespace Common.Brokers
         private CongressMemberSqlDbContext CreateCongressMemberSqlDbContext()
         {
             return new CongressMemberSqlDbContext(
-                this._configuration,
                 new DbContextOptionsBuilder<CongressMemberSqlDbContext>()
                     .UseSqlServer(this._configuration.GetConnectionString("CongressMemberDb"))
-                    .Options
+                    .Options,
+                this._configuration
             );
         }
     }

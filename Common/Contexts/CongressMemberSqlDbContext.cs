@@ -14,6 +14,9 @@ namespace Common.Contexts
             IConfiguration configuration) : base(options)
         {
             this._configuration = configuration;
+
+            // to prevent errors on first run with empty tables
+            this.Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
