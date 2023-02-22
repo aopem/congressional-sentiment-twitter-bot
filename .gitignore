@@ -140,3 +140,4 @@ secrets*
 .vscode
 _twitter
 *.PublishSettings
+*.sqlproj

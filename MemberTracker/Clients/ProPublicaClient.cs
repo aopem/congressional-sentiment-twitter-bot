@@ -11,14 +11,16 @@ namespace MemberTracker.Clients
 
         public ProPublicaClient(string apiKey)
         {
-            _client.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
-            _client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+            _httpClient.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
+            _httpClient.DefaultRequestHeaders.Add("X-API-Key", apiKey);
         }
 
         public async Task<List<CongressMember>> GetHouseMembersAsync()
         {
+            Console.WriteLine("Retrieving all current House member information...");
+
             var path = "house/members.json";
-            HttpResponseMessage response = await _client.GetAsync(path);
+            HttpResponseMessage response = await _httpClient.GetAsync(path);
 
             ProPublicaResponse responseContent = new ProPublicaResponse();
             if (response.IsSuccessStatusCode)
@@ -35,8 +37,10 @@ namespace MemberTracker.Clients
 
         public async Task<List<CongressMember>> GetSenateMembersAsync()
         {
+            Console.WriteLine("Retrieving all current Senate member information...");
+
             var path = "senate/members.json";
-            HttpResponseMessage response = await _client.GetAsync(path);
+            HttpResponseMessage response = await _httpClient.GetAsync(path);
 
             var responseContent = new ProPublicaResponse();
             if (response.IsSuccessStatusCode)

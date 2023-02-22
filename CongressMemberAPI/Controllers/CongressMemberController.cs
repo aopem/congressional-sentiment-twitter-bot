@@ -20,6 +20,7 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> CreateOrUpdate(CongressMember congressMember)
         {
             var message = $"[POST Request] {congressMember.ToString()}";
@@ -40,6 +41,7 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> Get(int id)
         {
             var message = $"[GET Request] id = {id}";
@@ -65,6 +67,7 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IQueryable<CongressMember>), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var message = "[GET Request] id = all";
@@ -90,6 +93,7 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> Delete(int id)
         {
             var message = $"[DELETE Request]id = {id}";

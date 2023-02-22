@@ -6,7 +6,7 @@ namespace MemberTracker.Clients
     {
         public CongressMemberClient()
         {
-            this._client.BaseAddress = new Uri("");
+            _httpClient.BaseAddress = new Uri("");
         }
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Azure.Identity;
-using Azure.Core;
 using Common.Utils;
 using Common.Clients;
 using Common.ResponseTypes;
@@ -34,9 +33,9 @@ namespace Common.Brokers.Azure
             _msiClientId = GetMsiClientId();
         }
 
-        public AccessToken GetAccessToken(string authUrl)
+        public DefaultAzureCredential GetCredential()
         {
-            Console.WriteLine($"Retrieving Azure access token...");
+            Console.WriteLine($"Retrieving Azure credential...");
 
             // local configuration does not use MSI
             var credential = new DefaultAzureCredential();
@@ -49,22 +48,8 @@ namespace Common.Brokers.Azure
                 });
             }
 
-            // obtain Azure access token
-            AccessToken accessToken = new AccessToken();
-            try
-            {
-                accessToken = credential.GetToken(new TokenRequestContext(new[]
-                {
-                    authUrl
-                }));
-            }
-            catch (AuthenticationFailedException e)
-            {
-                Console.WriteLine($"[ERROR] Could not retrieve Azure access token: {e}");
-            }
-
-            Console.WriteLine("Azure access token acquired");
-            return accessToken;
+            Console.WriteLine("Azure credential acquired");
+            return credential;
         }
 
         private string GetMsiClientId()
@@ -90,11 +75,11 @@ namespace Common.Brokers.Azure
                 {"mi_res_id", msiResourceId}
             });
 
-            _client.DefaultRequestHeaders.Add("X-IDENTITY-HEADER", Environment.GetEnvironmentVariable("IDENTITY_HEADER"));
+            _httpClient.DefaultRequestHeaders.Add("X-IDENTITY-HEADER", Environment.GetEnvironmentVariable("IDENTITY_HEADER"));
 
             // make GET request to managed identity REST endpoint
             // this does not need to be async, so running synchronously for simplicity
-            var getTask = Task.Run(() => _client.GetAsync(authUri));
+            var getTask = Task.Run(() => _httpClient.GetAsync(authUri));
             getTask.Wait();
             var response = getTask.Result;
             if (!response.IsSuccessStatusCode)

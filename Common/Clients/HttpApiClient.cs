@@ -2,11 +2,11 @@ namespace Common.Clients
 {
     public class HttpApiClient
     {
-        protected readonly HttpClient _client;
+        protected readonly HttpClient _httpClient;
 
         public HttpApiClient()
         {
-            _client = new HttpClient();
+            _httpClient = new HttpClient();
         }
     }
 }

@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Common.Brokers;
+using Common.Brokers.Azure;
 using Common.Contexts;
 using CongressMemberAPI.Services;
 
@@ -10,6 +10,14 @@ namespace CongressMemberAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // get secrets and add to configuration
+            var keyVaultName = builder.Configuration.GetValue<string>("Azure:KeyVault:Name");
+            var azureBroker = new AzureBroker(builder.Configuration);
+            builder.Configuration.AddAzureKeyVault(
+                new Uri ($"https://{keyVaultName}.vault.azure.net"),
+                azureBroker.GetCredential());
+
             builder.Services.AddDbContext<CongressMemberSqlDbContext>();
 
             // Add builder.Services to the container.

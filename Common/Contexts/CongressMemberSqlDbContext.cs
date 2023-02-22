@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Common.Models;
@@ -21,8 +22,15 @@ namespace Common.Contexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var connectionStringBuilder = new SqlConnectionStringBuilder(
+                _configuration.GetConnectionString("CongressMemberDb"));
+
+            // set Username/Password using key vault secrets
+            connectionStringBuilder.UserID = _configuration.GetValue<string>("CongressMemberDbUsername");
+            connectionStringBuilder.Password = _configuration.GetValue<string>("CongressMemberDbPassword");
+
             // configure to use SQL server
-            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("CongressMemberDb"));
+            optionsBuilder.UseSqlServer(connectionStringBuilder.ConnectionString);
         }
     }
 }
