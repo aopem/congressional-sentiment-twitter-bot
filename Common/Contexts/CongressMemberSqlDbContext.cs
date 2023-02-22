@@ -1,14 +1,25 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Common.Models;
 
 namespace Common.Contexts
 {
     public class CongressMemberSqlDbContext : DbContext, ICongressMemberDbContext
     {
-        public CongressMemberSqlDbContext(DbContextOptions<CongressMemberSqlDbContext> options) : base(options)
+        public DbSet<CongressMember> CongressMembers { get; set; } = null!;
+        private readonly IConfiguration _configuration;
+
+        public CongressMemberSqlDbContext(
+            DbContextOptions<CongressMemberSqlDbContext> options,
+            IConfiguration configuration) : base(options)
         {
+            this._configuration = configuration;
         }
 
-        public DbSet<CongressMember> CongressMembers { get; set; } = null!;
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // configure to use SQL server
+            optionsBuilder.UseSqlServer(this._configuration.GetConnectionString("CongressMemberDb"));
+        }
     }
 }

@@ -10,8 +10,7 @@ namespace CongressMemberAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<CongressMemberSqlDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<CongressMemberSqlDbContext>();
 
             // Add builder.Services to the container.
             AddBrokers(builder.Services);

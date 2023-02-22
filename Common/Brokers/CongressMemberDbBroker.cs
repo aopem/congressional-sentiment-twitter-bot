@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Common.Contexts;
 using Common.Models;
 
@@ -5,37 +7,42 @@ namespace Common.Brokers
 {
     public class CongressMemberDbBroker
     {
-        private readonly CongressMemberSqlDbContext _congressMemberDbContext;
+        private readonly IConfiguration _configuration;
 
-        public CongressMemberDbBroker(CongressMemberSqlDbContext congressMemberDbContext)
+        public CongressMemberDbBroker(
+            IConfiguration configuration)
         {
-            this._congressMemberDbContext = congressMemberDbContext;
+            this._configuration = configuration;
         }
 
         public async ValueTask<CongressMember> InsertAsync(CongressMember congressMember)
         {
-            var entry = await this._congressMemberDbContext.CongressMembers.AddAsync(congressMember);
+            var dbContext = CreateCongressMemberSqlDbContext();
+            var entry = await dbContext.CongressMembers.AddAsync(congressMember);
 
-            await this._congressMemberDbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return entry.Entity;
         }
 
         public async ValueTask<CongressMember> UpdateAsync(CongressMember congressMember)
         {
-            var entry = this._congressMemberDbContext.CongressMembers.Update(congressMember);
+            var dbContext = CreateCongressMemberSqlDbContext();
+            var entry = dbContext.CongressMembers.Update(congressMember);
 
-            await this._congressMemberDbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return entry.Entity;
         }
 
         public async ValueTask<CongressMember?> SelectByIdAsync(int id)
         {
-            return await this._congressMemberDbContext.CongressMembers.FindAsync(id);
+            var dbContext = CreateCongressMemberSqlDbContext();
+            return await dbContext.CongressMembers.FindAsync(id);
         }
 
         public IQueryable<CongressMember> SelectAll()
         {
-            return this._congressMemberDbContext.CongressMembers;
+            var dbContext = CreateCongressMemberSqlDbContext();
+            return dbContext.CongressMembers;
         }
 
         public async ValueTask<CongressMember> DeleteByIdAsync(int id)
@@ -46,10 +53,21 @@ namespace Common.Brokers
                 throw new Exception();
             }
 
-            var entry = this._congressMemberDbContext.CongressMembers.Remove(congressMember);
+            var dbContext = CreateCongressMemberSqlDbContext();
+            var entry = dbContext.CongressMembers.Remove(congressMember);
 
-            await this._congressMemberDbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return entry.Entity;
+        }
+
+        private CongressMemberSqlDbContext CreateCongressMemberSqlDbContext()
+        {
+            return new CongressMemberSqlDbContext(
+                this._configuration,
+                new DbContextOptionsBuilder<CongressMemberSqlDbContext>()
+                    .UseSqlServer(this._configuration.GetConnectionString("CongressMemberDb"))
+                    .Options
+            );
         }
     }
 }
