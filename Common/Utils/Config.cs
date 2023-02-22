@@ -15,7 +15,7 @@ namespace Common.Utils
                 throw new Exception();
             }
 
-            this.Properties = properties;
+            Properties = properties;
         }
     }
 }

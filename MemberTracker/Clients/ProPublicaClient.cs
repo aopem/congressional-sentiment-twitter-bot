@@ -11,14 +11,14 @@ namespace MemberTracker.Clients
 
         public ProPublicaClient(string apiKey)
         {
-            this._client.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
-            this._client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+            _client.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
+            _client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
         }
 
         public async Task<List<CongressMember>> GetHouseMembersAsync()
         {
             var path = "house/members.json";
-            HttpResponseMessage response = await this._client.GetAsync(path);
+            HttpResponseMessage response = await _client.GetAsync(path);
 
             ProPublicaResponse responseContent = new ProPublicaResponse();
             if (response.IsSuccessStatusCode)
@@ -30,13 +30,13 @@ namespace MemberTracker.Clients
                 throw new Exception();
             }
 
-            return this.DeserializeProPublicaResponse(responseContent, Chamber.House);
+            return DeserializeProPublicaResponse(responseContent, Chamber.House);
         }
 
         public async Task<List<CongressMember>> GetSenateMembersAsync()
         {
             var path = "senate/members.json";
-            HttpResponseMessage response = await this._client.GetAsync(path);
+            HttpResponseMessage response = await _client.GetAsync(path);
 
             var responseContent = new ProPublicaResponse();
             if (response.IsSuccessStatusCode)
@@ -48,7 +48,7 @@ namespace MemberTracker.Clients
                 throw new Exception();
             }
 
-            return this.DeserializeProPublicaResponse(responseContent, Chamber.Senate);
+            return DeserializeProPublicaResponse(responseContent, Chamber.Senate);
         }
 
         private List<CongressMember> DeserializeProPublicaResponse(ProPublicaResponse response, Chamber chamber)
@@ -56,15 +56,16 @@ namespace MemberTracker.Clients
             var congressMembers = new List<CongressMember>();
             foreach (var member in response.Results[0].Members)
             {
-                var deserializedMember = new CongressMember(
-                    firstName: member.FirstName,
-                    lastName: member.LastName,
-                    gender: member.Gender,
-                    party: member.Party,
-                    state: member.State,
-                    twitterAccountName: member.TwitterAccount,
-                    chamber: chamber
-                );
+                var deserializedMember = new CongressMember
+                {
+                    FirstName = member.FirstName,
+                    LastName = member.LastName,
+                    Gender = member.Gender,
+                    Party = member.Party,
+                    State = member.State,
+                    TwitterAccountName = member.TwitterAccount,
+                    Chamber = chamber
+                };
 
                 if (member.MiddleName is not null)
                 {

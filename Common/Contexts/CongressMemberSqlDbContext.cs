@@ -13,16 +13,16 @@ namespace Common.Contexts
             DbContextOptions<CongressMemberSqlDbContext> options,
             IConfiguration configuration) : base(options)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
 
             // to prevent errors on first run with empty tables
-            this.Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // configure to use SQL server
-            optionsBuilder.UseSqlServer(this._configuration.GetConnectionString("CongressMemberDb"));
+            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("CongressMemberDb"));
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Common.Clients
 
         public HttpApiClient()
         {
-            this._client = new HttpClient();
+            _client = new HttpClient();
         }
     }
 }

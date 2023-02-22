@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Azure.Identity;
 using Azure.Core;
 using Common.Utils;
@@ -9,35 +10,42 @@ namespace Common.Brokers.Azure
 {
     public class AzureBroker : HttpApiClient
     {
-        protected Config _config;
-        protected string _subscriptionId;
-        protected string _resourceGroup;
-        private string _msiName;
-        private string _apiVersion;
-        private string _msiClientId;
+        protected readonly IConfiguration _configuration;
+        protected readonly string _subscriptionId;
+        protected readonly string _resourceGroup;
+        private readonly string _msiName;
+        private readonly string _apiVersion;
+        private readonly string _msiClientId;
 
-        public AzureBroker()
+        public AzureBroker(
+            IConfiguration configuration)
         {
-            this._config = new Config(Constants.AZURE_CONFIG_FILEPATH);
-            this._subscriptionId = this._config.Properties._subscriptionId;
-            this._resourceGroup = this._config.Properties.resourceGroup.name;
-            this._msiName = this._config.Properties.resourceGroup.managedIdentity.name;
-            this._apiVersion = this._config.Properties.resourceGroup.managedIdentity.restApiVersion;
-            this._msiClientId = this.GetMsiClientId();
+            if (configuration is null)
+            {
+                var exception = "[ERROR] Configuration is null";
+                throw new Exception(exception);
+            }
+
+            _configuration = configuration;
+            _subscriptionId = _configuration.GetValue<string>("Azure:SubscriptionId");
+            _resourceGroup = _configuration.GetValue<string>("ResourceGroupName");
+            _msiName = _configuration.GetValue<string>("ManagedIdentity:Name");
+            _apiVersion = _configuration.GetValue<string>("ManagedIdentity:RestApiVersion");
+            _msiClientId = GetMsiClientId();
         }
 
         public AccessToken GetAccessToken(string authUrl)
         {
-            Console.WriteLine($"Retrieving Azure access...");
+            Console.WriteLine($"Retrieving Azure access token...");
 
             // local configuration does not use MSI
             var credential = new DefaultAzureCredential();
             if (!Constants.LOCAL_EXECUTION)
             {
-                Console.WriteLine($"Credential is using MSI client ID: {this._msiClientId}...");
+                Console.WriteLine($"Credential is using MSI client ID: {_msiClientId}...");
                 credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
                 {
-                    ManagedIdentityClientId = this._msiClientId
+                    ManagedIdentityClientId = _msiClientId
                 });
             }
 
@@ -70,29 +78,29 @@ namespace Common.Brokers.Azure
 
             // build MSI resource ID, auth URI
             var msiResourceId = String.Join(
-                $"/subscriptions/{this._subscriptionId}/resourcegroups",
-                $"/{this._resourceGroup}/providers",
-                $"/Microsoft.ManagedIdentity/userAssignedIdentities/{this._msiName}");
+                $"/subscriptions/{_subscriptionId}/resourcegroups",
+                $"/{_resourceGroup}/providers",
+                $"/Microsoft.ManagedIdentity/userAssignedIdentities/{_msiName}");
 
             var endpoint = Environment.GetEnvironmentVariable("IDENTITY_ENDPOINT");
             var authUri = QueryHelpers.AddQueryString(endpoint, new Dictionary<string, string>
             {
                 {"resource", "https://vault.azure.net"},
-                {"api-version", this._apiVersion},
+                {"api-version", _apiVersion},
                 {"mi_res_id", msiResourceId}
             });
 
-            this._client.DefaultRequestHeaders.Add("X-IDENTITY-HEADER", Environment.GetEnvironmentVariable("IDENTITY_HEADER"));
+            _client.DefaultRequestHeaders.Add("X-IDENTITY-HEADER", Environment.GetEnvironmentVariable("IDENTITY_HEADER"));
 
             // make GET request to managed identity REST endpoint
             // this does not need to be async, so running synchronously for simplicity
-            var getTask = Task.Run(() => this._client.GetAsync(authUri));
+            var getTask = Task.Run(() => _client.GetAsync(authUri));
             getTask.Wait();
             var response = getTask.Result;
             if (!response.IsSuccessStatusCode)
             {
                 var exception = String.Join(
-                    $"Status code = {response.StatusCode}, could not retrieve MSI client ID from endpoint\n",
+                    $"[ERROR] Status code = {response.StatusCode}, could not retrieve MSI client ID from endpoint\n",
                     $"Request URI: {authUri}");
                 throw new Exception(exception);
             }
@@ -100,7 +108,18 @@ namespace Common.Brokers.Azure
             // read response and get client ID
             var readTask = Task.Run(() => response.Content.ReadAsAsync<ManagedIdentityResponse>());
             readTask.Wait();
-            return readTask.Result.ClientId;
+
+            var clientId = readTask.Result.ClientId;
+            if (clientId is null)
+            {
+                var exception = String.Join(
+                    $"[ERROR] Managed identity client ID is null",
+                    $"Response: {response.ToString()}"
+                );
+                throw new Exception(exception);
+            }
+
+            return clientId;
         }
     }
 }

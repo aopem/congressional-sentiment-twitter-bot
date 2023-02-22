@@ -12,7 +12,7 @@ namespace Common.Brokers
         public CongressMemberDbBroker(
             IConfiguration configuration)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
         }
 
         public async ValueTask<CongressMember> InsertAsync(CongressMember congressMember)
@@ -47,7 +47,7 @@ namespace Common.Brokers
 
         public async ValueTask<CongressMember> DeleteByIdAsync(int id)
         {
-            var congressMember = await this.SelectByIdAsync(id);
+            var congressMember = await SelectByIdAsync(id);
             if (congressMember is null)
             {
                 throw new Exception();
@@ -64,9 +64,9 @@ namespace Common.Brokers
         {
             return new CongressMemberSqlDbContext(
                 new DbContextOptionsBuilder<CongressMemberSqlDbContext>()
-                    .UseSqlServer(this._configuration.GetConnectionString("CongressMemberDb"))
+                    .UseSqlServer(_configuration.GetConnectionString("CongressMemberDb"))
                     .Options,
-                this._configuration
+                _configuration
             );
         }
     }
