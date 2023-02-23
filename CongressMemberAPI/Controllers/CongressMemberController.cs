@@ -41,9 +41,9 @@ namespace CongressMemberAPI.Controllers
             return CreatedAtAction(nameof(Get), new { id = updatedCongressMember.ID }, updatedCongressMember);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
-        public async ValueTask<IActionResult> Get(int id)
+        public async ValueTask<IActionResult> Get(string id)
         {
             _logger.LogInformation($"[GET Request] id = {id}");
 
@@ -93,9 +93,9 @@ namespace CongressMemberAPI.Controllers
             return Ok(congressMembers);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
-        public async ValueTask<IActionResult> Delete(int id)
+        public async ValueTask<IActionResult> Delete(string id)
         {
             _logger.LogInformation($"[DELETE Request] id = {id}");
 

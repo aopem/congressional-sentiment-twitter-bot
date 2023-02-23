@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Common.Contexts;
 using Common.Models;
-using Newtonsoft.Json;
 
 namespace Common.Brokers
 {
@@ -33,7 +32,7 @@ namespace Common.Brokers
             return entry.Entity;
         }
 
-        public async ValueTask<CongressMember?> SelectByIdAsync(int id)
+        public async ValueTask<CongressMember?> SelectByIdAsync(string id)
         {
             var dbContext = CreateCongressMemberSqlDbContext();
             return await dbContext.CongressMembers.FindAsync(id);
@@ -45,7 +44,7 @@ namespace Common.Brokers
             return dbContext.CongressMembers;
         }
 
-        public async ValueTask<CongressMember> DeleteByIdAsync(int id)
+        public async ValueTask<CongressMember> DeleteByIdAsync(string id)
         {
             var congressMember = await SelectByIdAsync(id);
             if (congressMember is null)

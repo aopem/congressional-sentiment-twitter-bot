@@ -17,7 +17,7 @@ namespace CongressMemberAPI.Services
             return await _congressMemberDbBroker.InsertAsync(congressMember);
         }
 
-        public async ValueTask<CongressMember?> RetrieveCongressMemberAsync(int id)
+        public async ValueTask<CongressMember?> RetrieveCongressMemberAsync(string id)
         {
             return await _congressMemberDbBroker.SelectByIdAsync(id);
         }
@@ -32,7 +32,7 @@ namespace CongressMemberAPI.Services
             return await _congressMemberDbBroker.UpdateAsync(congressMember);
         }
 
-        public async ValueTask<CongressMember> DeleteCongressMemberAsync(int id)
+        public async ValueTask<CongressMember> DeleteCongressMemberAsync(string id)
         {
             return await _congressMemberDbBroker.DeleteByIdAsync(id);
         }

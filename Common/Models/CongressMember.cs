@@ -1,10 +1,12 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Common.Enums;
 
 namespace Common.Models
 {
     public class CongressMember
     {
-        public int ID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string ID { get; set; } = null!;
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Gender { get; set; }

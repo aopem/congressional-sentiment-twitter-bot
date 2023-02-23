@@ -62,6 +62,7 @@ namespace MemberTracker.Clients
             {
                 var deserializedMember = new CongressMember
                 {
+                    ID = member.Id,
                     FirstName = member.FirstName,
                     LastName = member.LastName,
                     Gender = member.Gender,
