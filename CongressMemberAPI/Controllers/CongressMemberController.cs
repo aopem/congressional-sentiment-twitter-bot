@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Common.Models;
 using CongressMemberAPI.Services;
 
@@ -23,8 +24,7 @@ namespace CongressMemberAPI.Controllers
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> CreateOrUpdate(CongressMember congressMember)
         {
-            var message = $"[POST Request] {congressMember.ToString()}";
-            _logger.LogInformation(message);
+            _logger.LogInformation($"[POST Request] {JsonConvert.SerializeObject(congressMember)}");
 
             var updatedCongressMember = new CongressMember();
             try
@@ -37,6 +37,7 @@ namespace CongressMemberAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
 
+            _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(updatedCongressMember)}");
             return CreatedAtAction(nameof(Get), new { id = updatedCongressMember.ID }, updatedCongressMember);
         }
 
@@ -44,13 +45,12 @@ namespace CongressMemberAPI.Controllers
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> Get(int id)
         {
-            var message = $"[GET Request] id = {id}";
-            _logger.LogInformation(message);
+            _logger.LogInformation($"[GET Request] id = {id}");
 
             CongressMember? congressMember = null;
             try
             {
-                await _congressMemberService.RetrieveCongressMemberAsync(id);
+                congressMember = await _congressMemberService.RetrieveCongressMemberAsync(id);
             }
             catch (Exception e)
             {
@@ -63,6 +63,7 @@ namespace CongressMemberAPI.Controllers
                 return NotFound();
             }
 
+            _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(congressMember)}");
             return Ok(congressMember);
         }
 
@@ -70,8 +71,7 @@ namespace CongressMemberAPI.Controllers
         [ProducesResponseType(typeof(IQueryable<CongressMember>), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var message = "[GET Request] id = all";
-            _logger.LogInformation(message);
+            _logger.LogInformation("[GET Request] id = all");
 
             IQueryable<CongressMember>? congressMembers = null;
             try
@@ -89,6 +89,7 @@ namespace CongressMemberAPI.Controllers
                 return NotFound();
             }
 
+            _logger.LogInformation("Request successful");
             return Ok(congressMembers);
         }
 
@@ -96,8 +97,7 @@ namespace CongressMemberAPI.Controllers
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
         public async ValueTask<IActionResult> Delete(int id)
         {
-            var message = $"[DELETE Request]id = {id}";
-            _logger.LogInformation(message);
+            _logger.LogInformation($"[DELETE Request] id = {id}");
 
             var congressMember = await _congressMemberService.DeleteCongressMemberAsync(id);
             if (congressMember is null)
@@ -105,6 +105,7 @@ namespace CongressMemberAPI.Controllers
                 return NotFound();
             }
 
+            _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(congressMember)}");
             return Ok(congressMember);
         }
     }

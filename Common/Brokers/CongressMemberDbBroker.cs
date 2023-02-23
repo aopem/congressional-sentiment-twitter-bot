@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Common.Contexts;
 using Common.Models;
+using Newtonsoft.Json;
 
 namespace Common.Brokers
 {
@@ -9,8 +10,7 @@ namespace Common.Brokers
     {
         private readonly IConfiguration _configuration;
 
-        public CongressMemberDbBroker(
-            IConfiguration configuration)
+        public CongressMemberDbBroker(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -63,9 +63,7 @@ namespace Common.Brokers
         private CongressMemberSqlDbContext CreateCongressMemberSqlDbContext()
         {
             return new CongressMemberSqlDbContext(
-                new DbContextOptionsBuilder<CongressMemberSqlDbContext>()
-                    .UseSqlServer(_configuration.GetConnectionString("CongressMemberDb"))
-                    .Options,
+                new DbContextOptionsBuilder<CongressMemberSqlDbContext>().Options,
                 _configuration
             );
         }

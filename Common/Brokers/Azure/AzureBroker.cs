@@ -16,8 +16,7 @@ namespace Common.Brokers.Azure
         private readonly string _apiVersion;
         private readonly string _msiClientId;
 
-        public AzureBroker(
-            IConfiguration configuration)
+        public AzureBroker(IConfiguration configuration)
         {
             if (configuration is null)
             {
