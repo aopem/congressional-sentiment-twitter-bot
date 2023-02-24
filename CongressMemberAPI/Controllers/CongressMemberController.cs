@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Common.Models;
 using CongressMemberAPI.Services;
@@ -21,8 +22,8 @@ namespace CongressMemberAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
-        public async ValueTask<IActionResult> CreateOrUpdate(CongressMember congressMember)
+        [ProducesResponseType(typeof(CongressMember), StatusCodes.Status201Created)]
+        public async ValueTask<IActionResult> CreateOrUpdateAsync(CongressMember congressMember)
         {
             _logger.LogInformation($"[POST Request] {JsonConvert.SerializeObject(congressMember)}");
 
@@ -31,19 +32,24 @@ namespace CongressMemberAPI.Controllers
             {
                 updatedCongressMember = await _congressMemberService.CreateCongressMemberAsync(congressMember);
             }
+            catch (DbUpdateException e)
+            {
+                _logger.LogWarning(e.ToString());
+                return Conflict(e.ToString());
+            }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                _logger.LogError(e.ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
             }
 
             _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(updatedCongressMember)}");
-            return CreatedAtAction(nameof(Get), new { id = updatedCongressMember.ID }, updatedCongressMember);
+            return CreatedAtAction(nameof(GetAsync), new { id = updatedCongressMember.ID }, updatedCongressMember);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
-        public async ValueTask<IActionResult> Get(string id)
+        public async ValueTask<IActionResult> GetAsync(string id)
         {
             _logger.LogInformation($"[GET Request] id = {id}");
 
@@ -54,7 +60,7 @@ namespace CongressMemberAPI.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e.ToString());
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
 
@@ -80,8 +86,8 @@ namespace CongressMemberAPI.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                _logger.LogError(e.ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
             }
 
             if (congressMembers is null)
@@ -95,11 +101,21 @@ namespace CongressMemberAPI.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(CongressMember), StatusCodes.Status200OK)]
-        public async ValueTask<IActionResult> Delete(string id)
+        public async ValueTask<IActionResult> DeleteAsync(string id)
         {
             _logger.LogInformation($"[DELETE Request] id = {id}");
 
-            var congressMember = await _congressMemberService.DeleteCongressMemberAsync(id);
+            CongressMember? congressMember = null;
+            try
+            {
+                congressMember = await _congressMemberService.DeleteCongressMemberAsync(id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e.ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
+            }
+
             if (congressMember is null)
             {
                 return NotFound();

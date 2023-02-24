@@ -29,6 +29,12 @@ namespace CongressMemberAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // make sure async suffix is not removed for routing
+            builder.Services.AddMvc(options =>
+            {
+            options.SuppressAsyncSuffixInActionNames = false;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

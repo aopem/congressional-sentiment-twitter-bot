@@ -80,7 +80,7 @@ namespace MemberTracker.ResponseTypes
         public string ContactForm { get; set; }
 
         [JsonProperty("in_office")]
-        public bool? InOffice { get; set; }
+        public bool InOffice { get; set; }
 
         [JsonProperty("cook_pvi")]
         public object CookPvi { get; set; }

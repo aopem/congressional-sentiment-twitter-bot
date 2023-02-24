@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Common.Models;
 using Common.Enums;
 using Common.Clients;
@@ -9,10 +10,10 @@ namespace MemberTracker.Clients
     {
         private readonly int congress = 117;
 
-        public ProPublicaClient(string apiKey)
+        public ProPublicaClient(IConfiguration configuration)
         {
             _httpClient.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
-            _httpClient.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+            _httpClient.DefaultRequestHeaders.Add("X-API-Key", configuration.GetValue<string>("ProPublicaApiKey"));
         }
 
         public async Task<List<CongressMember>> GetHouseMembersAsync()
