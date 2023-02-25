@@ -14,7 +14,6 @@ namespace Common.Brokers.Azure
         protected readonly string _resourceGroup;
         private readonly string _msiName;
         private readonly string _apiVersion;
-        private readonly string _msiClientId;
 
         public AzureBroker(IConfiguration configuration)
         {
@@ -29,22 +28,34 @@ namespace Common.Brokers.Azure
             _resourceGroup = _configuration.GetValue<string>("ResourceGroupName");
             _msiName = _configuration.GetValue<string>("ManagedIdentity:Name");
             _apiVersion = _configuration.GetValue<string>("ManagedIdentity:RestApiVersion");
-            _msiClientId = GetMsiClientId();
         }
 
         public DefaultAzureCredential GetCredential()
         {
             Console.WriteLine($"Retrieving Azure credential...");
 
-            // local configuration does not use MSI
-            var credential = new DefaultAzureCredential();
-            if (!Constants.LOCAL_EXECUTION)
+            // attempt with MSI, then fallback to using local credentials
+            DefaultAzureCredential? credential = null;
+            try
             {
-                Console.WriteLine($"Credential is using MSI client ID: {_msiClientId}...");
+                Console.WriteLine($"Credential attempting to use MSI client ID...");
+                var msiClientId = GetMsiClientId();
+
+                Console.WriteLine($"Obtained MSI client ID: {msiClientId}");
                 credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
                 {
-                    ManagedIdentityClientId = _msiClientId
+                    ManagedIdentityClientId = msiClientId
                 });
+            }
+            catch
+            {
+                Console.WriteLine("Credential falling back to default Azure credential...");
+                credential = new DefaultAzureCredential();
+            }
+
+            if (credential is null)
+            {
+                throw new Exception("[ERROR] Azure credential is null");
             }
 
             Console.WriteLine("Azure credential acquired");
@@ -53,13 +64,6 @@ namespace Common.Brokers.Azure
 
         private string GetMsiClientId()
         {
-            // use local secrets file when possible
-            if (Constants.LOCAL_EXECUTION)
-            {
-                var secrets = new Config(Constants.SECRETS_FILEPATH);
-                return secrets.Properties.msiClientId;
-            }
-
             // build MSI resource ID, auth URI
             var msiResourceId = String.Join(
                 $"/subscriptions/{_subscriptionId}/resourcegroups",
