@@ -1,0 +1,14 @@
+version: "0.0"
+services:
+  congressmemberapi:
+    image: twitter-bot/congressmemberapi
+    build:
+      context: ./
+      dockerfile: ./CongressMemberAPI/Dockerfile
+    container_name: congressmemberapi
+  membertracker:
+    image: twitter-bot/membertracker
+    build:
+      context: ./
+      dockerfile: ./MemberTracker/Dockerfile
+    container_name: membertracker
