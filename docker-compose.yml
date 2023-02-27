@@ -1,4 +1,4 @@
-version: "0.0"
+version: "3.4"
 services:
   congressmemberapi:
     image: twitter-bot/congressmemberapi
@@ -6,9 +6,19 @@ services:
       context: ./
       dockerfile: ./CongressMemberAPI/Dockerfile
     container_name: congressmemberapi
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
   membertracker:
     image: twitter-bot/membertracker
     build:
       context: ./
       dockerfile: ./MemberTracker/Dockerfile
     container_name: membertracker
+    depends_on:
+      - congressmemberapi
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
