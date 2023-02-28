@@ -10,6 +10,9 @@ services:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET
       - AZURE_TENANT_ID
+      - ASPNETCORE_ENVIRONMENT
+    expose:
+      - 5269
   membertracker:
     image: twitter-bot/membertracker
     build:
@@ -22,3 +25,4 @@ services:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET
       - AZURE_TENANT_ID
+      - ASPNETCORE_ENVIRONMENT

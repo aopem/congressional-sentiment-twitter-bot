@@ -32,8 +32,11 @@ namespace CongressMemberAPI
             // make sure async suffix is not removed for routing
             builder.Services.AddMvc(options =>
             {
-            options.SuppressAsyncSuffixInActionNames = false;
+                options.SuppressAsyncSuffixInActionNames = false;
             });
+
+            // set endpoint
+            builder.WebHost.UseUrls("http://localhost:5269");
 
             var app = builder.Build();
 
