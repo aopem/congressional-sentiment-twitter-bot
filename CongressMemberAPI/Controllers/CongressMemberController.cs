@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Common.Models;
-using CongressMemberAPI.Services;
+using Common.Services;
 
 namespace CongressMemberAPI.Controllers
 {
@@ -11,11 +11,11 @@ namespace CongressMemberAPI.Controllers
     public class CongressMemberController : ControllerBase
     {
         private readonly ILogger<CongressMemberController> _logger;
-        private readonly CongressMemberService _congressMemberService;
+        private readonly ICongressMemberService _congressMemberService;
 
         public CongressMemberController(
             ILogger<CongressMemberController> logger,
-            CongressMemberService congressMemberService)
+            ICongressMemberService congressMemberService)
         {
             _logger = logger;
             _congressMemberService = congressMemberService;
@@ -27,18 +27,10 @@ namespace CongressMemberAPI.Controllers
         {
             _logger.LogInformation($"[POST Request] {JsonConvert.SerializeObject(congressMember)}");
 
-            // check if member already exists
-            var updatedCongressMember = await _congressMemberService.RetrieveCongressMemberAsync(congressMember.ID);            try
+            var modifiedCongressMember = new CongressMember();
+            try
             {
-                // if doesn't already exist, create, else update
-                if (updatedCongressMember is null)
-                {
-                    updatedCongressMember = await _congressMemberService.CreateCongressMemberAsync(congressMember);
-                }
-                else
-                {
-                    updatedCongressMember = await _congressMemberService.UpdateCongressMemberAsync(congressMember);
-                }
+                modifiedCongressMember = await _congressMemberService.CreateOrUpdateCongressMemberAsync(congressMember);
             }
             catch (DbUpdateException e)
             {
@@ -51,8 +43,15 @@ namespace CongressMemberAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
             }
 
-            _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(updatedCongressMember)}");
-            return CreatedAtAction(nameof(GetAsync), new { id = updatedCongressMember.ID }, updatedCongressMember);
+            if (modifiedCongressMember is null)
+            {
+                var error = "[ERROR] Congress Member object returned is null";
+                _logger.LogError(error);
+                return StatusCode(StatusCodes.Status500InternalServerError, error);
+            }
+
+            _logger.LogInformation($"Request successful, returning: {JsonConvert.SerializeObject(modifiedCongressMember)}");
+            return CreatedAtAction(nameof(GetAsync), new { id = modifiedCongressMember.ID }, modifiedCongressMember);
         }
 
         [HttpGet("{id}")]

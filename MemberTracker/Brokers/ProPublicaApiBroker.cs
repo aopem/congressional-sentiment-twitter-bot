@@ -7,7 +7,7 @@ using MemberTracker.ResponseTypes;
 
 namespace MemberTracker.Brokers
 {
-    public class ProPublicaApiBroker : HttpApiClient
+    public class ProPublicaApiBroker : HttpApiClient, IProPublicaApiBroker
     {
         private readonly ILogger<ProPublicaApiBroker> _logger;
         private readonly IConfiguration _configuration;
@@ -23,7 +23,7 @@ namespace MemberTracker.Brokers
             _httpClient.DefaultRequestHeaders.Add("X-API-Key", configuration.GetValue<string>("ProPublicaApiKey"));
         }
 
-        public async ValueTask<List<CongressMember>> GetAllHouseMembersAsync()
+        public async ValueTask<IEnumerable<CongressMember>> GetAllHouseMembersAsync()
         {
             _logger.LogInformation("Retrieving all current House member information...");
 
@@ -36,7 +36,7 @@ namespace MemberTracker.Brokers
             {
                 var error = await response.Content.ReadAsStringAsync();
                 _logger.LogError(error);
-                return new List<CongressMember>();
+                return Enumerable.Empty<CongressMember>();
             }
 
             // deserialize list and return
@@ -44,7 +44,7 @@ namespace MemberTracker.Brokers
             return DeserializeProPublicaResponse(responseContent, Chamber.House);
         }
 
-        public async ValueTask<List<CongressMember>> GetAllSenateMembersAsync()
+        public async ValueTask<IEnumerable<CongressMember>> GetAllSenateMembersAsync()
         {
             _logger.LogInformation("Retrieving all current Senate member information...");
 
@@ -57,7 +57,7 @@ namespace MemberTracker.Brokers
             {
                 var error = await response.Content.ReadAsStringAsync();
                 _logger.LogError(error);
-                return new List<CongressMember>();
+                return Enumerable.Empty<CongressMember>();
             }
 
             // deserialize list and return

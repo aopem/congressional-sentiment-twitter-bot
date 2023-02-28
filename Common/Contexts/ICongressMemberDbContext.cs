@@ -5,6 +5,6 @@ namespace Common.Contexts
 {
     public interface ICongressMemberDbContext
     {
-        public DbSet<CongressMember> CongressMembers { get; set; }
+        DbSet<CongressMember> CongressMembers { get; set; }
     }
 }

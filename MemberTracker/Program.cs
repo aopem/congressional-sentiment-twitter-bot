@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MemberTracker.Brokers;
 using Common.Brokers.Azure;
-using Common.Models;
+using Common.Services;
+using MemberTracker.Brokers;
+using MemberTracker.Services;
 
 namespace MemberTracker
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -20,19 +21,23 @@ namespace MemberTracker
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 azureBroker.GetCredential());
 
-
+            // dependency injection
+            AddBrokers(builder.Services);
+            AddServices(builder.Services);
 
             Console.WriteLine("Task Complete. All Congress Member info updated");
         }
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddScoped<CongressMemberApiBroker>();
-            services.AddScoped<ProPublicaApiBroker>();
+            services.AddScoped<ICongressMemberApiBroker>();
+            services.AddScoped<IProPublicaApiBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
+            services.AddScoped<ICongressMemberService>();
+            services.AddScoped<IProPublicaService>();
         }
     }
 }

@@ -1,19 +1,27 @@
+using Microsoft.EntityFrameworkCore;
 using Common.Models;
 using Common.Brokers;
+using Common.Services;
 
 namespace CongressMemberAPI.Services
 {
-    public class CongressMemberService
+    public class CongressMemberService : ICongressMemberService
     {
-        private readonly CongressMemberDbBroker _congressMemberDbBroker;
+        private readonly ICongressMemberDbBroker _congressMemberDbBroker;
 
-        public CongressMemberService(CongressMemberDbBroker congressMemberDbBroker)
+        public CongressMemberService(ICongressMemberDbBroker congressMemberDbBroker)
         {
             _congressMemberDbBroker = congressMemberDbBroker;
         }
 
-        public async ValueTask<CongressMember> CreateCongressMemberAsync(CongressMember congressMember)
+        public async ValueTask<CongressMember?> CreateOrUpdateCongressMemberAsync(CongressMember congressMember)
         {
+            var existingCongressMember = await RetrieveCongressMemberAsync(congressMember.ID);
+            if (existingCongressMember is not null)
+            {
+                return await _congressMemberDbBroker.UpdateAsync(congressMember);
+            }
+
             return await _congressMemberDbBroker.InsertAsync(congressMember);
         }
 
@@ -22,17 +30,12 @@ namespace CongressMemberAPI.Services
             return await _congressMemberDbBroker.SelectByIdAsync(id);
         }
 
-        public IQueryable<CongressMember> RetrieveAllCongressMembers()
+        public async ValueTask<IEnumerable<CongressMember>> RetrieveAllCongressMembersAsync()
         {
-            return _congressMemberDbBroker.SelectAll();
+            return await _congressMemberDbBroker.SelectAll().ToListAsync<CongressMember>();
         }
 
-        public async ValueTask<CongressMember> UpdateCongressMemberAsync(CongressMember congressMember)
-        {
-            return await _congressMemberDbBroker.UpdateAsync(congressMember);
-        }
-
-        public async ValueTask<CongressMember> DeleteCongressMemberAsync(string id)
+        public async ValueTask<CongressMember?> DeleteCongressMemberAsync(string id)
         {
             return await _congressMemberDbBroker.DeleteByIdAsync(id);
         }

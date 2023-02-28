@@ -1,17 +1,18 @@
 using Microsoft.Extensions.Logging;
 using Common.Models;
+using Common.Services;
 using MemberTracker.Brokers;
 
 namespace MemberTracker.Services
 {
-    public class CongressMemberApiService
+    public class CongressMemberApiService : ICongressMemberService
     {
         private readonly ILogger<CongressMemberApiService> _logger;
-        private readonly CongressMemberApiBroker _congressMemberApiBroker;
+        private readonly ICongressMemberApiBroker _congressMemberApiBroker;
 
         public CongressMemberApiService(
             ILogger<CongressMemberApiService> logger,
-            CongressMemberApiBroker congressMemberApiBroker)
+            ICongressMemberApiBroker congressMemberApiBroker)
         {
             _logger = logger;
             _congressMemberApiBroker = congressMemberApiBroker;
@@ -27,14 +28,14 @@ namespace MemberTracker.Services
             return await _congressMemberApiBroker.GetByIdAsync(id);
         }
 
-        public async ValueTask<List<CongressMember>> RetrieveAllCongressMembersAsync()
+        public async ValueTask<IEnumerable<CongressMember>> RetrieveAllCongressMembersAsync()
         {
             return await _congressMemberApiBroker.GetAllAsync();
         }
 
         public async ValueTask<CongressMember?> DeleteCongressMemberAsync(string id)
         {
-            return await _congressMemberApiBroker.DeleteById(id);
+            return await _congressMemberApiBroker.DeleteByIdAsync(id);
         }
     }
 }

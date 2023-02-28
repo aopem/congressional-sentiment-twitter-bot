@@ -4,7 +4,7 @@ using MemberTracker.Brokers;
 
 namespace MemberTracker.Services
 {
-    public class ProPublicaApiService
+    public class ProPublicaApiService : IProPublicaService
     {
         private readonly ILogger<ProPublicaApiService> _logger;
         private readonly ProPublicaApiBroker _proPublicaApiBroker;
@@ -17,12 +17,12 @@ namespace MemberTracker.Services
             _proPublicaApiBroker = proPublicaApiBroker;
         }
 
-        public async ValueTask<List<CongressMember>> RetrieveAllHouseMembersAsync()
+        public async ValueTask<IEnumerable<CongressMember>> RetrieveAllHouseMembersAsync()
         {
             return await _proPublicaApiBroker.GetAllHouseMembersAsync();
         }
 
-        public async ValueTask<List<CongressMember>> RetrieveAllSenateMembersAsync()
+        public async ValueTask<IEnumerable<CongressMember>> RetrieveAllSenateMembersAsync()
         {
             return await _proPublicaApiBroker.GetAllSenateMembersAsync();
         }

@@ -1,7 +1,7 @@
 using Common.Brokers;
 using Common.Brokers.Azure;
 using Common.Contexts;
-using CongressMemberAPI.Services;
+using Common.Services;
 
 namespace CongressMemberAPI
 {
@@ -51,12 +51,12 @@ namespace CongressMemberAPI
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddScoped<CongressMemberDbBroker>();
+            services.AddScoped<ICongressMemberDbBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddScoped<CongressMemberService>();
+            services.AddScoped<ICongressMemberService>();
         }
     }
 }

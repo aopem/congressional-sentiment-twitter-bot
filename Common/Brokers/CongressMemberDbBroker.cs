@@ -5,7 +5,7 @@ using Common.Models;
 
 namespace Common.Brokers
 {
-    public class CongressMemberDbBroker
+    public class CongressMemberDbBroker : ICongressMemberDbBroker
     {
         private readonly IConfiguration _configuration;
 
@@ -14,7 +14,7 @@ namespace Common.Brokers
             _configuration = configuration;
         }
 
-        public async ValueTask<CongressMember> InsertAsync(CongressMember congressMember)
+        public async ValueTask<CongressMember?> InsertAsync(CongressMember congressMember)
         {
             var dbContext = CreateCongressMemberSqlDbContext();
             var entry = await dbContext.CongressMembers.AddAsync(congressMember);
@@ -23,7 +23,7 @@ namespace Common.Brokers
             return entry.Entity;
         }
 
-        public async ValueTask<CongressMember> UpdateAsync(CongressMember congressMember)
+        public async ValueTask<CongressMember?> UpdateAsync(CongressMember congressMember)
         {
             var dbContext = CreateCongressMemberSqlDbContext();
             var entry = dbContext.CongressMembers.Update(congressMember);
@@ -41,10 +41,10 @@ namespace Common.Brokers
         public IQueryable<CongressMember> SelectAll()
         {
             var dbContext = CreateCongressMemberSqlDbContext();
-            return dbContext.CongressMembers;
+            return dbContext.CongressMembers.AsQueryable();
         }
 
-        public async ValueTask<CongressMember> DeleteByIdAsync(string id)
+        public async ValueTask<CongressMember?> DeleteByIdAsync(string id)
         {
             var congressMember = await SelectByIdAsync(id);
             if (congressMember is null)

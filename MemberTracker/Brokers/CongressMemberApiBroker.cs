@@ -5,7 +5,7 @@ using Common.Models;
 
 namespace MemberTracker.Brokers
 {
-    public class CongressMemberApiBroker : HttpApiClient
+    public class CongressMemberApiBroker : HttpApiClient, ICongressMemberApiBroker
     {
         private readonly ILogger<CongressMemberApiBroker> _logger;
         private readonly IConfiguration _configuration;
@@ -49,7 +49,7 @@ namespace MemberTracker.Brokers
             return await response.Content.ReadAsAsync<CongressMember>();
         }
 
-        public async ValueTask<List<CongressMember>> GetAllAsync()
+        public async ValueTask<IEnumerable<CongressMember>> GetAllAsync()
         {
             var path = $"CongressMember";
             var response = await _httpClient.GetAsync(path);
@@ -58,13 +58,13 @@ namespace MemberTracker.Brokers
             {
                 var error = await response.Content.ReadAsStringAsync();
                 _logger.LogError(error);
-                return new List<CongressMember>();
+                return Enumerable.Empty<CongressMember>();
             }
 
-            return await response.Content.ReadAsAsync<List<CongressMember>>();
+            return await response.Content.ReadAsAsync<IEnumerable<CongressMember>>();
         }
 
-        public async ValueTask<CongressMember?> DeleteById(string id)
+        public async ValueTask<CongressMember?> DeleteByIdAsync(string id)
         {
             var path = $"CongressMember/{id}";
             var response = await _httpClient.DeleteAsync(path);
