@@ -82,14 +82,14 @@ namespace CongressMemberAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IQueryable<CongressMember>), StatusCodes.Status200OK)]
-        public IActionResult GetAll()
+        public async ValueTask<IActionResult> GetAllAsync()
         {
             _logger.LogInformation("[GET Request] id = all");
 
-            IQueryable<CongressMember>? congressMembers = null;
+            var congressMembers = Enumerable.Empty<CongressMember>();
             try
             {
-                congressMembers = _congressMemberService.RetrieveAllCongressMembers();
+                congressMembers = await _congressMemberService.RetrieveAllCongressMembersAsync();
             }
             catch (Exception e)
             {

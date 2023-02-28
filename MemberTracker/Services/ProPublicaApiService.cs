@@ -7,11 +7,11 @@ namespace MemberTracker.Services
     public class ProPublicaApiService : IProPublicaService
     {
         private readonly ILogger<ProPublicaApiService> _logger;
-        private readonly ProPublicaApiBroker _proPublicaApiBroker;
+        private readonly IProPublicaApiBroker _proPublicaApiBroker;
 
         public ProPublicaApiService(
             ILogger<ProPublicaApiService> logger,
-            ProPublicaApiBroker proPublicaApiBroker)
+            IProPublicaApiBroker proPublicaApiBroker)
         {
             _logger = logger;
             _proPublicaApiBroker = proPublicaApiBroker;

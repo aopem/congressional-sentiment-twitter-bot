@@ -68,17 +68,48 @@ namespace MemberTracker.Brokers
         private List<CongressMember> DeserializeProPublicaResponse(ProPublicaResponse response, Chamber chamber)
         {
             var congressMembers = new List<CongressMember>();
-            foreach (var member in response.Results[0].Members)
+            var memberResponseResult = response.Results;
+            if (memberResponseResult is null)
             {
+                var error = "[ERROR] response.Results is null";
+                _logger.LogError(error);
+                return congressMembers;
+            }
+
+            var memberReponseResultEntry = memberResponseResult[0];
+            if (memberReponseResultEntry is null)
+            {
+                var error = "[ERROR] response.Results[0] is null";
+                _logger.LogError(error);
+                return congressMembers;
+            }
+
+            var memberReponseList = memberResponseResult[0].Members;
+            if (memberReponseList is null)
+            {
+                var error = "[ERROR] response.Results[0].Members is null";
+                _logger.LogError(error);
+                return congressMembers;
+            }
+
+            foreach (var member in memberReponseList)
+            {
+                if (member is null)
+                {
+                    var error = "[ERROR] Encountered null member object during deserialization";
+                    _logger.LogError(error);
+                    continue;
+                }
+
                 var deserializedMember = new CongressMember
                 {
-                    ID = member.Id,
-                    FirstName = member.FirstName,
-                    LastName = member.LastName,
-                    Gender = member.Gender,
-                    Party = member.Party,
-                    State = member.State,
-                    TwitterAccountName = member.TwitterAccount,
+                    ID = member.Id!,
+                    FirstName = member.FirstName!,
+                    LastName = member.LastName!,
+                    Gender = member.Gender!,
+                    Party = member.Party!,
+                    State = member.State!,
+                    TwitterAccountName = member.TwitterAccount!,
                     Chamber = chamber
                 };
 

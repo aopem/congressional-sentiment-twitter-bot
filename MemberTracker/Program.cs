@@ -5,6 +5,7 @@ using Common.Brokers.Azure;
 using Common.Services;
 using MemberTracker.Brokers;
 using MemberTracker.Services;
+using MemberTracker.BackgroundServices;
 
 namespace MemberTracker
 {
@@ -24,20 +25,23 @@ namespace MemberTracker
             // dependency injection
             AddBrokers(builder.Services);
             AddServices(builder.Services);
+            builder.Services.AddHostedService<ScheduledMemberTrackerTask>();
+            builder.Services.AddScoped<IScopedProcessingService, MemberTrackerProcessingService>();
 
-            Console.WriteLine("Task Complete. All Congress Member info updated");
+            var app = builder.Build();
+            app.Run();
         }
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddScoped<ICongressMemberApiBroker>();
-            services.AddScoped<IProPublicaApiBroker>();
+            services.AddScoped<ICongressMemberApiBroker, CongressMemberApiBroker>();
+            services.AddScoped<IProPublicaApiBroker, ProPublicaApiBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddScoped<ICongressMemberService>();
-            services.AddScoped<IProPublicaService>();
+            services.AddScoped<ICongressMemberService, CongressMemberApiService>();
+            services.AddScoped<IProPublicaService, ProPublicaApiService>();
         }
     }
 }
