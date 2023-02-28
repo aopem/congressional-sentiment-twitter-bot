@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using MemberTracker.Clients;
+using Microsoft.Extensions.DependencyInjection;
+using MemberTracker.Brokers;
 using Common.Brokers.Azure;
 using Common.Models;
 
@@ -19,30 +20,19 @@ namespace MemberTracker
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 azureBroker.GetCredential());
 
-            // call API and get congressional data
-            var proPublicaClient = new ProPublicaClient(builder.Configuration);
-            var houseMembers = await proPublicaClient.GetHouseMembersAsync();
-            var senateMembers = await proPublicaClient.GetSenateMembersAsync();
 
-            // join lists to add to database, then update
-            var congressMemberClient = new CongressMemberClient(builder.Configuration);
-            var congressMembers = houseMembers.Concat<CongressMember>(senateMembers);
-
-            // add all members to database
-            foreach (var member in congressMembers)
-            {
-                try
-                {
-                    await congressMemberClient.CreateOrUpdateMember(member);
-                }
-                catch (Exception e)
-                {
-                    // handle exceptions when member already exists
-                    Console.WriteLine(e.ToString());
-                }
-            }
 
             Console.WriteLine("Task Complete. All Congress Member info updated");
+        }
+
+        private static void AddBrokers(IServiceCollection services)
+        {
+            services.AddScoped<CongressMemberApiBroker>();
+            services.AddScoped<ProPublicaApiBroker>();
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
         }
     }
 }

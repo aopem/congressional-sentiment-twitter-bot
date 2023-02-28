@@ -27,10 +27,18 @@ namespace CongressMemberAPI.Controllers
         {
             _logger.LogInformation($"[POST Request] {JsonConvert.SerializeObject(congressMember)}");
 
-            var updatedCongressMember = new CongressMember();
-            try
+            // check if member already exists
+            var updatedCongressMember = await _congressMemberService.RetrieveCongressMemberAsync(congressMember.ID);            try
             {
-                updatedCongressMember = await _congressMemberService.CreateCongressMemberAsync(congressMember);
+                // if doesn't already exist, create, else update
+                if (updatedCongressMember is null)
+                {
+                    updatedCongressMember = await _congressMemberService.CreateCongressMemberAsync(congressMember);
+                }
+                else
+                {
+                    updatedCongressMember = await _congressMemberService.UpdateCongressMemberAsync(congressMember);
+                }
             }
             catch (DbUpdateException e)
             {

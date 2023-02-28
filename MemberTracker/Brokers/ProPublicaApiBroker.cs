@@ -1,58 +1,67 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Common.Models;
 using Common.Enums;
 using Common.Clients;
 using MemberTracker.ResponseTypes;
 
-namespace MemberTracker.Clients
+namespace MemberTracker.Brokers
 {
-    public class ProPublicaClient : HttpApiClient
+    public class ProPublicaApiBroker : HttpApiClient
     {
+        private readonly ILogger<ProPublicaApiBroker> _logger;
+        private readonly IConfiguration _configuration;
         private readonly int congress = 117;
 
-        public ProPublicaClient(IConfiguration configuration)
+        public ProPublicaApiBroker(
+            ILogger<ProPublicaApiBroker> logger,
+            IConfiguration configuration)
         {
+            _logger = logger;
+            _configuration = configuration;
             _httpClient.BaseAddress = new Uri($"https://api.propublica.org/congress/v1/{congress}/");
             _httpClient.DefaultRequestHeaders.Add("X-API-Key", configuration.GetValue<string>("ProPublicaApiKey"));
         }
 
-        public async Task<List<CongressMember>> GetHouseMembersAsync()
+        public async ValueTask<List<CongressMember>> GetAllHouseMembersAsync()
         {
-            Console.WriteLine("Retrieving all current House member information...");
+            _logger.LogInformation("Retrieving all current House member information...");
 
             var path = "house/members.json";
             HttpResponseMessage response = await _httpClient.GetAsync(path);
 
+            // handle any errors
             ProPublicaResponse responseContent = new ProPublicaResponse();
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
-            }
-            else
-            {
-                throw new Exception();
+                var error = await response.Content.ReadAsStringAsync();
+                _logger.LogError(error);
+                return new List<CongressMember>();
             }
 
+            // deserialize list and return
+            responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
             return DeserializeProPublicaResponse(responseContent, Chamber.House);
         }
 
-        public async Task<List<CongressMember>> GetSenateMembersAsync()
+        public async ValueTask<List<CongressMember>> GetAllSenateMembersAsync()
         {
-            Console.WriteLine("Retrieving all current Senate member information...");
+            _logger.LogInformation("Retrieving all current Senate member information...");
 
             var path = "senate/members.json";
             HttpResponseMessage response = await _httpClient.GetAsync(path);
 
+            // handle any errors
             var responseContent = new ProPublicaResponse();
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
-            }
-            else
-            {
-                throw new Exception();
+                var error = await response.Content.ReadAsStringAsync();
+                _logger.LogError(error);
+                return new List<CongressMember>();
             }
 
+            // deserialize list and return
+            responseContent = await response.Content.ReadAsAsync<ProPublicaResponse>();
             return DeserializeProPublicaResponse(responseContent, Chamber.Senate);
         }
 
