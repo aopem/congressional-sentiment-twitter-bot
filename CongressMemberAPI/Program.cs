@@ -35,9 +35,6 @@ namespace CongressMemberAPI
                 options.SuppressAsyncSuffixInActionNames = false;
             });
 
-            // set endpoint
-            builder.WebHost.UseUrls("http://localhost:5269");
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
