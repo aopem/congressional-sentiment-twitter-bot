@@ -19,8 +19,6 @@ services:
       context: ./
       dockerfile: ./MemberTracker/Dockerfile
     container_name: membertracker
-    depends_on:
-      - congressmemberapi
     environment:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET
