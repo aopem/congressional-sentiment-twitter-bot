@@ -1,0 +1,13 @@
+replicaCount: 1
+
+image:
+  repository: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi
+  tag: "latest"
+
+service:
+  name: congressmemberapi-service
+  type: ClusterIP
+  containerPort: 5269
+  port: 5269
+  targetPort: 80
+  protocol: TCP
