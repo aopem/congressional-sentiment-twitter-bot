@@ -64,7 +64,7 @@ namespace MemberTracker.BackgroundServices
 
         private int GetMsBetweenExecutions()
         {
-            var msBetweenExecutions = (int)(DateTime.Now.AddDays(_daysBetweenExecution) - DateTime.Now).TotalMilliseconds;
+            var msBetweenExecutions = (int)(DateTime.Now.AddMinutes(3) - DateTime.Now).TotalMilliseconds;
             _logger.LogInformation($"Time until next execution: {msBetweenExecutions} ms");
             return msBetweenExecutions;
         }
