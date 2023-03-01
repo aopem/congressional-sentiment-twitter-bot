@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   congressmemberapi:
-    image: twitter-bot/congressmemberapi
+    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi
     build:
       context: ./
       dockerfile: ./CongressMemberAPI/Dockerfile
@@ -14,7 +14,7 @@ services:
     ports:
       - "5269:80"
   membertracker:
-    image: twitter-bot/membertracker
+    image: twitterbotacr.azurecr.io/twitter-bot/membertracker
     build:
       context: ./
       dockerfile: ./MemberTracker/Dockerfile
