@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: congressmemberapi-{{ .Release.Name }}
+  name: {{ .Release.Name }}-congressmemberapi
   labels:
     app: congressmemberapi
 spec:
