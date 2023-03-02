@@ -2,4 +2,4 @@ replicaCount: 1
 
 image:
   repository: twitterbotacr.azurecr.io/twitter-bot/membertracker
-  tag: "latest"
+  tag: "0.0.0"

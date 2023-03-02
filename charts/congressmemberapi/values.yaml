@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi
-  tag: "latest"
+  tag: "0.0.0"
 
 service:
   name: congressmemberapi-service
