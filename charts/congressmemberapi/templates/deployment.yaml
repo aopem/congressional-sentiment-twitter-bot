@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-congressmemberapi
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
   labels:
-    app: congressmemberapi
+    app: {{ .Chart.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: congressmemberapi
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: congressmemberapi
+        app: {{ .Chart.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: {{ .Values.service.containerPort }}

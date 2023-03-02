@@ -1,6 +1,6 @@
 apiVersion: v2
 name: membertracker
-description: API for updating database of Congress members
+description: App to keep Congress member database up to date
 
 # A chart can be either an 'application' or a 'library' chart.
 #

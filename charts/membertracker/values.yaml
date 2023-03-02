@@ -1,4 +1,4 @@
-replicaCount: 0
+replicaCount: 1
 
 image:
   repository: twitterbotacr.azurecr.io/twitter-bot/membertracker
