@@ -11,3 +11,9 @@ service:
   port: 5269
   targetPort: 80
   protocol: TCP
+
+managedIdentity:
+  name: twitter-bot-msi
+
+aspNetCore:
+  environment: Development

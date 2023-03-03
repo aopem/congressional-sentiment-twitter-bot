@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
 using Azure.Identity;
-using Common.Brokers.Azure;
 using Common.Services;
 using MemberTracker.Brokers;
 using MemberTracker.Services;
@@ -24,25 +22,19 @@ namespace MemberTracker
                 builder.SetMinimumLevel(LogLevel.Information);
                 builder.AddConsole();
             });
-            var logger = loggerFactory.CreateLogger<AzureBroker>();
-            var azureBroker = new AzureBroker(logger, builder.Configuration);
+            var logger = loggerFactory.CreateLogger<Program>();
 
-            // authenticate to Azure depending on environment
-            DefaultAzureCredential? credential = null;
-            if (builder.Environment.IsDevelopment())
-            {
-                credential = azureBroker.GetDevelopmentCredential();
-            }
-            else
-            {
-                credential = azureBroker.GetProductionCredential();
-            }
+            // get Azure credential
+            logger.LogInformation("Retrieving Azure credential...");
+            var credential = new DefaultAzureCredential();
 
             // get secrets and add to configuration
             var keyVaultName = builder.Configuration.GetValue<string>("Azure:KeyVault:Name");
             builder.Configuration.AddAzureKeyVault(
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 credential);
+
+            logger.LogInformation("Successfully authenticated to Azure and retrieved secrets");
 
             // dependency injection
             AddBrokers(builder.Services);

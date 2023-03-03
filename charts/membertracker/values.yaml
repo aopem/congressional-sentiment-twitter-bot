@@ -3,3 +3,9 @@ replicaCount: 1
 image:
   repository: twitterbotacr.azurecr.io/twitter-bot/membertracker
   tag: "0.0.0"
+
+managedIdentity:
+  name: twitter-bot-msi
+
+aspNetCore:
+  environment: Development

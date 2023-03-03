@@ -1,6 +1,5 @@
 using Azure.Identity;
 using Common.Brokers;
-using Common.Brokers.Azure;
 using Common.Contexts;
 using Common.Services;
 using CongressMemberAPI.Services;
@@ -13,31 +12,24 @@ namespace CongressMemberAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // create a logger for AzureBroker, then broker itself
+            // create a logger for main
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.SetMinimumLevel(LogLevel.Information);
                 builder.AddConsole();
             });
-            var logger = loggerFactory.CreateLogger<AzureBroker>();
-            var azureBroker = new AzureBroker(logger, builder.Configuration);
+            var logger = loggerFactory.CreateLogger<Program>();
 
-            // authenticate to Azure depending on environment
-            DefaultAzureCredential? credential = null;
-            if (builder.Environment.IsDevelopment())
-            {
-                credential = azureBroker.GetDevelopmentCredential();
-            }
-            else
-            {
-                credential = azureBroker.GetProductionCredential();
-            }
+            // get Azure credential
+            logger.LogInformation("Retrieving Azure credential...");
+            var credential = new DefaultAzureCredential();
 
             // get secrets and add to configuration
             var keyVaultName = builder.Configuration.GetValue<string>("Azure:KeyVault:Name");
             builder.Configuration.AddAzureKeyVault(
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 credential);
+            logger.LogInformation("Successfully authenticated to Azure and retrieved secrets");
 
             builder.Services.AddDbContext<CongressMemberSqlDbContext>();
 
