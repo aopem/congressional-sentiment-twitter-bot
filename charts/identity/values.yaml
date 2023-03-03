@@ -1,0 +1,3 @@
+managedIdentity:
+  name: twitter-bot-msi
+  clientId: __SECRET__
