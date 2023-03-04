@@ -9,7 +9,7 @@ namespace MemberTracker.BackgroundServices
         private readonly ILogger<ScheduledMemberTrackerTask> _logger;
         private readonly IServiceProvider _serviceProvider;
         private Timer? _timer;
-        private readonly int _daysBetweenExecution = 15;
+        private readonly int _daysBetweenExecution = 1;
 
         public ScheduledMemberTrackerTask(
             ILogger<ScheduledMemberTrackerTask> logger,
@@ -64,8 +64,8 @@ namespace MemberTracker.BackgroundServices
 
         private int GetMsBetweenExecutions()
         {
-            var msBetweenExecutions = (int)(DateTime.Now.AddMinutes(3) - DateTime.Now).TotalMilliseconds;
-            _logger.LogInformation($"Time until next execution: {msBetweenExecutions} ms");
+            var msBetweenExecutions = (int)(DateTime.Now.AddDays(_daysBetweenExecution) - DateTime.Now).TotalMilliseconds;
+            _logger.LogInformation($"Time until next execution: {_daysBetweenExecution} day(s) ({msBetweenExecutions} ms)");
             return msBetweenExecutions;
         }
     }

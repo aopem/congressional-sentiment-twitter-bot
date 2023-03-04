@@ -16,7 +16,11 @@ namespace MemberTracker.Brokers
         {
             _logger = logger;
             _configuration = configuration;
-            _httpClient.BaseAddress = new Uri($"http://localhost:{_configuration.GetValue<string>("CongressMemberApi:Port")}/api/");
+
+            // set HTTP client for API calls
+            var port = _configuration.GetValue<string>("CongressMemberApi:Port");
+            var host = _configuration.GetValue<string>("CongressMemberApi:Host");
+            _httpClient.BaseAddress = new Uri($"http://{host}:{port}/api/");
         }
 
         public async ValueTask<CongressMember?> CreateOrUpdateAsync(CongressMember congressMember)
