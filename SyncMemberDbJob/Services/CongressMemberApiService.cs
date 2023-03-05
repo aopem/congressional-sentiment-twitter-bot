@@ -1,9 +1,8 @@
-using Microsoft.Extensions.Logging;
 using Common.Models;
 using Common.Services;
-using MemberTracker.Brokers;
+using SyncMemberDbJob.Brokers;
 
-namespace MemberTracker.Services
+namespace SyncMemberDbJob.Services
 {
     public class CongressMemberApiService : ICongressMemberService
     {

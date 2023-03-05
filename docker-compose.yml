@@ -13,12 +13,12 @@ services:
       - ASPNETCORE_ENVIRONMENT
     ports:
       - "5269:80"
-  membertracker:
-    image: twitterbotacr.azurecr.io/twitter-bot/membertracker:1.0.0
+  syncmemberdbjob:
+    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:1.0.0
     build:
       context: ./
-      dockerfile: ./MemberTracker/Dockerfile
-    container_name: membertracker
+      dockerfile: ./SyncMemberDbJob/Dockerfile
+    container_name: syncmemberdbjob
     environment:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET

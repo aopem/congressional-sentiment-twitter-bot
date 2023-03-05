@@ -1,20 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Azure.Identity;
+﻿using Azure.Identity;
 using Common.Services;
-using MemberTracker.Brokers;
-using MemberTracker.Services;
-using MemberTracker.BackgroundServices;
+using SyncMemberDbJob.Brokers;
+using SyncMemberDbJob.Services;
+using SyncMemberDbJob.BackgroundServices;
 
-namespace MemberTracker
+namespace SyncMemberDbJob
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = Host.CreateApplicationBuilder(args);
 
             // create a logger for AzureBroker, then broker itself
             var loggerFactory = LoggerFactory.Create(builder =>
@@ -39,10 +35,9 @@ namespace MemberTracker
             // dependency injection
             AddBrokers(builder.Services);
             AddServices(builder.Services);
-            builder.Services.AddHostedService<ScheduledMemberTrackerTask>();
-            builder.Services.AddScoped<IScopedProcessingService, MemberTrackerProcessingService>();
+            builder.Services.AddHostedService<SyncMemberDbBackgroundService>();
 
-            builder.Build().Run();
+            await builder.Build().RunAsync();
         }
 
         private static void AddBrokers(IServiceCollection services)

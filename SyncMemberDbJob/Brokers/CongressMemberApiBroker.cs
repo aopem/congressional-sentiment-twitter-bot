@@ -1,9 +1,7 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Common.Clients;
 using Common.Models;
 
-namespace MemberTracker.Brokers
+namespace SyncMemberDbJob.Brokers
 {
     public class CongressMemberApiBroker : HttpApiClient, ICongressMemberApiBroker
     {

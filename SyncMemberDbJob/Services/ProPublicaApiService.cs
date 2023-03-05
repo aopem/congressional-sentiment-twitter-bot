@@ -1,8 +1,7 @@
-using Microsoft.Extensions.Logging;
 using Common.Models;
-using MemberTracker.Brokers;
+using SyncMemberDbJob.Brokers;
 
-namespace MemberTracker.Services
+namespace SyncMemberDbJob.Services
 {
     public class ProPublicaApiService : IProPublicaService
     {

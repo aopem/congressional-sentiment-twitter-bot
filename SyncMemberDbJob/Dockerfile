@@ -7,16 +7,16 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 # copy common, application files
 WORKDIR /
 COPY ./Common/ /Common/
-COPY ./MemberTracker/ /MemberTracker/
+COPY ./SyncMemberDbJob/ /SyncMemberDbJob/
 
 # build app
-WORKDIR /MemberTracker
+WORKDIR /SyncMemberDbJob
 RUN dotnet publish -c release -o /Release
 
 #
 # RUN stage
 #
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
-WORKDIR /MemberTracker
+WORKDIR /SyncMemberDbJob
 COPY --from=build /Release ./
-ENTRYPOINT ["dotnet", "MemberTracker.dll"]
+ENTRYPOINT ["dotnet", "SyncMemberDbJob.dll"]

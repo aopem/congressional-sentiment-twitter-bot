@@ -1,11 +1,9 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Common.Models;
 using Common.Enums;
 using Common.Clients;
-using MemberTracker.ResponseTypes;
+using SyncMemberDbJob.ResponseTypes;
 
-namespace MemberTracker.Brokers
+namespace SyncMemberDbJob.Brokers
 {
     public class ProPublicaApiBroker : HttpApiClient, IProPublicaApiBroker
     {

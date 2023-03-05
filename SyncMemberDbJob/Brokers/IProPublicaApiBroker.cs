@@ -1,6 +1,6 @@
 using Common.Models;
 
-namespace MemberTracker.Brokers
+namespace SyncMemberDbJob.Brokers
 {
     public interface IProPublicaApiBroker
     {

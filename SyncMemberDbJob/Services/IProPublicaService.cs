@@ -1,6 +1,6 @@
 using Common.Models;
 
-namespace MemberTracker.Services
+namespace SyncMemberDbJob.Services
 {
     public interface IProPublicaService
     {

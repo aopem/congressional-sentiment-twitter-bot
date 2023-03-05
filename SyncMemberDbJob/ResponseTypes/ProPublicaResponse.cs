@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace MemberTracker.ResponseTypes
+namespace SyncMemberDbJob.ResponseTypes
 {
     public class Member
     {

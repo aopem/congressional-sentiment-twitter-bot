@@ -1,21 +1,19 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Common.Services;
 using Common.Models;
-using MemberTracker.Services;
+using SyncMemberDbJob.Services;
 
-namespace MemberTracker.BackgroundServices
+namespace SyncMemberDbJob.BackgroundServices
 {
-    public class MemberTrackerProcessingService : IScopedProcessingService
+    public class SyncMemberDbBackgroundService : BackgroundService
     {
-        private readonly ILogger<MemberTrackerProcessingService> _logger;
+        private readonly ILogger<SyncMemberDbBackgroundService> _logger;
         private readonly IConfiguration _configuration;
         private readonly ICongressMemberService _congressMemberApiService;
         private readonly IProPublicaService _proPublicaApiService;
 
-        public MemberTrackerProcessingService(
-            ILogger<MemberTrackerProcessingService> logger,
+        public SyncMemberDbBackgroundService(
+            ILogger<SyncMemberDbBackgroundService> logger,
             IConfiguration configuration,
             ICongressMemberService congressMemberApiService,
             IProPublicaService proPublicaApiService)
@@ -26,7 +24,7 @@ namespace MemberTracker.BackgroundServices
             _proPublicaApiService = proPublicaApiService;
         }
 
-        public async ValueTask DoWork(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
