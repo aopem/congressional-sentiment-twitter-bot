@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   congressmemberapi:
-    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:1.0.0
+    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.6.0
     build:
       context: ./
       dockerfile: ./CongressMemberAPI/Dockerfile
@@ -14,7 +14,7 @@ services:
     ports:
       - "5269:80"
   syncmemberdbjob:
-    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:1.0.0
+    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:2023.3.6.0
     build:
       context: ./
       dockerfile: ./SyncMemberDbJob/Dockerfile

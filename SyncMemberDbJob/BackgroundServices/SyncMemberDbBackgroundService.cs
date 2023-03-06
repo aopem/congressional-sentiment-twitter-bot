@@ -26,27 +26,32 @@ namespace SyncMemberDbJob.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                _logger.LogInformation("Retrieving all congress members...");
-                var congressMembers = await GetAllCongressMembers();
+            _logger.LogInformation("Retrieving all congress members...");
+            var congressMembers = await GetAllCongressMembers();
 
-                _logger.LogInformation("Updating congress member database");
-                await UpdateCongressMemberDatabase(congressMembers);
-            }
+            _logger.LogInformation("Updating congress member database...");
+            await UpdateCongressMemberDatabase(cancellationToken, congressMembers);
+
+            _logger.LogInformation("SyncMemberDbBackgroundService execution complete");
         }
 
-        private async ValueTask UpdateCongressMemberDatabase(IEnumerable<CongressMember> congressMembers)
+        private async ValueTask UpdateCongressMemberDatabase(
+            CancellationToken cancellationToken,
+            IEnumerable<CongressMember> congressMembers)
         {
             // add all members to database using API
             foreach (var member in congressMembers)
             {
+                // if task is cancelled stop processing Congress members
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 try
                 {
                     var addedMember = await _congressMemberApiService.CreateOrUpdateCongressMemberAsync(member);
-
-                    var message = $"Successfully created or updated: {JsonConvert.SerializeObject(addedMember)}";
-                    _logger.LogInformation(message);
+                    _logger.LogInformation($"Successfully created or updated: {JsonConvert.SerializeObject(addedMember)}");
                 }
                 catch (Exception e)
                 {

@@ -2,7 +2,6 @@ replicaCount: 2
 
 image:
   repository: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi
-  tag: "1.0.0"
 
 service:
   type: ClusterIP
