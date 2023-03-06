@@ -1,6 +1,6 @@
 apiVersion: v2
 name: sync-member-db-job
-description: App to keep Congress member database up to date
+description: Cronjob to keep Congress member database up to date. Runs once a day at midnight.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
