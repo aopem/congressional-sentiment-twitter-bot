@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   congressmemberapi:
-    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.6.0
+    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.6.1
     build:
       context: ./
       dockerfile: ./CongressMemberAPI/Dockerfile
