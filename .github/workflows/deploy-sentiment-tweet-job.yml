@@ -1,4 +1,4 @@
-name: 'AKS - Build & Deploy CongressMemberAPI'
+name: 'AKS - Build & Deploy sentiment_tweet_job'
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
       - 'dev'
     paths:
       # any time chart is updated, means app has been updated
-      - 'charts/congressmember-api/**'
+      - 'charts/sentiment-tweet-job/**'
   workflow_dispatch:
 
 env:
   PROD: ${{ github.ref == 'refs/heads/main' }}
-  DOCKER_IMAGE: 'congressmemberapi'
-  HELM_CHART: 'congressmember-api'
+  DOCKER_IMAGE: 'sentimenttweetjob'
+  HELM_CHART: 'sentiment-tweet-job'
   HELM_VERSION: 'v3.11.1'
   KUBELOGIN_VERSION: 'v0.0.27'
   AZURE_RESOURCE_GROUP: 'bot-rg'
