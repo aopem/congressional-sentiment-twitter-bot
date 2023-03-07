@@ -9,17 +9,20 @@ namespace SyncMemberDbJob.BackgroundServices
     {
         private readonly ILogger<SyncMemberDbBackgroundService> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IHostApplicationLifetime _lifetime;
         private readonly ICongressMemberService _congressMemberApiService;
         private readonly IProPublicaService _proPublicaApiService;
 
         public SyncMemberDbBackgroundService(
             ILogger<SyncMemberDbBackgroundService> logger,
             IConfiguration configuration,
+            IHostApplicationLifetime lifetime,
             ICongressMemberService congressMemberApiService,
             IProPublicaService proPublicaApiService)
         {
             _logger = logger;
             _configuration = configuration;
+            _lifetime = lifetime;
             _congressMemberApiService = congressMemberApiService;
             _proPublicaApiService = proPublicaApiService;
         }
@@ -33,6 +36,7 @@ namespace SyncMemberDbJob.BackgroundServices
             await UpdateCongressMemberDatabase(cancellationToken, congressMembers);
 
             _logger.LogInformation("SyncMemberDbBackgroundService execution complete");
+            _lifetime.StopApplication();
         }
 
         private async ValueTask UpdateCongressMemberDatabase(
