@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  GITHUB_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+  GITHUB_ENVIRONMENT: '${{ github.ref == "refs/heads/main" && "production" || "development" }}'
   DOCKER_IMAGE: 'congressmemberapi'
   HELM_CHART: 'congressmember-api'
   HELM_VERSION: 'v3.11.1'
