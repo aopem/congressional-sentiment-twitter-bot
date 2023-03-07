@@ -1,0 +1,77 @@
+name: Build and Deploy Congress Member API
+
+on:
+  # TODO: integrate this once action is working
+  # push:
+  #   paths:
+  #     - 'CongressMemberAPI/**'
+  workflow_dispatch:
+
+env:
+  PROD: ${{ github.ref == 'refs/heads/main' }}
+  DOCKER_IMAGE: 'congressmemberapi'
+  HELM_CHART: 'congressmember-api'
+  HELM_VERSION: 'v3.11.1'
+  AZURE_RESOURCE_GROUP: 'bot-rg'
+  AZURE_KUBERNETES_CLUSTER: 'twitter-bot-aks-cluster'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout branch'
+      uses: actions/checkout@v3
+
+    - name: 'Conditionally set environment variables for Production'
+      run: |
+        if [[ ${{ env.PROD }} ]]; then
+          echo "AZURE_RESOURCE_GROUP=bot-rg-prod" >> $GITHUB_ENV
+          echo "AZURE_KUBERNETES_CLUSTER=twitter-bot-aks-cluster-prod" >> $GITHUB_ENV
+          echo "ASPNETCORE_ENVIRONMENT=Production" >> $GITHUB_ENV
+          echo "ENVIRONMENT=Production" >> $GITHUB_ENV
+        fi
+
+    - name: 'Environment variables'
+      run: |
+        echo "${{ toJson(github) }}"
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ env.PROD && secrets.AZURE_CREDENTIALS_PROD || secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Login to Azure Container Registry'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.PROD && secrets.REGISTRY_LOGIN_SERVER_PROD || secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ env.PROD && secrets.REGISTRY_USERNAME_PROD || secrets.REGISTRY_USERNAME }}
+        password: ${{ env.PROD && secrets.REGISTRY_PASSWORD_PROD || secrets.REGISTRY_PASSWORD }}
+
+    - name: 'Build image and push to ACR'
+      run: |
+        # make sure environment variables are set for images
+        export ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
+        export ENVIRONMENT=${{ env.ENVIRONMENT }}
+
+        docker compose build ${{ env.DOCKER_IMAGE }}
+        docker compose push ${{ env.DOCKER_IMAGE }}
+
+    - name: 'Install Kubectl'
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: 'Install Helm'
+      uses: azure/setup-helm@v3
+      with:
+        version: ${{ env.HELM_VERSION }}
+
+    - name: 'Set Kubernetes context for AKS'
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+        cluster-name: ${{ env.AZURE_KUBERNETES_CLUSTER }}
+
+    - name: 'Deploy to AKS with Helm chart'
+      run: |
+        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
