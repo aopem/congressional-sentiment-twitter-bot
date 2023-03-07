@@ -1,4 +1,4 @@
-name: 'AKS - Build & Deploy CongressMemberAPI'
+name: 'CongressMemberAPI'
 
 on:
   push:

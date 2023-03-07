@@ -1,4 +1,4 @@
-name: 'AKS - Build & Deploy sentiment_tweet_job'
+name: 'sentiment_tweet_job'
 
 on:
   push:
@@ -11,29 +11,21 @@ on:
   workflow_dispatch:
 
 env:
-  PROD: ${{ github.ref == 'refs/heads/main' }}
   DOCKER_IMAGE: 'sentimenttweetjob'
   HELM_CHART: 'sentiment-tweet-job'
   HELM_VERSION: 'v3.11.1'
   KUBELOGIN_VERSION: 'v0.0.27'
-  AZURE_RESOURCE_GROUP: 'bot-rg'
-  AZURE_KUBERNETES_CLUSTER: 'twitter-bot-aks-cluster'
+  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  AZURE_KUBERNETES_CLUSTER: ${{ vars.AZURE_KUBERNETES_CLUSTER }}
+  ASPNETCORE_ENVIRONMENT: ${{ vars.ASPNETCORE_ENVIRONMENT }}
 
 jobs:
   build-and-deploy:
+    environment: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout branch'
       uses: actions/checkout@v3
-
-    - name: 'Conditionally set environment variables for Production'
-      run: |
-        if [[ ${{ env.PROD }} == true ]]; then
-          echo "AZURE_RESOURCE_GROUP=bot-rg-prod" >> $GITHUB_ENV
-          echo "AZURE_KUBERNETES_CLUSTER=twitter-bot-aks-cluster-prod" >> $GITHUB_ENV
-          echo "ASPNETCORE_ENVIRONMENT=Production" >> $GITHUB_ENV
-          echo "ENVIRONMENT=Production" >> $GITHUB_ENV
-        fi
 
     - name: 'Environment variables'
       run: |
@@ -42,20 +34,20 @@ jobs:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
-        creds: ${{ env.PROD == true && secrets.AZURE_CREDENTIALS_PROD || secrets.AZURE_CREDENTIALS }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: 'Login to Azure Container Registry'
       uses: azure/docker-login@v1
       with:
-        login-server: ${{ env.PROD == true && secrets.REGISTRY_LOGIN_SERVER_PROD || secrets.REGISTRY_LOGIN_SERVER }}
-        username: ${{ env.PROD == true && secrets.REGISTRY_USERNAME_PROD || secrets.REGISTRY_USERNAME }}
-        password: ${{ env.PROD == true && secrets.REGISTRY_PASSWORD_PROD || secrets.REGISTRY_PASSWORD }}
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: 'Build image and push to ACR'
       run: |
         # make sure environment variables are set for images
         export ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
-        export ENVIRONMENT=${{ env.ENVIRONMENT }}
+        export ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
 
         docker compose build ${{ env.DOCKER_IMAGE }}
         docker compose push ${{ env.DOCKER_IMAGE }}
