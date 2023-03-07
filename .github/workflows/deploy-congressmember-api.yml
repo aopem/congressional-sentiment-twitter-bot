@@ -18,7 +18,7 @@ env:
 
 jobs:
   build-and-deploy:
-    environment: fromJSON('["development", "production"]')[github.ref == 'refs/heads/main']
+    environment: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout branch'
