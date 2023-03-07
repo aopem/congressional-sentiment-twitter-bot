@@ -11,7 +11,6 @@ env:
   PROD: ${{ github.ref == 'refs/heads/main' }}
   DOCKER_IMAGE: 'congressmemberapi'
   HELM_CHART: 'congressmember-api'
-  HELM_VERSION: 'v3.11.1'
   KUBELOGIN_VERSION: 'v0.0.27'
   AZURE_RESOURCE_GROUP: 'bot-rg'
   AZURE_KUBERNETES_CLUSTER: 'twitter-bot-aks-cluster'
@@ -79,5 +78,7 @@ jobs:
         cluster-name: ${{ env.AZURE_KUBERNETES_CLUSTER }}
 
     - name: 'Deploy to AKS with Helm chart'
-      run: |
-        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
