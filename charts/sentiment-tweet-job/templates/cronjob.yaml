@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  schedule: "0 0 12 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ .Values.managedIdentity.name }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+            imagePullPolicy: Always
+            env:
+              - name: ENVIRONMENT
+                value: {{ .Values.environment }}
+          restartPolicy: OnFailure
