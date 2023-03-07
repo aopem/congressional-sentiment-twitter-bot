@@ -24,3 +24,14 @@ services:
       - AZURE_CLIENT_SECRET
       - AZURE_TENANT_ID
       - ASPNETCORE_ENVIRONMENT
+  sentimenttweetjob:
+    image: twitterbotacr.azurecr.io/twitter-bot/sentimenttweetjob:2023.3.6.0
+    build:
+      context: ./
+      dockerfile: ./sentiment_tweet_job/Dockerfile
+    container_name: sentimenttweetjob
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
+      - ENVIRONMENT=Development

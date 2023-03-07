@@ -13,9 +13,9 @@ class AzureTextAnalyticsBroker():
         for interacting with AI cognitive services
     """
     def __init__(
-            self,
-            text_analytics_endpoint: str
-        ):
+        self,
+        text_analytics_endpoint: str
+    ):
         self.__text_analytics_endpoint = text_analytics_endpoint
         self.__text_analytics_client = TextAnalyticsClient(
             endpoint=self.__text_analytics_endpoint,
