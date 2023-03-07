@@ -77,9 +77,9 @@ jobs:
       with:
         resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
         cluster-name: ${{ env.AZURE_KUBERNETES_CLUSTER }}
+        admin: 'false'
+        use-kubelogin: 'true'
 
     - name: 'Deploy to AKS with Helm chart'
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
+      run: |
+        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
