@@ -16,9 +16,9 @@ class AzureKeyVaultBroker():
     """
     def __init__(
         self,
-        key_vault_name: str
+        configuration: dict
     ):
-        self._key_vault_name = key_vault_name
+        key_vault_name = configuration["Azure"]["KeyVault"]["Name"]
         self._vault_url = f"https://{key_vault_name}.vault.azure.net"
         self._key_vault_client = SecretClient(
             vault_url=self._vault_url,

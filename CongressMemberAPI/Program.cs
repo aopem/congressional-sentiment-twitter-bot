@@ -48,6 +48,12 @@ namespace CongressMemberAPI
                 options.SuppressAsyncSuffixInActionNames = false;
             });
 
+            // set URL endpoint
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.ListenAnyIP(builder.Configuration.GetValue<int>("CongressMemberApi:Port"));
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

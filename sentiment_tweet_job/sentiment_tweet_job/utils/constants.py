@@ -14,4 +14,5 @@ TWITTER_TWEET_CHAR_LIMIT = 280
 AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST = 10
 
 # see if running in development or production environment
+# then, set configuration file accordingly
 ENVIRONMENT = os.environ["ENVIRONMENT"] if os.environ["ENVIRONMENT"] is not None else "Development"

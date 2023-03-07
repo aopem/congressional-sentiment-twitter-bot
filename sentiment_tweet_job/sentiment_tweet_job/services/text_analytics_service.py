@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from azure.ai.textanalytics import AnalyzeSentimentResult
 

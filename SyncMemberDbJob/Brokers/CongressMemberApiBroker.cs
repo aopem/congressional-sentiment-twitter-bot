@@ -53,7 +53,7 @@ namespace SyncMemberDbJob.Brokers
 
         public async ValueTask<IEnumerable<CongressMember>> GetAllAsync()
         {
-            var path = $"CongressMember";
+            var path = "CongressMember";
             var response = await _httpClient.GetAsync(path);
 
             if (!response.IsSuccessStatusCode)

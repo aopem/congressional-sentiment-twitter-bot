@@ -32,7 +32,7 @@ COPY ./sentiment_tweet_job/requirements.txt /
 RUN pip3 install -r requirements.txt
 
 # copy app files
-COPY . .
+COPY ./sentiment_tweet_job .
 
 # run app
-CMD [ "python3", "-m", "manage.py" ]
+CMD [ "python3", "main.py" ]

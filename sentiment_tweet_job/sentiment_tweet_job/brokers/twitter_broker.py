@@ -16,6 +16,7 @@ class TwitterBroker():
     """
     def __init__(
         self,
+        azure_keyvault_broker: AzureKeyVaultBroker,
         wait_on_rate_limit: bool = True
     ):
         """
@@ -26,7 +27,7 @@ class TwitterBroker():
             broker should not synchronously wait when Twitter rate limits
             the API calls. Defaults to True.
         """
-        self.__azure_keyvault_broker = AzureKeyVaultBroker()
+        self.__azure_keyvault_broker = azure_keyvault_broker
         self.__api_secrets = self.__get_api_secrets_dict()
         self._tweepy_client = tweepy.Client(
             consumer_key=self.__api_secrets["apiKey"],

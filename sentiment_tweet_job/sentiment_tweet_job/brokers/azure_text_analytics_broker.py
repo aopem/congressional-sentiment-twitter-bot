@@ -14,11 +14,11 @@ class AzureTextAnalyticsBroker():
     """
     def __init__(
         self,
-        text_analytics_endpoint: str
+        configuration: dict
     ):
-        self.__text_analytics_endpoint = text_analytics_endpoint
+        cognitive_services_account = configuration["Azure"]["CognitiveServices"]["AccountName"]
         self.__text_analytics_client = TextAnalyticsClient(
-            endpoint=self.__text_analytics_endpoint,
+            endpoint=f"https://{cognitive_services_account}.cognitiveservices.azure.com/",
             credential=DefaultAzureCredential()
         )
 

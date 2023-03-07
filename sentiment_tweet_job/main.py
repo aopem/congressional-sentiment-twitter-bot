@@ -1,81 +1,60 @@
 import json
 import logging
+logging.basicConfig(level=logging.INFO)
+
 from random import randrange
 
-import django
-from django.conf import settings
-
-from sentiment_tweet_job.brokers import AzureKeyVaultBroker, AzureTextAnalyticsBroker, TwitterBroker
+from sentiment_tweet_job.brokers import AzureTextAnalyticsBroker, \
+    AzureKeyVaultBroker, TwitterBroker, CongressMemberApiBroker
 from sentiment_tweet_job.services import TextAnalyticsService, TwitterService
-from sentiment_tweet_job.models import CongressMember
+from sentiment_tweet_job.models import TwitterAccount
 from sentiment_tweet_job.utils.constants import ENVIRONMENT, \
     TWITTER_MAX_TWEETS_RETURNED, AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
 
-# setup django so ORM can be used without full framework
-def django_init():
-    if settings.configured:
-        return
-
-    # access Azure KeyVault for secrets
-    appsettings_file_path = f"./appsettings.{ENVIRONMENT}.json"
-    appsettings = json.loads(appsettings_file_path)
-    keyvault_broker = AzureKeyVaultBroker(
-        key_vault_name=appsettings["Azure"]["KeyVault"]["Name"]
-    )
-
-    # get db connection string secrets
-    db_user = keyvault_broker.get_secret("CongressMemberDbUsername").value
-    db_password = keyvault_broker.get_secret("CongressMemberDbPassword").value
-    db_name = appsettings["Azure"]["Databases"]["CongressMember"]["DatabaseName"]
-    db_host = appsettings["Azure"]["Databases"]["CongressMember"]["ServerName"]
-
-    # configure db connection
-    settings.configure(
-        INSTALLED_APPS=[
-            'sentiment_tweet_job',
-        ],
-        DATABASES={
-            'default': {
-                'ENGINE': 'mssql',
-                'NAME': db_name,
-                'USER': db_user,
-                'PASSWORD': db_password,
-                'HOST': db_host,
-                'PORT': '',
-                'OPTIONS': {
-                    'driver': 'ODBC Driver 18 for SQL Server'
-                }
-            }
-        }
-    )
-
-    django.setup()
-
 
 def main():
-    # create brokers
-    bot = TwitterBroker()
-    text_analytics_broker = AzureTextAnalyticsBroker()
+    # get configuration
+    appsettings = json.load(open(f"./appsettings.{ENVIRONMENT}.json"))
+
+    # create and inject dependencies
+    azure_keyvault_broker = AzureKeyVaultBroker(configuration=appsettings)
+    text_analytics_broker = AzureTextAnalyticsBroker(configuration=appsettings)
+    congress_member_api_broker = CongressMemberApiBroker(configuration=appsettings)
+    bot = TwitterBroker(azure_keyvault_broker=azure_keyvault_broker)
 
     # get all congress member IDs from db
-    member_ids = CongressMember.objects.values_list(
-        'id',
-        flat=True
-    )
+    members = congress_member_api_broker.get_all()
 
     # select a random ID, then retrieve that member object
     # along with the corresponding twitter user
-    rand_id = randrange(0, len(member_ids))
-    member = CongressMember.objects.filter(
-        id=rand_id
-    )
+    rand_index = randrange(0, len(members))
+    member = members[rand_index]
+
+    while member["twitterAccountName"] is None:
+        message = f"Congress member {member['firstName']} {member['lastName']} does not have a Twitter account. " \
+            f"Finding a new account to analyze..."
+        logging.info(message)
+
+        # randomly select another member
+        rand_index = randrange(0, len(members))
+        member = members[rand_index]
+
+    logging.info(f"Successfully randomly selected {member['firstName']} {member['lastName']} (@{member['twitterAccountName']}, ID: {member['id']})")
     user = bot.get_user_by_name(
-        username=member.twitter_account_name
+        username=member["twitterAccountName"]
+    )
+
+    user_account = TwitterAccount(
+        id=user["id"],
+        name=user["name"],
+        username=user["username"],
+        verified=user["verified"]
     )
 
     # get tweets up to TWITTER_MAX_TWEETS_RETURNED to analyze
+    logging.info(f"Using Twitter user ID: {user_account.id}")
     mentions = bot.get_user_mentions(
-        user=user,
+        user=user_account,
         max_results=TWITTER_MAX_TWEETS_RETURNED
     )
 
@@ -125,11 +104,10 @@ def main():
             text=sentiment_tweet
         )
     else:
-        logging.info(f"Running in environment: {ENVIRONMENT}, will not send tweet unless in 'Production'")
+        logging.info(f"Running in environment: '{ENVIRONMENT}', will not send tweet unless in 'Production'")
 
     return
 
 
 if __name__ == "__main__":
-    django_init()
     main()
