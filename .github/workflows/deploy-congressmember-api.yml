@@ -12,6 +12,7 @@ env:
   DOCKER_IMAGE: 'congressmemberapi'
   HELM_CHART: 'congressmember-api'
   HELM_VERSION: 'v3.11.1'
+  KUBELOGIN_VERSION: 'v0.0.27'
   AZURE_RESOURCE_GROUP: 'bot-rg'
   AZURE_KUBERNETES_CLUSTER: 'twitter-bot-aks-cluster'
 
@@ -60,6 +61,11 @@ jobs:
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
+
+    - name: 'Install Kubelogin'
+      uses: azure/use-kubelogin@v1
+      with:
+        kubelogin-version: ${{ env.KUBELOGIN_VERSION }}
 
     - name: 'Install Helm'
       uses: azure/setup-helm@v3
