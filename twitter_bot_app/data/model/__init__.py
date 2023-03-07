@@ -1,1 +1,0 @@
-from .politician import Politician

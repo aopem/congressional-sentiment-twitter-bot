@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob
+
+managedIdentity:
+  name: twitter-bot-msi
+
+aspNetCore:
+  environment: Development

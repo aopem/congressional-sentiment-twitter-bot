@@ -1,0 +1,37 @@
+version: "3.4"
+services:
+  congressmemberapi:
+    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.6.1
+    build:
+      context: ./
+      dockerfile: ./CongressMemberAPI/Dockerfile
+    container_name: congressmemberapi
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
+      - ASPNETCORE_ENVIRONMENT
+    ports:
+      - "5269:80"
+  syncmemberdbjob:
+    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:2023.3.7.0
+    build:
+      context: ./
+      dockerfile: ./SyncMemberDbJob/Dockerfile
+    container_name: syncmemberdbjob
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
+      - ASPNETCORE_ENVIRONMENT
+  sentimenttweetjob:
+    image: twitterbotacr.azurecr.io/twitter-bot/sentimenttweetjob:2023.3.6.0
+    build:
+      context: ./
+      dockerfile: ./sentiment_tweet_job/Dockerfile
+    container_name: sentimenttweetjob
+    environment:
+      - AZURE_CLIENT_ID
+      - AZURE_CLIENT_SECRET
+      - AZURE_TENANT_ID
+      - ENVIRONMENT=Development

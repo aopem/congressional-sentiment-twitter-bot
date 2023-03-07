@@ -1,0 +1,17 @@
+replicaCount: 2
+
+image:
+  repository: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi
+
+service:
+  type: ClusterIP
+  containerPort: 80
+  port: 5269
+  targetPort: 80
+  protocol: TCP
+
+managedIdentity:
+  name: twitter-bot-msi
+
+aspNetCore:
+  environment: Development
