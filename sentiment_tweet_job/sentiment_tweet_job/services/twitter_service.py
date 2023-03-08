@@ -14,7 +14,7 @@ class TwitterService:
                f"of #uscongress member @{user.username}, I have given them "       \
                f"a {sentiment_analysis.category} Twitter sentiment score of "      \
                f"{sentiment_analysis.score:.3f} (-1 to +1). I found "              \
-               f"{sentiment_analysis.num_positive} positive tweet(s) and "         \
-               f"{sentiment_analysis.num_negative} negative tweet(s)"
+               f"{int(sentiment_analysis.num_positive)} positive tweet(s) and "         \
+               f"{int(sentiment_analysis.num_negative)} negative tweet(s)"
 
         return text
