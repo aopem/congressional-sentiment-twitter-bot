@@ -3,7 +3,7 @@ name: 'sentiment_tweet_job'
 on:
   push:
     branches:
-      # - 'main' TODO: uncomment once prod fully set up
+      - 'main'
       - 'dev'
     paths:
       # any time chart is updated, means app has been updated
@@ -12,6 +12,7 @@ on:
 
 env:
   DOCKER_IMAGE: 'sentimenttweetjob'
+  DOCKERFILE_DIR: 'sentiment_tweet_job'
   HELM_CHART: 'sentiment-tweet-job'
   HELM_VERSION: 'v3.11.1'
   KUBELOGIN_VERSION: 'v0.0.27'
@@ -31,6 +32,12 @@ jobs:
       run: |
         echo "${{ toJson(env) }}"
 
+    - name: 'Get appVersion from Helm chart'
+      id: chart
+      uses: jacobtomlinson/gha-read-helm-chart@master
+      with:
+        path: charts/${{ env.HELM_CHART }}
+
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
@@ -49,8 +56,9 @@ jobs:
         export ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
         export ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
 
-        docker compose build ${{ env.DOCKER_IMAGE }}
-        docker compose push ${{ env.DOCKER_IMAGE }}
+        DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ env.DOCKER_IMAGE }}:${{ steps.chart.outputs.appVersion }}
+        docker build . -t $DOCKER_TAG -f ./${{ env.DOCKERFILE_DIR }}/Dockerfile
+        docker push $DOCKER_TAG
 
     - name: 'Install Kubectl'
       uses: azure/setup-kubectl@v3
