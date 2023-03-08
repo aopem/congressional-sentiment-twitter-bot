@@ -1,8 +1,4 @@
 replicaCount: 1
 
-image: __GITHUB_ACTIONS_VAR__
-
-managedIdentity:
-  name: twitter-bot-msi
-
-environment: Development
+image:
+  repository: twitter-bot/sentimenttweetjob

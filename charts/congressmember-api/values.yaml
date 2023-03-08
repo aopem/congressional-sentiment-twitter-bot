@@ -1,6 +1,7 @@
 replicaCount: 2
 
-image: __GITHUB_ACTIONS_VAR__
+image:
+  repository: twitter-bot/congressmemberapi
 
 service:
   type: ClusterIP
@@ -8,9 +9,3 @@ service:
   port: 5269
   targetPort: 80
   protocol: TCP
-
-managedIdentity:
-  name: twitter-bot-msi
-
-aspNetCore:
-  environment: Development

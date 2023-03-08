@@ -1,9 +1,4 @@
 replicaCount: 1
 
-image: __GITHUB_ACTIONS_VAR__
-
-managedIdentity:
-  name: twitter-bot-msi
-
-aspNetCore:
-  environment: Development
+image:
+  repository: twitter-bot/syncmemberdbjob

@@ -13,9 +13,9 @@ spec:
           serviceAccountName: {{ .Values.managedIdentity.name }}
           containers:
           - name: {{ .Chart.Name }}
-            image: "{{ .Values.image }}"
+            image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
             imagePullPolicy: Always
             env:
               - name: ENVIRONMENT
-                value: {{ .Values.environment }}
+                value: {{ .Values.aspNetCore.environment }}
           restartPolicy: OnFailure
