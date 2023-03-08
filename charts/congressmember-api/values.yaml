@@ -5,7 +5,7 @@ image:
 
 service:
   type: ClusterIP
-  containerPort: 80
+  containerPort: 5269
   port: 5269
-  targetPort: 80
+  targetPort: 5269
   protocol: TCP

@@ -1,13 +1,6 @@
 image:
   registry: twitterbotacrprod.azurecr.io
 
-service:
-  type: ClusterIP
-  containerPort: 80
-  port: 5269
-  targetPort: 80
-  protocol: TCP
-
 managedIdentity:
   name: twitter-bot-msi-prod
 
