@@ -57,7 +57,7 @@ jobs:
         export ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
 
         DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ env.DOCKER_IMAGE }}:${{ steps.chart.outputs.appVersion }}
-        docker build -t $DOCKER_TAG ./${{ env.DOCKERFILE_DIR }}
+        docker build . -t $DOCKER_TAG -f ./${{ env.DOCKERFILE_DIR }}/Dockerfile
         docker push $DOCKER_TAG
 
     - name: 'Install Kubectl'
