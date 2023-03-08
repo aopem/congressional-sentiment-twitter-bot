@@ -51,6 +51,7 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: 'Build image and push to ACR'
+      id: acr
       run: |
         # make sure environment variables are set for images
         export ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
@@ -59,6 +60,9 @@ jobs:
         DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ env.DOCKER_IMAGE }}:${{ steps.chart.outputs.appVersion }}
         docker build . -t $DOCKER_TAG -f ./${{ env.DOCKERFILE_DIR }}/Dockerfile
         docker push $DOCKER_TAG
+
+        # output docker tag variable
+        echo "DOCKER_TAG=$DOCKER_TAG" >> $GITHUB_OUTPUT
 
     - name: 'Install Kubectl'
       uses: azure/setup-kubectl@v3
@@ -85,4 +89,4 @@ jobs:
 
     - name: 'Deploy to AKS with Helm chart'
       run: |
-        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
+        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install --set image=${{ steps.acr.outputs.DOCKER_TAG }}

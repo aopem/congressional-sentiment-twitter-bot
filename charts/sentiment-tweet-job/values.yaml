@@ -1,7 +1,6 @@
 replicaCount: 1
 
-image:
-  repository: twitterbotacr.azurecr.io/twitter-bot/sentimenttweetjob
+image: __GITHUB_ACTIONS_VAR__
 
 managedIdentity:
   name: twitter-bot-msi
