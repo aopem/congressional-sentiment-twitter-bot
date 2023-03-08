@@ -1,0 +1,8 @@
+image:
+  registry: twitterbotacrprod.azurecr.io
+
+managedIdentity:
+  name: twitter-bot-msi-prod
+
+aspNetCore:
+  environment: Production

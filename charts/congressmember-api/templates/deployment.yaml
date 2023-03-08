@@ -18,7 +18,7 @@ spec:
       serviceAccountName: {{ .Values.managedIdentity.name }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: Always
           ports:
             - name: http

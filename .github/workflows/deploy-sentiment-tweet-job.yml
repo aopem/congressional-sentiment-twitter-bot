@@ -11,6 +11,7 @@ on:
   workflow_dispatch:
 
 env:
+  DEPLOYMENT_ENVIRONMENT: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
   DOCKER_IMAGE: 'sentimenttweetjob'
   DOCKERFILE_DIR: 'sentiment_tweet_job'
   HELM_CHART: 'sentiment-tweet-job'
@@ -51,11 +52,8 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: 'Build image and push to ACR'
+      id: acr
       run: |
-        # make sure environment variables are set for images
-        export ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
-        export ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
-
         DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ env.DOCKER_IMAGE }}:${{ steps.chart.outputs.appVersion }}
         docker build . -t $DOCKER_TAG -f ./${{ env.DOCKERFILE_DIR }}/Dockerfile
         docker push $DOCKER_TAG
@@ -85,4 +83,7 @@ jobs:
 
     - name: 'Deploy to AKS with Helm chart'
       run: |
-        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install
+        # last values.yaml file specified will override chart-specific values
+        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install \
+          --values charts/${{ env.HELM_CHART }}/values.yaml \
+          --values charts/values.${{ env.DEPLOYMENT_ENVIRONMENT }}.yaml
