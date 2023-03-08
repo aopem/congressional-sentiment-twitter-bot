@@ -9,6 +9,7 @@ spec:
   jobTemplate:
     spec:
       template:
+        azure.workload.identity/use: "true"
         spec:
           serviceAccountName: {{ .Values.managedIdentity.name }}
           containers:
