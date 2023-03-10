@@ -26,7 +26,7 @@ namespace SyncMemberDbJob
 
             // get secrets and add to configuration
             var keyVaultName = builder.Configuration.GetValue<string>("Azure:KeyVault:Name");
-            logger.LogInformation($"Attempting to connect to Key Vault: {keyVaultName}...");
+            logger.LogInformation($"Attempting to connect to Key Vault: {keyVaultName}");
             builder.Configuration.AddAzureKeyVault(
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 credential);
@@ -43,14 +43,14 @@ namespace SyncMemberDbJob
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddScoped<ICongressMemberApiBroker, CongressMemberApiBroker>();
-            services.AddScoped<IProPublicaApiBroker, ProPublicaApiBroker>();
+            services.AddTransient<ICongressMemberApiBroker, CongressMemberApiBroker>();
+            services.AddTransient<IProPublicaApiBroker, ProPublicaApiBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddScoped<ICongressMemberService, CongressMemberApiService>();
-            services.AddScoped<IProPublicaService, ProPublicaApiService>();
+            services.AddTransient<ICongressMemberService, CongressMemberApiService>();
+            services.AddTransient<IProPublicaService, ProPublicaApiService>();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace CongressMemberAPI
 
             // get secrets and add to configuration
             var keyVaultName = builder.Configuration.GetValue<string>("Azure:KeyVault:Name");
-            logger.LogInformation($"Attempting to connect to Key Vault: {keyVaultName}...");
+            logger.LogInformation($"Attempting to connect to Key Vault: {keyVaultName}");
             builder.Configuration.AddAzureKeyVault(
                 new Uri ($"https://{keyVaultName}.vault.azure.net"),
                 credential);
