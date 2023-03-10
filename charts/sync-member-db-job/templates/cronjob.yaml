@@ -19,6 +19,6 @@ spec:
             image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
             imagePullPolicy: Always
             env:
-              - name: ASPNETCORE_ENVIRONMENT
-                value: {{ .Values.aspNetCore.environment }}
+              - name: DOTNET_ENVIRONMENT
+                value: {{ .Values.environment }}
           restartPolicy: OnFailure

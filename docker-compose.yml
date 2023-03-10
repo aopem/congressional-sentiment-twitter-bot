@@ -1,33 +1,34 @@
+# Docker compose file for local testing
 version: "3.4"
 services:
   congressmemberapi:
-    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.6.1
+    image: twitterbotacr.azurecr.io/twitter-bot/congressmemberapi:2023.3.10.0
     build:
-      context: ./
+      context: .
       dockerfile: ./CongressMemberAPI/Dockerfile
     container_name: congressmemberapi
     environment:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET
       - AZURE_TENANT_ID
-      - ASPNETCORE_ENVIRONMENT
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5269:80"
+      - "5269:5269"
   syncmemberdbjob:
-    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:2023.3.7.0
+    image: twitterbotacr.azurecr.io/twitter-bot/syncmemberdbjob:2023.3.10.0
     build:
-      context: ./
+      context: .
       dockerfile: ./SyncMemberDbJob/Dockerfile
     container_name: syncmemberdbjob
     environment:
       - AZURE_CLIENT_ID
       - AZURE_CLIENT_SECRET
       - AZURE_TENANT_ID
-      - ASPNETCORE_ENVIRONMENT
+      - DOTNET_ENVIRONMENT=Development
   sentimenttweetjob:
-    image: twitterbotacr.azurecr.io/twitter-bot/sentimenttweetjob:2023.3.6.0
+    image: twitterbotacr.azurecr.io/twitter-bot/sentimenttweetjob:2023.3.8.0
     build:
-      context: ./
+      context: .
       dockerfile: ./sentiment_tweet_job/Dockerfile
     container_name: sentimenttweetjob
     environment:

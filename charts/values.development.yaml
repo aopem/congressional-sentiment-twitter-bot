@@ -4,5 +4,4 @@ image:
 managedIdentity:
   name: twitter-bot-msi
 
-aspNetCore:
-  environment: Development
+environment: Development

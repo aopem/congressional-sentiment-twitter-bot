@@ -20,5 +20,5 @@ spec:
             imagePullPolicy: Always
             env:
               - name: ENVIRONMENT
-                value: {{ .Values.aspNetCore.environment }}
+                value: {{ .Values.environment }}
           restartPolicy: OnFailure

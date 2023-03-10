@@ -26,5 +26,5 @@ spec:
               protocol: TCP
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: {{ .Values.aspNetCore.environment }}
+              value: {{ .Values.environment }}
 
