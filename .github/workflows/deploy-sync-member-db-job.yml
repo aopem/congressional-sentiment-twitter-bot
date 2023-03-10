@@ -13,6 +13,7 @@ on:
 jobs:
   aks-deploy:
     uses: ./.github/workflows/deploy-aks.yml
+    secrets: inherit
     with:
       dockerImage: 'syncmemberdbjob'
       dockerfileDir: 'SyncMemberDbJob'
