@@ -32,12 +32,13 @@ jobs:
     - name: 'Environment variables'
       run: |
         echo "${{ toJson(env) }}"
+        echo "${{ toJson(inputs) }}"
 
     - name: 'Get appVersion from Helm chart'
       id: chart
       uses: jacobtomlinson/gha-read-helm-chart@master
       with:
-        path: charts/${{ env.HELM_CHART }}
+        path: charts/${{ inputs.helmChart }}
 
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
@@ -53,8 +54,8 @@ jobs:
 
     - name: 'Build image and push to ACR'
       run: |
-        DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ env.DOCKER_IMAGE }}:${{ steps.chart.outputs.appVersion }}
-        docker build . -t $DOCKER_TAG -f ./${{ env.DOCKERFILE_DIR }}/Dockerfile
+        DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ inputs.dockerImage }}:${{ steps.chart.outputs.appVersion }}
+        docker build . -t $DOCKER_TAG -f ./${{ inputs.dockerfileDir }}/Dockerfile
         docker push $DOCKER_TAG
 
     - name: 'Install Kubectl'
@@ -83,6 +84,6 @@ jobs:
     - name: 'Deploy to AKS with Helm chart'
       run: |
         # last values.yaml file specified will override chart-specific values
-        helm upgrade ${{ env.HELM_CHART }} charts/${{ env.HELM_CHART }} --install \
-          --values charts/${{ env.HELM_CHART }}/values.yaml \
+        helm upgrade ${{ inputs.helmChart }} charts/${{ inputs.helmChart }} --install \
+          --values charts/${{ inputs.helmChart }}/values.yaml \
           --values charts/values.${{ env.DEPLOYMENT_ENVIRONMENT }}.yaml
