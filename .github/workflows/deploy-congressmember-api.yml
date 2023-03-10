@@ -12,15 +12,8 @@ on:
 
 jobs:
   aks-deploy:
-    environment: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: 'Checkout branch'
-      uses: actions/checkout@v3
-
-    - name: 'Deploy to Azure Kubernetes Service'
-      uses: ./.github/workflows/deploy-aks.yml
-      with:
-        dockerImage: 'congressmemberapi'
-        dockerfileDir: 'CongressMemberAPI'
-        helmChart: 'congressmember-api'
+    uses: ./.github/workflows/deploy-aks.yml
+    with:
+      dockerImage: 'congressmemberapi'
+      dockerfileDir: 'CongressMemberAPI'
+      helmChart: 'congressmember-api'
