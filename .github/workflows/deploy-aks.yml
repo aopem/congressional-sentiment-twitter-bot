@@ -1,0 +1,89 @@
+name: Deploy to Azure Kubernetes Service
+
+on:
+  workflow_call:
+    inputs:
+      dockerImage:
+        required: true
+        type: string
+      dockerfileDir:
+        required: true
+        type: string
+      helmChart:
+        required: true
+        type: string
+
+env:
+  DEPLOYMENT_ENVIRONMENT: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
+  HELM_VERSION: 'v3.11.1'
+  KUBELOGIN_VERSION: 'v0.0.27'
+  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  AZURE_KUBERNETES_CLUSTER: ${{ vars.AZURE_KUBERNETES_CLUSTER }}
+  ASPNETCORE_ENVIRONMENT: ${{ vars.ASPNETCORE_ENVIRONMENT }}
+
+jobs:
+  build-and-deploy:
+    environment: ${{ fromJSON('["development", "production"]')[github.ref == 'refs/heads/main'] }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout branch'
+      uses: actions/checkout@v3
+
+    - name: 'Environment variables'
+      run: |
+        echo "${{ toJson(env) }}"
+        echo "${{ toJson(inputs) }}"
+
+    - name: 'Get appVersion from Helm chart'
+      id: chart
+      uses: jacobtomlinson/gha-read-helm-chart@master
+      with:
+        path: charts/${{ inputs.helmChart }}
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Login to Azure Container Registry'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: 'Build image and push to ACR'
+      run: |
+        DOCKER_TAG=${{ secrets.REGISTRY_LOGIN_SERVER }}/twitter-bot/${{ inputs.dockerImage }}:${{ steps.chart.outputs.appVersion }}
+        docker build . -t $DOCKER_TAG -f ./${{ inputs.dockerfileDir }}/Dockerfile
+        docker push $DOCKER_TAG
+
+    - name: 'Install Kubectl'
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: 'Install Kubelogin'
+      uses: azure/use-kubelogin@v1
+      with:
+        kubelogin-version: ${{ env.KUBELOGIN_VERSION }}
+
+    - name: 'Install Helm'
+      uses: azure/setup-helm@v3
+      with:
+        version: ${{ env.HELM_VERSION }}
+
+    - name: 'Set Kubernetes context for AKS'
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+        cluster-name: ${{ env.AZURE_KUBERNETES_CLUSTER }}
+        admin: 'false'
+        use-kubelogin: 'true'
+
+    - name: 'Deploy to AKS with Helm chart'
+      run: |
+        # last values.yaml file specified will override chart-specific values
+        helm upgrade ${{ inputs.helmChart }} charts/${{ inputs.helmChart }} --install \
+          --values charts/${{ inputs.helmChart }}/values.yaml \
+          --values charts/values.${{ env.DEPLOYMENT_ENVIRONMENT }}.yaml

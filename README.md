@@ -25,22 +25,3 @@ A Kubernetes cronjob that runs daily at 12PM PST. The job crowdsources the 100 l
 ### SyncMemberDbJob
 
 A Kubernetes cronjob built using C#/ASP.NET Core that runs once daily at 12AM PST. It creates a background service that queries the [ProPublica Congress API](https://www.propublica.org/datastore/api/propublica-congress-api) to get a list of all current members of Congress. Then, it updates the associated database using the CongressMemberAPI service.
-
-## Usage
-
-Build or push a Docker image from local environment:
-
-```bash
-docker compose build                # build all images
-docker compose build <image-name>   # build a specific image
-
-docker compose push                 # push all images
-docker compose push <image-name>    # push a specific image
-```
-
-Deploy to AKS with helm:
-
-```bash
-az aks get-credentials --resource-group <resource-group> --name <aks-cluster-name>
-helm upgrade <chart-name> charts/<chart-name> --install
-```
