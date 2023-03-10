@@ -2,12 +2,12 @@ import json
 import logging
 logging.basicConfig(level=logging.INFO)
 
-from random import randrange
+from random import randrange, uniform
 
 from sentiment_tweet_job.brokers import AzureTextAnalyticsBroker, \
     AzureKeyVaultBroker, TwitterBroker, CongressMemberApiBroker
 from sentiment_tweet_job.services import TextAnalyticsService, TwitterService
-from sentiment_tweet_job.models import TwitterAccount
+from sentiment_tweet_job.models import TwitterAccount, SentimentAnalysis
 from sentiment_tweet_job.utils.constants import ENVIRONMENT, \
     TWITTER_MAX_TWEETS_RETURNED, AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
 
@@ -74,27 +74,39 @@ def main():
     step = AZURE_MAX_DOCUMENTS_PER_SENTIMENT_REQUEST
 
     # get sentiment of tweets, assuming all in English
-    logging.info("Obtaining tweet sentiment...")
+    twitter_service = TwitterService()
+    text_analytics_service = TextAnalyticsService()
     sentiments = []
-    for i in range(0, stop, step):
-        batch = text_analytics_broker.get_text_sentiment(
-            text=mention_list[i:i + step]
+
+    # only perform actual sentiment analysis in Production
+    logging.info("Obtaining tweet sentiment...")
+    if ENVIRONMENT == "Production":
+        for i in range(0, stop, step):
+            batch = text_analytics_broker.get_text_sentiment(
+                text=mention_list[i:i + step]
+            )
+
+            # add all elements of batch to sentiment list
+            for analysis in batch:
+                sentiments.append(analysis)
+
+        sentiment_analysis = text_analytics_service.get_sentiment_analysis(
+            sentiments=sentiments
+        )
+    else:
+        # simulate a sentiment analysis
+        sentiment_analysis = SentimentAnalysis(
+            score=uniform(-1.0, 1.0),
+            num_positive=randrange(0, 33),
+            num_negative=randrange(0, 33),
+            num_neutral=randrange(0, 33),
+            num_mixed=0
         )
 
-        # add all elements of batch to sentiment list
-        for analysis in batch:
-            sentiments.append(analysis)
-
-    text_analytics_service = TextAnalyticsService()
-    twitter_service = TwitterService()
-    sentiment_analysis = text_analytics_service.get_sentiment_analysis(
-        sentiments=sentiments
-    )
     sentiment_tweet = twitter_service.create_sentiment_tweet(
         user=user,
         sentiment_analysis=sentiment_analysis
     )
-
     logging.info(f"Full tweet text ({len(sentiment_tweet)} characters):")
     logging.info(f"{sentiment_tweet}")
 
