@@ -12,8 +12,6 @@ certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==2.1.0
 cryptography==39.0.1
-msal==1.18.0
-msal-extensions==1.0.0
 msrest==0.7.1
 msrestazure==0.6.4
 mssql-django==1.2
