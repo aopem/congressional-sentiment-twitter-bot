@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/SyncMemberDbJob"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
+  - package-ecosystem: "nuget"
+    directory: "/CongressMemberAPI"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
+  - package-ecosystem: "pip"
+    directory: "/sentiment_tweet_job"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
