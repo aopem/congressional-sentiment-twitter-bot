@@ -27,7 +27,7 @@ msrestazure==0.6.4
 mssql-django==1.2
 oauthlib==3.2.2
 platformdirs==3.5.1
-portalocker==2.5.1
+portalocker==2.7.0
 pycparser==2.21
 PyJWT==2.4.0
 pyodbc==4.0.35
