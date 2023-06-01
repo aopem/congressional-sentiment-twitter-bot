@@ -4,17 +4,20 @@ updates:
     directory: "/SyncMemberDbJob"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
     update:
       - dependency-type: "all"
   - package-ecosystem: "nuget"
     directory: "/CongressMemberAPI"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
     update:
       - dependency-type: "all"
   - package-ecosystem: "pip"
     directory: "/sentiment_tweet_job"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
     update:
       - dependency-type: "all"
