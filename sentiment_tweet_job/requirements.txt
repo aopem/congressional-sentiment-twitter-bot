@@ -26,4 +26,4 @@ sqlparse==0.4.4
 StrEnum==0.4.8
 tweepy==4.7.0
 urllib3==2.0.3
-virtualenv==20.16.3
+virtualenv==20.23.1
