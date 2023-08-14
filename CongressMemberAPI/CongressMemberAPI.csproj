@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
